@@ -17,22 +17,19 @@ struct ContentView: View {
                 nav = .detailOnly
             }
         } detail: {
-            if let currentPage = pageManager.currentPage {
-                lessons(page: currentPage)
-            }
+            lessons
         }
     }
     
     @ViewBuilder
-    private func lessons(page: Int) -> some View {
-        if page == 0 {
-            Intro()
-        } else if page == 1 {
-            Voice()
-        } else if page == 2 {
-            Attitude()
-        } else if page == 3 {
-            Final()
+    private var lessons: some View {
+        switch pageManager.currentPage {
+        case 0: Intro()
+        case 1: Voice()
+        case 2: Face()
+        case 3: Attitude()
+        case 4: Final()
+        default: Intro()
         }
     }
 }

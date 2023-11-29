@@ -12,10 +12,15 @@ struct Intro: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("when you have to speech...")
-                    .navigationTitle("Intro")
-                next
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack {
+                        Text("when you have to speech...")
+                            .navigationTitle("Intro")
+                        next
+                    }
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                }
             }
         }
     }
@@ -31,6 +36,7 @@ struct Intro: View {
                 .padding()
         }
         .buttonStyle(.borderedProminent)
+        .tint(.blue)
     }
 }
 
