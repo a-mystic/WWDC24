@@ -1,18 +1,18 @@
 //
-//  Final.swift
+//  Finish.swift
 //  Your Speech
 //
-//  Created by a mystic on 11/29/23.
+//  Created by a mystic on 12/23/23.
 //
 
 import SwiftUI
 
-struct Final: View {
+struct Finish: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    Final()
+    Finish()
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct Controller: View {
     @EnvironmentObject var pageManager: PageManager
     
     @State private var nav: NavigationSplitViewVisibility = .all
@@ -19,6 +19,9 @@ struct ContentView: View {
         } detail: {
             lessons
         }
+        .onAppear {
+            similarity("a", and: "b")
+        }
     }
     
     @ViewBuilder
@@ -26,9 +29,10 @@ struct ContentView: View {
         switch pageManager.currentPage {
         case 0: Intro()
         case 1: Voice()
-        case 2: Face()
-        case 3: Attitude()
-        case 4: Final()
+        case 2: Script()
+        case 3: Face()
+        case 4: Attitude()
+        case 5: Finish()
         default: Intro()
         }
     }

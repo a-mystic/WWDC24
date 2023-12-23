@@ -6,8 +6,10 @@ struct MyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Controller()
                 .environmentObject(pageManager)
+                .preferredColorScheme(.dark)
+                .tint(.black)
         }
     }
 }

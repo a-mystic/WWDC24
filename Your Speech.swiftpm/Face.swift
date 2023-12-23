@@ -18,7 +18,7 @@ struct Face: View {
                         Text("when you speech...")
                             .font(.largeTitle)
                         placeHolder(in: geometry.size)
-                        next
+                        stateButton
                     }
                     .frame(width: geometry.size.width, height: geometry.size.height)
                 }
@@ -51,7 +51,7 @@ struct Face: View {
     
     @State private var buttonState = ButtonState.start
     
-    private var next: some View {
+    private var stateButton: some View {
         Button {
             withAnimation {
                 switch buttonState {

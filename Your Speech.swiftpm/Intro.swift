@@ -34,7 +34,8 @@ struct Intro: View {
                 .padding()
         }
         .buttonStyle(.borderedProminent)
-        .tint(.blue)
+        .foregroundStyle(.black)
+        .tint(.white)
     }
 }
 
