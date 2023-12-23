@@ -35,7 +35,7 @@ struct Intro: View {
         }
         .buttonStyle(.borderedProminent)
         .foregroundStyle(.black)
-        .tint(.white)
+//        .tint(.white)
     }
 }
 

@@ -44,9 +44,20 @@ struct Face: View {
     }
     
     private enum ButtonState: String {
-        case start = "Start"
-        case stop = "Stop"
-        case next = "Go to next page"
+        case start = "play.fill"
+        case stop = "stop.fill"
+        case next = "arrow.right"
+        
+        var description: String {
+            switch self {
+            case .start:
+                return "Play"
+            case .stop:
+                return "Stop"
+            case .next:
+                return "Go to next page"
+            }
+        }
     }
     
     @State private var buttonState = ButtonState.start
@@ -61,13 +72,16 @@ struct Face: View {
                 }
             }
         } label: {
-            Text(buttonState.rawValue)
-                .bold()
-                .padding()
-                .font(.title)
+            HStack {
+                Text(buttonState.description)
+                Image(systemName: buttonState.rawValue)
+            }
+            .padding()
+            .font(.title)
+            .foregroundStyle(.black)
+
         }
         .buttonStyle(.borderedProminent)
-        .tint(.blue)
     }
 }
 
