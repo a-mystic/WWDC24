@@ -10,14 +10,6 @@ import SwiftUI
 struct Intro: View {
     @EnvironmentObject var pageManager: PageManager
     
-    private let texts = [
-        "Your Speech",
-        "I know you have great idea.",
-        "And I ensure your idea can change world.",
-        "And third.",
-        "And forth."
-    ]
-    
     var body: some View {
         ZStack {
             Color.black
@@ -41,17 +33,17 @@ struct Intro: View {
                 needTap = false
             }
         }
-        .opacity(isAnimation ? 1 : 0)
         .transition(.asymmetric(insertion: .opacity, removal: .opacity))
     }
     
-    @State private var currentText = 0
+    @State private var currentTextIndex = 0
     @State private var isAnimation = true
     
     private var text: some View {
-        Text(texts[currentText])
+        Text(TextConstants.introTexts[currentTextIndex])
             .font(.largeTitle)
             .fontWeight(.black)
+            .opacity(isAnimation ? 1 : 0)
     }
     
     @State private var needTap = false
@@ -71,16 +63,23 @@ struct Intro: View {
             withAnimation(.linear(duration: 4)) {
                 isAnimation = true
             }
-            currentText += 1
-            if currentText == texts.count - 1 {
+            currentTextIndex += 1
+            if currentTextIndex == TextConstants.introTexts.count - 1 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    withAnimation {
+                        showButton = true
+                    }
+                }
                 timer.invalidate()
             }
         }
     }
     
+    @State private var showButton = false
+    
     @ViewBuilder
     private var next: some View {
-        if currentText == texts.count - 1 {
+        if currentTextIndex == TextConstants.introTexts.count - 1 {
             Button {
                 withAnimation {
                     pageManager.addPage()
@@ -95,6 +94,7 @@ struct Intro: View {
                 .foregroundStyle(.black)
             }
             .buttonStyle(.borderedProminent)
+            .opacity(showButton ? 1 : 0)
         }
     }
 }
