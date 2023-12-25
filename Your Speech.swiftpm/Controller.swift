@@ -5,10 +5,12 @@ struct Controller: View {
     
     @State private var nav: NavigationSplitViewVisibility = .all
     
+    private let lessons = ["Intro", "Voice", "Script", "Face", "Attitude", "Finish"]
+    
     var body: some View {
         NavigationSplitView(columnVisibility: $nav) {
-            List(0..<5, selection: $pageManager.currentPage) { index in
-                Text("\(index+1). lesson")
+            List(0..<6, selection: $pageManager.currentPage) { index in
+                Text("\(index+1). \(lessons[index])")
                     .listRowSeparator(.visible, edges: .bottom)
                     .listRowSeparatorTint(.gray.opacity(0.4))
             }
@@ -17,7 +19,9 @@ struct Controller: View {
                 nav = .detailOnly
             }
         } detail: {
-            lessons
+            NavigationStack {
+                lesson
+            }
         }
         .onAppear {
             similarity("a", and: "b")
@@ -25,7 +29,7 @@ struct Controller: View {
     }
     
     @ViewBuilder
-    private var lessons: some View {
+    private var lesson: some View {
         switch pageManager.currentPage {
         case 0: Intro()
         case 1: Voice()

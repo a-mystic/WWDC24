@@ -11,26 +11,24 @@ struct Face: View {
     @EnvironmentObject var pageManager: PageManager
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack {
-                        Text("when you speech...")
-                            .font(.largeTitle)
-                        placeHolder(in: geometry.size)
-                        stateButton
-                    }
-                    .frame(width: geometry.size.width, height: geometry.size.height)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack {
+                    Text("when you speech...")
+                        .font(.largeTitle)
+                    placeHolder(in: geometry.size)
+                    stateButton
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .navigationTitle("Intro")
         }
+        .navigationTitle("Face")
     }
     
     private func placeHolder(in size: CGSize) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
-                .foregroundStyle(.gray.opacity(0.44).gradient)
+                .foregroundStyle(.white.gradient)
                 .padding(.vertical)
                 .frame(width: size.width, height: size.height * 0.77)
             VStack {
@@ -40,6 +38,7 @@ struct Face: View {
                 Text("Please tap start!!")
                     .font(.largeTitle)
             }
+            .foregroundStyle(.black)
         }
     }
     
@@ -47,7 +46,6 @@ struct Face: View {
         case start = "play.fill"
         case stop = "stop.fill"
         case next = "arrow.right"
-        
         var description: String {
             switch self {
             case .start:
@@ -55,7 +53,7 @@ struct Face: View {
             case .stop:
                 return "Stop"
             case .next:
-                return "Go to next page"
+                return "Next page"
             }
         }
     }
@@ -73,13 +71,12 @@ struct Face: View {
             }
         } label: {
             HStack {
-                Text(buttonState.description)
                 Image(systemName: buttonState.rawValue)
+                Text(buttonState.description)
             }
             .padding()
             .font(.title)
             .foregroundStyle(.black)
-
         }
         .buttonStyle(.borderedProminent)
     }
