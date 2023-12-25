@@ -13,7 +13,7 @@ struct Intro: View {
     var body: some View {
         ZStack {
             Color.black
-            VStack(spacing: 20) {
+            VStack(spacing: 40) {
                 Spacer()
                 text
                 next
@@ -33,14 +33,16 @@ struct Intro: View {
                 needTap = false
             }
         }
-        .transition(.asymmetric(insertion: .opacity, removal: .opacity))
     }
     
     @State private var currentTextIndex = 0
     @State private var isAnimation = true
+    private var currentText: String {
+        TextConstants.introTexts[currentTextIndex]
+    }
     
     private var text: some View {
-        Text(TextConstants.introTexts[currentTextIndex])
+        Text(currentText)
             .font(.largeTitle)
             .fontWeight(.black)
             .opacity(isAnimation ? 1 : 0)
@@ -58,6 +60,11 @@ struct Intro: View {
     }
     
     private func startAnimation() {
+        isAnimation = false
+        withAnimation(.linear(duration: 4)) {
+            isAnimation = true
+        }
+        currentTextIndex += 1
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
             isAnimation = false
             withAnimation(.linear(duration: 4)) {
@@ -79,7 +86,7 @@ struct Intro: View {
     
     @ViewBuilder
     private var next: some View {
-        if currentTextIndex == TextConstants.introTexts.count - 1 {
+        if currentTextIndex == TextConstants.introTexts.count - 1, showButton {
             Button {
                 withAnimation {
                     pageManager.addPage()
@@ -94,7 +101,7 @@ struct Intro: View {
                 .foregroundStyle(.black)
             }
             .buttonStyle(.borderedProminent)
-            .opacity(showButton ? 1 : 0)
+            .transition(.scale)
         }
     }
 }
@@ -102,4 +109,6 @@ struct Intro: View {
 #Preview {
     Intro()
         .environmentObject(PageManager())
+        .preferredColorScheme(.dark)
+        .tint(.white)
 }
