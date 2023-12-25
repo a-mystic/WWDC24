@@ -11,6 +11,7 @@ struct Intro: View {
     @EnvironmentObject var pageManager: PageManager
     
     private let texts = [
+        "Your Speech",
         "I know you have great idea.",
         "And I ensure your idea can change world.",
         "And third.",
@@ -21,9 +22,11 @@ struct Intro: View {
         ZStack {
             Color.black
             VStack(spacing: 20) {
+                Spacer()
                 text
-                tap
                 next
+                Spacer()
+                tap
             }
         }
         .navigationTitle("Intro")
@@ -54,10 +57,10 @@ struct Intro: View {
     @State private var needTap = false
     
     private var tap: some View {
-        Text("Tap")
-            .foregroundStyle(.gray)
-            .font(.title)
-            .scaleEffect(needTap ? 1 : 0)
+        Text("Tap to start")
+            .foregroundStyle(.white.opacity(0.8))
+            .font(.largeTitle)
+            .opacity(needTap ? 1 : 0)
             .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: needTap)
             .opacity(needTap ? 1 : 0)
     }
@@ -65,7 +68,7 @@ struct Intro: View {
     private func startAnimation() {
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
             isAnimation = false
-            withAnimation(.linear(duration: 3)) {
+            withAnimation(.linear(duration: 4)) {
                 isAnimation = true
             }
             currentText += 1
