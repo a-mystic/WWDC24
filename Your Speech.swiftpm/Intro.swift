@@ -22,11 +22,7 @@ struct Intro: View {
             }
         }
         .navigationTitle("Intro")
-        .onAppear {
-            withAnimation {
-                needTap = true
-            }
-        }
+        .navigationBarTitleDisplayMode(.inline)
         .onTapGesture {
             if needTap {
                 startAnimation()
@@ -57,6 +53,11 @@ struct Intro: View {
             .opacity(needTap ? 1 : 0)
             .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: needTap)
             .opacity(needTap ? 1 : 0)
+            .onAppear {
+                withAnimation {
+                    needTap = true
+                }
+            }
     }
     
     private func startAnimation() {

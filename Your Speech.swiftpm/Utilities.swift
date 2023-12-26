@@ -58,9 +58,9 @@ struct PlayButton: View {
     }
 }
 
-extension Color {
-    static var specialGold: Self {
-        Color(red: <#T##Double#>, green: <#T##Double#>, blue: <#T##Double#>)
-    }
-}
+//extension Color {
+//    static var specialGold: Self {
+//        Color(red: <#T##Double#>, green: <#T##Double#>, blue: <#T##Double#>)
+//    }
+//}
 

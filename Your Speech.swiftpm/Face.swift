@@ -21,6 +21,7 @@ struct Face: View {
             }
         }
         .navigationTitle("Face")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func placeHolder(in size: CGSize) -> some View {
