@@ -1,5 +1,5 @@
 //
-//  Utilities.swift
+//  UtilitieViews.swift
 //  Your Speech
 //
 //  Created by a mystic on 11/29/23.
@@ -38,7 +38,6 @@ struct PlayButton: View {
             .foregroundStyle(.black)
         }
         .buttonStyle(.borderedProminent)
-        .tint(.white)
     }
     
     private enum PlayButtonState: String {

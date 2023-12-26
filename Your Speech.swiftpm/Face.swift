@@ -20,8 +20,6 @@ struct Face: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
-        .navigationTitle("Face")
-        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func placeHolder(in size: CGSize) -> some View {
@@ -54,5 +52,4 @@ struct Face: View {
     Face()
         .environmentObject(PageManager())
         .preferredColorScheme(.dark)
-        .tint(.gray)
 }

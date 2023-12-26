@@ -33,8 +33,8 @@ let package = Package(
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
             capabilities: [
-                .microphone(purposeString: "Unknown Usage Description"),
-                .speechRecognition(purposeString: "Unknown Usage Description")
+                .microphone(purposeString: "Can I use microphone for your script?"),
+                .speechRecognition(purposeString: "Can I use Speech Recognition for your script?(my app do not need connecting network)")
             ],
             appCategory: .education
         )

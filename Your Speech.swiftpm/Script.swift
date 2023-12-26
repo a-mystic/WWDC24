@@ -16,7 +16,9 @@ struct Script: View {
     
     var body: some View {
         VStack {
-            Text("input your script and test your part of all script.")
+            Text(TextConstants.scriptText)
+                .font(.largeTitle)
+                .bold()
             inputField
             Text(recognizedText)
             Text(similarity)
@@ -32,10 +34,11 @@ struct Script: View {
             .padding()
             .foregroundStyle(.black)
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .lineLimit(6)
-            .padding()
-            .lineLimit(4...10)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .lineLimit(15...20)
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+            .padding(.horizontal, 200)
     }
     
     private var playButton: some View {

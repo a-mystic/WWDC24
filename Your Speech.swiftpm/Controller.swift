@@ -6,22 +6,27 @@ struct Controller: View {
     @State private var nav: NavigationSplitViewVisibility = .all
     
     private let lessons = ["Intro", "Voice", "Script", "Face", "Attitude", "Finish"]
+    private var currentLessonTitle: String {
+        if pageManager.currentPage != nil {
+            return lessons[pageManager.currentPage!]
+        }
+        return ""
+    }
     
     var body: some View {
-        NavigationSplitView(columnVisibility: $nav) {
-            List(0..<6, selection: $pageManager.currentPage) { index in
-                Text("\(index+1). \(lessons[index])")
-                    .listRowSeparator(.visible, edges: .bottom)
-                    .listRowSeparatorTint(.gray.opacity(0.4))
-            }
-            .navigationTitle("Lessons")
-            .onChange(of: pageManager.currentPage) { _ in // hide sidebar setting
-                nav = .detailOnly
-            }
-        } detail: {
-            NavigationStack {
-                lesson
-            }
+        NavigationStack {
+            lesson
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        HStack {
+                            testButton
+                            currentProgress
+                        }
+                    }
+                }
+                .toolbarBackground(.visible, for: .navigationBar)
+                .navigationTitle(currentLessonTitle)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -35,6 +40,28 @@ struct Controller: View {
         case 4: Attitude()
         case 5: Finish()
         default: Intro()
+        }
+    }
+    
+    private var testButton: some View {
+        Button(action: {
+            pageManager.addPage()
+        }, label: {
+            Image(systemName: "arrowtriangle.right.fill")
+        })
+    }
+    
+    @State private var showCurrentProgress = false
+    
+    private var currentProgress: some View {
+        Button {
+            showCurrentProgress = true
+        } label: {
+            Image(systemName: "info.circle")
+                .font(.title2)
+        }
+        .sheet(isPresented: $showCurrentProgress) {
+            CurrentProgressView()
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Text.swift
+//  TextConstants.swift
 //  Your Speech
 //
 //  Created by a mystic on 12/25/23.
@@ -15,4 +15,6 @@ struct TextConstants {
         "And third.",
         "And forth."
     ]
+    
+    static let scriptText = "input your script and test your part of all script."
 }

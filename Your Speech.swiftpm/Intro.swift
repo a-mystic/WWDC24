@@ -21,8 +21,6 @@ struct Intro: View {
                 tap
             }
         }
-        .navigationTitle("Intro")
-        .navigationBarTitleDisplayMode(.inline)
         .onTapGesture {
             if needTap {
                 startAnimation()
@@ -111,5 +109,4 @@ struct Intro: View {
     Intro()
         .environmentObject(PageManager())
         .preferredColorScheme(.dark)
-        .tint(.gray)
 }
