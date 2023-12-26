@@ -9,7 +9,6 @@ struct MyApp: App {
             Controller()
                 .environmentObject(pageManager)
                 .preferredColorScheme(.dark)
-                .tint(.white)
         }
     }
 }

@@ -23,9 +23,6 @@ struct Controller: View {
                 lesson
             }
         }
-        .onAppear {
-            similarity("a", and: "b")
-        }
     }
     
     @ViewBuilder

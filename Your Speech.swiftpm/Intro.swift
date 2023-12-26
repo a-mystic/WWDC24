@@ -110,5 +110,5 @@ struct Intro: View {
     Intro()
         .environmentObject(PageManager())
         .preferredColorScheme(.dark)
-        .tint(.white)
+        .tint(.gray)
 }

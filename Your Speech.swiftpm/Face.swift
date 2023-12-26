@@ -7,9 +7,7 @@
 
 import SwiftUI
 
-struct Face: View {
-    @EnvironmentObject var pageManager: PageManager
-    
+struct Face: View {    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -17,7 +15,7 @@ struct Face: View {
                     Text("when you speech...")
                         .font(.largeTitle)
                     placeHolder(in: geometry.size)
-                    stateButton
+                    playButton
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
@@ -42,46 +40,18 @@ struct Face: View {
         }
     }
     
-    private enum ButtonState: String {
-        case start = "play.fill"
-        case stop = "stop.fill"
-        case next = "arrow.right"
-        var description: String {
-            switch self {
-            case .start:
-                return "Play"
-            case .stop:
-                return "Stop"
-            case .next:
-                return "Next page"
-            }
+    private var playButton: some View {
+        PlayButton {
+            print("Start")
+        } stopAction: {
+            print("Stop")
         }
-    }
-    
-    @State private var buttonState = ButtonState.start
-    
-    private var stateButton: some View {
-        Button {
-            withAnimation {
-                switch buttonState {
-                case .start: buttonState = .stop
-                case .stop: buttonState = .next
-                case .next: pageManager.addPage()
-                }
-            }
-        } label: {
-            HStack {
-                Image(systemName: buttonState.rawValue)
-                Text(buttonState.description)
-            }
-            .padding()
-            .font(.title)
-            .foregroundStyle(.black)
-        }
-        .buttonStyle(.borderedProminent)
     }
 }
 
 #Preview {
     Face()
+        .environmentObject(PageManager())
+        .preferredColorScheme(.dark)
+        .tint(.gray)
 }

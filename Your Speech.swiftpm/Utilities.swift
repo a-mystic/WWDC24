@@ -5,17 +5,62 @@
 //  Created by a mystic on 11/29/23.
 //
 
-import Foundation
-import NaturalLanguage
+import SwiftUI
 
-func similarity(_ input: String, and compare: String) {
-    if let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english) {
-        let input = """
-Hello! I'm ChatGPT, an AI language model created by OpenAI. I'm here to assist you with any questions or information you may need. Let's chat and explore the world of knowledge together!
-"""
-        let compare = "hello! i'm mystic, an AI image model created by korea. I'm here to assist you with any questions or information you may need. Let's chat and explore the world of knowledge together!"
-        let distance = sentenceEmbedding.distance(between: input, and: compare)
-        print(distance.description)
+struct PlayButton: View {
+    @State private var buttonState = PlayButtonState.start
+    @EnvironmentObject var pageManager: PageManager
+    
+    var startAction: () -> Void
+    var stopAction: () -> Void
+    
+    var body: some View {
+        Button {
+            withAnimation {
+                switch buttonState {
+                case .start: 
+                    startAction()
+                    buttonState = .stop
+                case .stop: 
+                    stopAction()
+                    buttonState = .next
+                case .next: 
+                    pageManager.addPage()
+                }
+            }
+        } label: {
+            HStack {
+                Image(systemName: buttonState.rawValue)
+                Text(buttonState.description)
+            }
+            .padding()
+            .font(.title2)
+            .foregroundStyle(.black)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(.white)
+    }
+    
+    private enum PlayButtonState: String {
+        case start = "play.fill"
+        case stop = "stop.fill"
+        case next = "arrow.right"
+        var description: String {
+            switch self {
+            case .start:
+                return "Play"
+            case .stop:
+                return "Stop"
+            case .next:
+                return "Next page"
+            }
+        }
+    }
+}
+
+extension Color {
+    static var specialGold: Self {
+        Color(red: <#T##Double#>, green: <#T##Double#>, blue: <#T##Double#>)
     }
 }
 
