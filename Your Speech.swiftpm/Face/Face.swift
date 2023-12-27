@@ -7,18 +7,40 @@
 
 import SwiftUI
 
-struct Face: View {    
+struct Face: View {     // consider adding progress view.
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
+            ZStack {
                 VStack {
                     Text("when you speech...")
                         .font(.largeTitle)
-                    placeHolder(in: geometry.size)
+                    faceTracking(in: geometry.size)
                     playButton
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
+        }
+    }
+    
+    enum PlayStatus {
+        case notPlay
+        case play
+        case finish
+    }
+    
+    @State private var playStatus = PlayStatus.notPlay
+    
+    @ViewBuilder
+    private func faceTracking(in size: CGSize) -> some View {
+        switch playStatus {
+        case .notPlay:
+            placeHolder(in: size)
+        case .play:
+            FacialView()
+                .frame(width: size.width, height: size.height * 0.77)
+                .transition(.asymmetric(insertion: .scale, removal: .opacity))
+        case .finish:
+            finish(in: size)
         }
     }
     
@@ -41,9 +63,22 @@ struct Face: View {
     
     private var playButton: some View {
         PlayButton {
-            print("Start")
+            withAnimation {
+                playStatus = .play
+            }
         } stopAction: {
-            print("Stop")
+            withAnimation {
+                playStatus = .finish
+            }
+        }
+    }
+    
+    private func finish(in size: CGSize) -> some View {
+        VStack {
+            Image(systemName: "chart.bar.xaxis.ascending")
+                .imageScale(.large)
+                .font(.system(size: size.width * 0.3))
+            Text("some finish comment & feedback.")
         }
     }
 }
@@ -51,5 +86,6 @@ struct Face: View {
 #Preview {
     Face()
         .environmentObject(PageManager())
+        .environmentObject(FaceManager())
         .preferredColorScheme(.dark)
 }

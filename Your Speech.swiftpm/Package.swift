@@ -34,7 +34,8 @@ let package = Package(
             ],
             capabilities: [
                 .microphone(purposeString: "Can I use microphone for your script?"),
-                .speechRecognition(purposeString: "Can I use Speech Recognition for your script?(my app do not need connecting network)")
+                .speechRecognition(purposeString: "Can I use Speech Recognition for your script?(my app do not need connecting network)"),
+                .camera(purposeString: "Can I use camera for your present?")
             ],
             appCategory: .education
         )

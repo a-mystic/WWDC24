@@ -18,9 +18,12 @@ struct Controller: View {
             lesson
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
+                        currentProgress
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
                         HStack {
-                            testButton
-                            currentProgress
+                            testMinusButton
+                            testPlusButton
                         }
                     }
                 }
@@ -43,7 +46,15 @@ struct Controller: View {
         }
     }
     
-    private var testButton: some View {
+    private var testMinusButton: some View {
+        Button(action: {
+            pageManager.minusPage()
+        }, label: {
+            Image(systemName: "arrowtriangle.left.fill")
+        })
+    }
+    
+    private var testPlusButton: some View {
         Button(action: {
             pageManager.addPage()
         }, label: {
@@ -57,11 +68,13 @@ struct Controller: View {
         Button {
             showCurrentProgress = true
         } label: {
-            Image(systemName: "info.circle")
+            Image(systemName: "info.circle.fill")
                 .font(.title2)
         }
         .sheet(isPresented: $showCurrentProgress) {
-            CurrentProgressView()
+            NavigationStack {
+                CurrentProgressView()
+            }
         }
     }
 }

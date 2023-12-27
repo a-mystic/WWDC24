@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CurrentProgressView: View {
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         Form {
             Section("Voice") {
@@ -21,6 +23,13 @@ struct CurrentProgressView: View {
             }
             Section("Attitude") {
                 Text("Not yet")
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Close") {
+                    dismiss()
+                }
             }
         }
     }
