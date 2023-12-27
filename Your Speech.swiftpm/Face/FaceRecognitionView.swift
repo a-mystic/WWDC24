@@ -10,7 +10,7 @@ import SwiftUI
 import ARKit
 import RealityKit
 
-final class FacialController: UIViewController {
+final class FaceRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     
     @Binding var expression: String
@@ -39,23 +39,18 @@ final class FacialController: UIViewController {
         self.arView.removeFromSuperview()
     }
     
-    private var videoManager = Video()
-    
+    private var videoManager = VideoManager()
     private var face = FaceAnchor()
         
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
-        if isARTrackingSupported {
+        if ARFaceTrackingConfiguration.isSupported {
             requestPermission()
         } else {
             print("ARTrackingSupported error")
         }
         self.view.addSubview(arView)
-    }
-    
-    private var isARTrackingSupported: Bool {
-        ARFaceTrackingConfiguration.isSupported
     }
     
     private func requestPermission() {
@@ -89,7 +84,7 @@ final class FacialController: UIViewController {
     }
 }
 
-extension FacialController: ARSessionDelegate, FaceAnchorDelegate {
+extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         for anchor in anchors {
             if let faceAnchor = anchor as? ARFaceAnchor {
@@ -103,32 +98,39 @@ extension FacialController: ARSessionDelegate, FaceAnchorDelegate {
         self.expressionsOfRecognized.insert(expression)
         setEmotion(expression)
     }
+    
+//    func session(_ session: ARSession, didFailWithError error: Error) {   // 영상 두번 실행할때 대비해서 오류 방지 코드
+//        if let arError = error as? ARError {
+//            switch arError.errorCode {
+//            case 102: setUp()
+//            default: setUp()
+//            }
+//        }
+//    }
 }
 
-struct FacialViewRefer: UIViewControllerRepresentable {
-    @EnvironmentObject var emotionManager: FaceManager
+struct FaceRecognitionViewRefer: UIViewControllerRepresentable {
+    @EnvironmentObject var faceManager: FaceManager
     
     @Binding var expression: String
     @Binding var expressionsOfRecognized: Set<String>
 
-    func makeUIViewController(context: Context) -> FacialController {
-        return FacialController(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized) { emotion in
-            emotionManager.setEmotion(emotion)
+    func makeUIViewController(context: Context) -> FaceRecognitionViewController {
+        return FaceRecognitionViewController(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized) { emotion in
+            faceManager.setEmotion(emotion)
         }
     }
     
-    func updateUIViewController(_ uiViewController: FacialController, context: Context) { }
+    func updateUIViewController(_ uiViewController: FaceRecognitionViewController, context: Context) { }
 }
 
-struct FacialView: View {
-    @EnvironmentObject var emotionManager: FaceManager
-    
+struct FaceRecognitionView: View {
     @State private var expression = ""
         
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
-                FacialViewRefer(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized)
+                FaceRecognitionViewRefer(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized)
                 currentExpression
             }
         }

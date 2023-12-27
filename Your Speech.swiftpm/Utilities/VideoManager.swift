@@ -8,9 +8,7 @@
 import AVKit
 import SwiftUI
 
-final class Video: NSObject {
-    @EnvironmentObject var emotionManager: FaceManager
-    
+final class VideoManager: NSObject {
     private let captureSession = AVCaptureSession()
     private let videoDevice = AVCaptureDevice.default(for: .video)
 

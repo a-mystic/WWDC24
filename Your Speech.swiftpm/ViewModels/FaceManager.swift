@@ -16,23 +16,10 @@ class FaceManager: ObservableObject {
         "😛" : 0,
         "😮" : 0
     ]
-    @Published private(set) var isAnalyzing = false
-    @Published var currentEmotion = "😐"
     
     func setEmotion(_ emotion: String) {
-        if isAnalyzing {
-            currentEmotion = emotion
-            if faceEmotions.keys.contains(emotion) {
-                faceEmotions[emotion]! += 1
-            }
+        if faceEmotions.keys.contains(emotion) {
+            faceEmotions[emotion]! += 1
         }
-    }
-    
-    func startAnalyzing() {
-        isAnalyzing = true
-    }
-    
-    func stopAnalyzing() {
-        isAnalyzing = false
     }
 }

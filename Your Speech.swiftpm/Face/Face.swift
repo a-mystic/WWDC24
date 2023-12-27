@@ -36,7 +36,7 @@ struct Face: View {     // consider adding progress view.
         case .notPlay:
             placeHolder(in: size)
         case .play:
-            FacialView()
+            FaceRecognitionView()
                 .frame(width: size.width, height: size.height * 0.77)
                 .transition(.asymmetric(insertion: .scale, removal: .opacity))
         case .finish:
