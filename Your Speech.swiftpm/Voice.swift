@@ -1,25 +1,75 @@
 //
-//  Voice.swift
+//  Script.swift
 //  Your Speech
 //
 //  Created by a mystic on 11/29/23.
 //
 
 import SwiftUI
+import NaturalLanguage
 
 struct Voice: View {
+    private let speechManager = SpeechManager()
+    
+    @State private var recognizedText = ""
+    @State private var similarity = ""
+    
     var body: some View {
         VStack {
-            Text("Voice")
-            PlayButton {
-                
-            } stopAction: {
-                
-            }
+            Text(TextConstants.voiceText)
+                .font(.largeTitle)
+                .bold()
+            inputField
+            Text(recognizedText)
+            Text(similarity)
+                .font(.largeTitle)
+            playButton
         }
+    }
+    
+    @State private var script = ""
+    
+    private var inputField: some View {
+        TextField("Enter your script", text: $script, axis: .vertical)
+            .padding()
+            .foregroundStyle(.black)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .lineLimit(15...20)
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+            .padding(.horizontal, 200)
+    }
+    
+    private var playButton: some View {
+        PlayButton {
+            speechManager.requestPermission()
+            speechManager.startRecording { text in
+                recognizedText = text
+            }
+        } stopAction: {
+            calcSimilarity(recognizedText, and: script)
+            speechManager.stopRecording()
+        }
+    }
+
+    func calcSimilarity(_ input: String, and compare: String) {
+        if let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english) {
+            let shortInput = makeOnlyString(input)
+            let shortCompare = makeOnlyString(compare)
+            let distance = sentenceEmbedding.distance(between: shortInput, and: shortCompare)
+            similarity += "Similarity: " + distance.description
+        }
+    }
+    
+    private func makeOnlyString(_ text: String) -> String {
+        let removeCondition = CharacterSet(charactersIn: ".,?!&-_\n\t")
+        return text.components(separatedBy: removeCondition).joined().lowercased()
     }
 }
 
 #Preview {
     Voice()
+        .environmentObject(PageManager())
+        .preferredColorScheme(.dark)
 }

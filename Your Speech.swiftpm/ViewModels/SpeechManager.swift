@@ -22,6 +22,7 @@ class SpeechManager {
             }
         }
     }
+    
     func startRecording(completion: @escaping (String) -> Void) {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
