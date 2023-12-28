@@ -58,10 +58,28 @@ struct Voice: View {
     }
     
     private func playingVoice() -> some View {
-        Chart(speechManager.voiceDatas, id: \.index) { data in
-            LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
+        VStack {
+            Chart(speechManager.voiceDatas, id: \.index) { data in
+                LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
+            }
+            .frame(width: 300, height: 300)
+            Text("\(calcMeanOfDeviation(speechManager.voiceDatas))")
         }
-        .frame(width: 300, height: 300)
+    }
+    
+    private func calcMeanOfDeviation(_ datas: [VoiceModel]) -> Float {
+        let mean = calcMean(datas)
+        let deviations = datas.map { abs($0.strength - mean) }
+        let sumOfDeviations = deviations.reduce(0, +)
+        return sumOfDeviations / Float(datas.count)
+    }
+    
+    private func calcMean(_ datas: [VoiceModel]) -> Float {
+        var sum: Float = 0
+        for data in datas {
+            sum += data.strength
+        }
+        return sum / Float(datas.count)
     }
     
     private var playButton: some View {
