@@ -8,11 +8,14 @@
 import Foundation
 import Speech
 
-class SpeechManager {
+class SpeechManager: ObservableObject {
     private var audioEngine = AVAudioEngine()
     private var inputNode: AVAudioInputNode { audioEngine.inputNode }
     private var audioSession = AVAudioSession()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+    private var voiceIndex = 0
+    
+    @Published var voiceDatas = [VoiceModel]()
     
     func requestPermission() {
         SFSpeechRecognizer.requestAuthorization { status in
@@ -27,6 +30,17 @@ class SpeechManager {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
             self.recognitionRequest.append(buffer)
+            let channelData = buffer.floatChannelData?[0]
+            let bufferLength = Int(buffer.frameLength)
+            var strength: Float = 0
+            for i in 0..<bufferLength {
+                strength += abs(channelData?[i] ?? 0)
+            }
+            let averageStrength = strength / Float(bufferLength)
+            DispatchQueue.main.async {
+                self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
+                self.voiceIndex += 1
+            }
         }
         audioEngine.prepare()
         guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")), recognizer.isAvailable else { return }
@@ -36,7 +50,7 @@ class SpeechManager {
         
         recognizer.recognitionTask(with: recognitionRequest) { result, error in
             if error != nil {
-                print("error")
+                print("Error")
                 return
             }
             guard let result = result else { return }

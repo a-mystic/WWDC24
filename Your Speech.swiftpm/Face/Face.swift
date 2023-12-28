@@ -22,12 +22,6 @@ struct Face: View {     // consider adding progress view.
         }
     }
     
-    enum PlayStatus {
-        case notPlay
-        case play
-        case finish
-    }
-    
     @State private var playStatus = PlayStatus.notPlay
     
     @ViewBuilder

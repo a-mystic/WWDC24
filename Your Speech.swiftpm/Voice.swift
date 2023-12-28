@@ -7,9 +7,10 @@
 
 import SwiftUI
 import NaturalLanguage
+import Charts
 
 struct Voice: View {
-    private let speechManager = SpeechManager()
+    private var speechManager = SpeechManager()
     
     @State private var recognizedText = ""
     @State private var similarity = ""
@@ -19,7 +20,7 @@ struct Voice: View {
             Text(TextConstants.voiceText)
                 .font(.largeTitle)
                 .bold()
-            inputField
+            voiceField
             Text(recognizedText)
             Text(similarity)
                 .font(.largeTitle)
@@ -28,8 +29,23 @@ struct Voice: View {
     }
     
     @State private var script = ""
+    @State private var playStatus = PlayStatus.notPlay
     
-    private var inputField: some View {
+    @ViewBuilder
+    private var voiceField: some View {
+        switch playStatus {
+        case .notPlay: textInput
+        case .play:
+            playingVoice()
+        case .finish:
+            VStack {
+                playingVoice()
+                Text("Finish go next page!!!!")
+            }
+        }
+    }
+    
+    private var textInput: some View {
         TextField("Enter your script", text: $script, axis: .vertical)
             .padding()
             .foregroundStyle(.black)
@@ -41,15 +57,25 @@ struct Voice: View {
             .padding(.horizontal, 200)
     }
     
+    private func playingVoice() -> some View {
+        Chart(speechManager.voiceDatas, id: \.index) { data in
+            LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
+        }
+        .frame(width: 300, height: 300)
+    }
+    
     private var playButton: some View {
         PlayButton {
             speechManager.requestPermission()
+            playStatus = .play
             speechManager.startRecording { text in
                 recognizedText = text
             }
         } stopAction: {
             calcSimilarity(recognizedText, and: script)
+            playStatus = .finish
             speechManager.stopRecording()
+            print(speechManager.voiceDatas)
         }
     }
 

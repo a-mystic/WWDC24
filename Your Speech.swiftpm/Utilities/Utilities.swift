@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+enum PlayStatus {
+    case notPlay
+    case play
+    case finish
+}
+
 struct PlayButton: View {
     @State private var buttonState = PlayButtonState.start
     @EnvironmentObject var pageManager: PageManager
