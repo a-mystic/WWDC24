@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct Face: View {     // consider adding progress view.
     var body: some View {
@@ -30,7 +31,7 @@ struct Face: View {     // consider adding progress view.
         case .notPlay:
             placeHolder(in: size)
         case .play:
-            FaceRecognitionView()
+            FaceRecognitionView(position: $position)
                 .frame(width: size.width, height: size.height * 0.77)
                 .transition(.asymmetric(insertion: .scale, removal: .opacity))
         case .finish:
@@ -67,14 +68,26 @@ struct Face: View {     // consider adding progress view.
         }
     }
     
+    @State private var position = [LookAtPosition]()
+    
     private func finish(in size: CGSize) -> some View {
-        VStack {
-            Image(systemName: "chart.bar.xaxis.ascending")
-                .imageScale(.large)
-                .font(.system(size: size.width * 0.3))
-            Text("some finish comment & feedback.")
+        HStack {
+            Chart(position, id: \.index) { item in
+                LineMark(x: .value("Index", item.index), y: .value("X", item.x))
+            }
+            .frame(width: 300, height: 300)
+            Chart(position, id: \.index) { item in
+                LineMark(x: .value("Index", item.index), y: .value("Y", item.y))
+            }
+            .frame(width: 300, height: 300)
         }
     }
+}
+
+struct LookAtPosition {
+    var index: Int
+    var x: Float
+    var y: Float
 }
 
 #Preview {

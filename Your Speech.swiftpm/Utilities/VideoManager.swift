@@ -6,7 +6,6 @@
 //
 
 import AVKit
-import SwiftUI
 
 final class VideoManager: NSObject {
     private let captureSession = AVCaptureSession()

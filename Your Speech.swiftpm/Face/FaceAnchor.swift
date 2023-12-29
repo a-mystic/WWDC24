@@ -9,6 +9,7 @@ import ARKit
 
 protocol FaceAnchorDelegate: AnyObject {
     func update(expression: String)
+    func updateLookat(x: Float, y: Float)
 }
 
 final class FaceAnchor: NSObject {
@@ -17,6 +18,9 @@ final class FaceAnchor: NSObject {
     private var expression = ""
     
     func analyze(faceAnchor: ARFaceAnchor) {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.updateLookat(x: faceAnchor.lookAtPoint.x, y: faceAnchor.lookAtPoint.y)
+        }
         mouth(faceAnchor)
         eyebrow(faceAnchor)
         tongue(faceAnchor)
