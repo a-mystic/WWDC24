@@ -106,7 +106,7 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
 //    }
 }
 
-struct FaceRecognitionViewRefer: UIViewControllerRepresentable {
+struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace posturerecognitionView later..
     @EnvironmentObject var faceManager: FaceManager
     
     @Binding var expression: String
@@ -122,7 +122,7 @@ struct FaceRecognitionViewRefer: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: FaceRecognitionViewController, context: Context) { }
 }
 
-struct FaceRecognitionView: View {
+struct FaceRecognitionView: View {  
     @State private var expression = ""
     @Binding var position: [LookAtPosition]
         

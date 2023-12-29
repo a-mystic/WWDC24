@@ -5,7 +5,7 @@ struct Controller: View {
     
     @State private var nav: NavigationSplitViewVisibility = .all
     
-    private let lessons = ["Intro", "Voice", "Face", "Attitude", "Finish"]
+    private let lessons = ["Intro", "Voice", "Face", "Posture", "Finish"]
     private var currentLessonTitle: String {
         if pageManager.currentPage != nil {
             return lessons[pageManager.currentPage!]
@@ -39,7 +39,7 @@ struct Controller: View {
         case 0: Intro()
         case 1: Voice()
         case 2: Face()
-        case 3: Attitude()
+        case 3: Posture()
         case 4: Finish()
         default: Intro()
         }
