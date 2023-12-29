@@ -5,7 +5,6 @@
 //  Created by a mystic on 12/27/23.
 //
 
-import UIKit
 import SwiftUI
 import ARKit
 import RealityKit
@@ -153,6 +152,7 @@ struct FaceRecognitionView: View {
     private var currentExpression: some View {
         VStack {
             Text(expression)
+                .font(.largeTitle)
                 .frame(alignment: .bottom)
             Spacer().frame(height: 100)
         }
