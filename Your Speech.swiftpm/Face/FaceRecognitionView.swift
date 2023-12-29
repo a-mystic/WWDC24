@@ -13,6 +13,7 @@ import Charts
 final class FaceRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index = 0
+    private var face = FaceAnchor()
     
     @Binding var expression: String
     @Binding var expressionsOfRecognized: Set<String>
@@ -39,13 +40,9 @@ final class FaceRecognitionViewController: UIViewController {
     
     deinit {
         self.arView.session.pause()
-        self.videoManager.stopVideoCapturing()
         self.arView.removeFromSuperview()
     }
-    
-    private var videoManager = VideoManager()
-    private var face = FaceAnchor()
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
@@ -58,13 +55,13 @@ final class FaceRecognitionViewController: UIViewController {
     }
     
     private func requestPermission() {
-        videoManager.requestPermission { [weak self] accessGranted in
-            if accessGranted {
+        AVCaptureDevice.requestAccess(for: .video) { [weak self] access in
+            if access {
                 DispatchQueue.main.async {
                     self?.setUp()
                 }
             } else {
-                print("videoManager request error")
+                print("Video request error")
             }
         }
     }
@@ -76,15 +73,6 @@ final class FaceRecognitionViewController: UIViewController {
         arView.session.delegate = self
         face.delegate = self
         self.view.addSubview(self.arView)
-        videoManager.startVideoCapturing()
-        addCamera()
-    }
-    
-    private func addCamera() {
-        let videoLayer = videoManager.videoLayer
-        videoLayer.frame = self.view.frame
-        videoLayer.videoGravity = .resizeAspectFill
-        self.view.layer.addSublayer(videoLayer)
     }
 }
 
