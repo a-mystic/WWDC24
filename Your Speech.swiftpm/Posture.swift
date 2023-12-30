@@ -19,13 +19,17 @@ struct Posture: View {
     private var detectPosture: some View {
         ZStack(alignment: .bottom) {
             PostureRecognitionViewRefer(value: $value)
-            Text(value)
-                .font(.largeTitle)
-                .padding()
-                .foregroundStyle(.red)
-                .background {
-                    Color.black.opacity(0.5)
-                }
+            VStack {
+                Text(value)
+                    .font(.title)
+                    .padding()
+                    .foregroundStyle(.red)
+                    .background {
+                        Color.black.opacity(0.5)
+                    }
+                Spacer()
+                    .frame(height: 100)
+            }
         }
     }
 }

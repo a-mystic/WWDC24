@@ -74,30 +74,17 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                let leftShoulder = bodyAnchor.skeleton.modelTransform(for: .leftShoulder),
                let rightFoot = bodyAnchor.skeleton.modelTransform(for: .rightFoot),
                let leftFoot = bodyAnchor.skeleton.modelTransform(for: .leftFoot) {
-                let rightHandPosition = abs(rightHand[0][0]) * 100
-                let leftHandPosition = abs(leftHand[0][0]) * 100
-                let shoulderDistanceX = (abs(rightShoulder[0][0]) - abs(leftShoulder[0][0])) * 100
-                let shoulderDistanceY = (abs(rightShoulder[1][1]) - abs(leftShoulder[1][1])) * 100
-                let footDistanceX = (abs(rightFoot[0][0]) - abs(leftFoot[0][0])) * 100
-                let footDistanceY = (abs(rightFoot[1][1]) - abs(leftFoot[1][1])) * 100
-                
-                
-                let rightHandPosX = rightHand[0][0] * 100
-                let rightHandPosY = rightHand[1][1] * 100
-                let shoulderRightposX = rightShoulder[0][0] * 100
-                let shoulderleftposX = leftShoulder[0][0] * 100
-                let shoulderRightposY = rightShoulder[1][1] * 100
-                let shoulderleftPosY = leftShoulder[1][1] * 100
-                let rightFootposX = rightFoot[0][0] * 100
-                let leftFootposX = leftFoot[0][0] * 100
-                let rightFootposY = rightFoot[1][1] * 100
-                let leftFootposY = leftFoot[1][1] * 100
-                
+                let rightHandPosition = rightHand.columns.3.y
+                let leftHandPosition = leftHand.columns.3.y
+                let shoulderDistance = abs(leftShoulder.columns.3.x - rightShoulder.columns.3.x)
+                let footDistance = abs(leftFoot.columns.3.x - rightFoot.columns.3.x)
                 value = """
-                rightHandPosX: \(rightHandPosX)
-                rightHandPosY: \(rightHandPosY)
-
+                shoulderDistance = \(shoulderDistance)
+                footDistance = \(footDistance)
                 """
+                
+                
+               
                 
 //            rightFootPosX: \(rightFootposX)
 //            leftFootPosX: \(leftFootposX)
