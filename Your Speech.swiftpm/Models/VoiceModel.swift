@@ -9,5 +9,5 @@ import Foundation
 
 struct VoiceModel {
     var strength: Float
-    var index: Int
+    var index: UInt64
 }

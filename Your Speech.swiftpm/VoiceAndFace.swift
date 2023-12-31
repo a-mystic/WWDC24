@@ -61,15 +61,16 @@ struct VoiceAndFace: View {
     }
     
     private var cv: String {
-        var datas: [Float] = []
-        speechManager.voiceDatas.forEach { data in
-            datas.append(data.strength)
-        }
-        if let returncv = datas.coefficientOfVariation() {
-            return "\(returncv)"
-        } else {
-            return ""
-        }
+//        var datas: [Float] = []
+//        speechManager.voiceDatas.forEach { data in
+//            datas.append(data.strength)
+//        }
+//        if let returncv = datas.coefficientOfVariation() {
+//            return "\(returncv)"
+//        } else {
+//            return ""
+//        }
+        return ""
     }
     
     @State private var position = [LookAtPoint]()
@@ -77,7 +78,8 @@ struct VoiceAndFace: View {
     private func playingVoiceAndFace(in size: CGSize) -> some View {
         VStack {
             FaceRecognitionView(position: $position)
-                .frame(width: size.width, height: size.height * 0.4)
+                .frame(width: size.width * 0.7, height: size.height * 0.6)
+                .clipShape(RoundedRectangle(cornerRadius: 7))
             Chart(speechManager.voiceDatas, id: \.index) { data in
                 LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
             }

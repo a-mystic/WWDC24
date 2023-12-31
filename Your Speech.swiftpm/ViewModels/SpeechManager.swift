@@ -13,7 +13,7 @@ class SpeechManager: ObservableObject {
     private var inputNode: AVAudioInputNode { audioEngine.inputNode }
     private var audioSession = AVAudioSession()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-    private var voiceIndex = 0
+    private var voiceIndex: UInt64 = 0
     
     @Published var voiceDatas = [VoiceModel]()
     
@@ -30,16 +30,17 @@ class SpeechManager: ObservableObject {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
             self.recognitionRequest.append(buffer)
-            let channelData = buffer.floatChannelData?[0]
-            let bufferLength = Int(buffer.frameLength)
-            var strength: Float = 0
-            for i in 0..<bufferLength {
-                strength += abs(channelData?[i] ?? 0)
-            }
-            let averageStrength = strength / Float(bufferLength)
-            DispatchQueue.main.async {
-                self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
-                self.voiceIndex += 1
+            if let channelData = buffer.floatChannelData?[0] {
+                let bufferLength = Int(buffer.frameLength)
+                var sumOfStrength: Float = 0
+                for i in 0..<bufferLength {
+                    sumOfStrength += abs(channelData[i])
+                }
+                let averageStrength = sumOfStrength / Float(bufferLength)
+                DispatchQueue.main.async {
+                    self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
+                    self.voiceIndex += 1
+                }
             }
         }
         audioEngine.prepare()

@@ -12,7 +12,7 @@ import Charts
 
 final class FaceRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
-    private var index = 0
+    private var index: UInt64 = 0
     private var face = FaceAnchor()
     
     @Binding var expression: String

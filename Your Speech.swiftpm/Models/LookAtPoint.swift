@@ -8,7 +8,7 @@
 import Foundation
 
 struct LookAtPoint {
-    var index: Int
+    var index: UInt64
     var x: Float
     var y: Float
 }
