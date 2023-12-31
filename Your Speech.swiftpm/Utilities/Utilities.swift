@@ -63,4 +63,14 @@ struct PlayButton: View {
     }
 }
 
+extension Array where Element == Float {
+    private func mean() -> Float {
+        return self.reduce(0, +) / Float(self.count)
+    }
+    
+    func coefficientOfVariation() -> Float {
+        let variance = self.map { pow($0 - self.mean(), 2) }.reduce(0, +) / Float(self.count)
+        return sqrtf(variance) / self.mean()
+    }
+}
 

@@ -68,35 +68,29 @@ extension PostureRecognitionViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         for anchor in anchors {
             if let bodyAnchor = anchor as? ARBodyAnchor,
-               let rightHand = bodyAnchor.skeleton.modelTransform(for: .rightHand),
-               let leftHand = bodyAnchor.skeleton.modelTransform(for: .leftHand),
-               let rightShoulder = bodyAnchor.skeleton.modelTransform(for: .rightShoulder),
-               let leftShoulder = bodyAnchor.skeleton.modelTransform(for: .leftShoulder),
-               let rightFoot = bodyAnchor.skeleton.modelTransform(for: .rightFoot),
-               let leftFoot = bodyAnchor.skeleton.modelTransform(for: .leftFoot) {
-                let rightHandPosition = rightHand.columns.3.y
-                let leftHandPosition = leftHand.columns.3.y
-                let shoulderDistance = abs(leftShoulder.columns.3.x - rightShoulder.columns.3.x)
-                let footDistance = abs(leftFoot.columns.3.x - rightFoot.columns.3.x)
-                value = """
-                shoulderDistance = \(shoulderDistance)
-                footDistance = \(footDistance)
-                """
+               let rightHandPos = bodyAnchor.skeleton.modelTransform(for: .rightHand)?.columns.3,
+               let leftHandPos = bodyAnchor.skeleton.modelTransform(for: .leftHand)?.columns.3,
+               let rightShoulderPos = bodyAnchor.skeleton.modelTransform(for: .rightShoulder)?.columns.3,
+               let leftShoulderPos = bodyAnchor.skeleton.modelTransform(for: .leftShoulder)?.columns.3,
+               let rightFootPos = bodyAnchor.skeleton.modelTransform(for: .rightFoot)?.columns.3,
+               let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 {
+                let rightHandPosition = rightHandPos.y
+                let leftHandPosition = leftHandPos.y
+                let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
+                let footDistance = abs(leftFootPos.x - rightFootPos.x)
                 
+                if rightHandPosition > rightShoulderPos.y * 0.85 {
+                    value = "Over shoulder"
+                } else {
+                    value = "Not"
+                }
                 
-               
-                
-//            rightFootPosX: \(rightFootposX)
-//            leftFootPosX: \(leftFootposX)
-//            rightFootPosY: \(rightFootposY)
-//            leftFootPosY: \(leftFootposY)
-//            
-//            rightShoulderposX: \(shoulderRightposX)
-//            leftShoulderposX: \(shoulderleftposX)
-//            rightShoulderposY: \(shoulderRightposY)
-//            leftShoulderposY: \(shoulderleftPosY)
-//
-                //                 rightHand: \(rightHandPosition)\n leftHand: \(leftHandPosition)\nShoulderDistanceX: \(shoulderDistanceX)\n ShoulderDistanceY: \(shoulderDistanceY)\nfootDistanceX: \(footDistanceX)\n footDistanceY: \(footDistanceY)\nrightShoulderposX: \(shoulderRightpos)\nleftShoulderpos: \(shoulderleftpos)
+//                value = """
+//                rightHandPos = \(rightHandPosition)
+//                rootPos = \(rootPos.y)
+//                shoulderDistance = \(shoulderDistance)
+//                footDistance = \(footDistance)
+//                """
                 }
             }
     }
