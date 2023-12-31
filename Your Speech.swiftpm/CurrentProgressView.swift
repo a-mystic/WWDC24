@@ -12,7 +12,7 @@ struct CurrentProgressView: View {
     
     var body: some View {
         Form {
-            Section("Voice") {
+            Section("VoiceAndFace") {
                 Text("Not yet")
             }
             Section("Script") {

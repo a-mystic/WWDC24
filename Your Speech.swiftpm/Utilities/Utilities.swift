@@ -68,9 +68,13 @@ extension Array where Element == Float {
         return self.reduce(0, +) / Float(self.count)
     }
     
-    func coefficientOfVariation() -> Float {
-        let variance = self.map { pow($0 - self.mean(), 2) }.reduce(0, +) / Float(self.count)
-        return sqrtf(variance) / self.mean()
+    func coefficientOfVariation() -> Float? {
+        if self.isEmpty {
+            return nil
+        } else {
+            let variance = self.map { pow($0 - self.mean(), 2) }.reduce(0, +) / Float(self.count)
+            return sqrtf(variance) / self.mean()
+        }
     }
 }
 
