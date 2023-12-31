@@ -57,7 +57,7 @@ struct PlayButton: View {
             case .stop:
                 return "Stop"
             case .next:
-                return "Next page"
+                return "Next"
             }
         }
     }

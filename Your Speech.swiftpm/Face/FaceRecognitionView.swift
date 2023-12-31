@@ -17,14 +17,14 @@ final class FaceRecognitionViewController: UIViewController {
     
     @Binding var expression: String
     @Binding var expressionsOfRecognized: Set<String>
-    @Binding var position: [LookAtPosition]
+    @Binding var position: [LookAtPoint]
     
     var setEmotion: (String) -> Void
     
     init(
         expression: Binding<String>,
         expressionsOfRecognized: Binding<Set<String>>,
-        position: Binding<Array<LookAtPosition>>,
+        position: Binding<Array<LookAtPoint>>,
         setEmotion: @escaping (String) -> Void
     ) {
         _expression = expression
@@ -92,7 +92,7 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     }
     
     func updateLookat(x: Float, y: Float) {
-        position.append(LookAtPosition(index: index, x: x, y: y))
+        position.append(LookAtPoint(index: index, x: x, y: y))
         index += 1
     }
     
@@ -111,7 +111,7 @@ struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace p
     
     @Binding var expression: String
     @Binding var expressionsOfRecognized: Set<String>
-    @Binding var position: [LookAtPosition]
+    @Binding var position: [LookAtPoint]
 
     func makeUIViewController(context: Context) -> FaceRecognitionViewController {
         return FaceRecognitionViewController(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized, position: $position) { emotion in
@@ -124,7 +124,7 @@ struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace p
 
 struct FaceRecognitionView: View {  
     @State private var expression = ""
-    @Binding var position: [LookAtPosition]
+    @Binding var position: [LookAtPoint]
         
     var body: some View {
         GeometryReader { geometry in

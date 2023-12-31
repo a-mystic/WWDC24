@@ -5,7 +5,7 @@ struct Controller: View {
     
     @State private var nav: NavigationSplitViewVisibility = .all
     
-    private let lessons = ["Intro", "VoiceAndFace", "Posture", "Finish"]
+    private let lessons = ["Intro", "Voice&Face", "Posture", "Finish"]
     private var currentLessonTitle: String {
         if pageManager.currentPage != nil {
             return lessons[pageManager.currentPage!]
@@ -45,19 +45,19 @@ struct Controller: View {
     }
     
     private var testMinusButton: some View {
-        Button(action: {
+        Button {
             pageManager.minusPage()
-        }, label: {
+        } label: {
             Image(systemName: "arrowtriangle.left.fill")
-        })
+        }
     }
     
     private var testPlusButton: some View {
-        Button(action: {
+        Button {
             pageManager.addPage()
-        }, label: {
+        } label: {
             Image(systemName: "arrowtriangle.right.fill")
-        })
+        }
     }
     
     @State private var showCurrentProgress = false

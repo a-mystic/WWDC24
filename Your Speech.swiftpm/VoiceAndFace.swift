@@ -25,6 +25,8 @@ struct VoiceAndFace: View {
                     Text(similarity)
                         .font(.largeTitle)
                 }
+                finish(in: geometry.size)
+                changeByResult
                 playButton
             }
             .frame(height: geometry.size.height)
@@ -42,10 +44,7 @@ struct VoiceAndFace: View {
         case .play:
             playingVoiceAndFace(in: size)
         case .finish:
-            VStack {
-                finishOfFaceData(in: size)
-                Text("Finish go next page!!!!")
-            }
+            finishOfFaceData()
         }
     }
     
@@ -66,9 +65,6 @@ struct VoiceAndFace: View {
         speechManager.voiceDatas.forEach { data in
             datas.append(data.strength)
         }
-        print(datas)
-        print("\n\n\n\n\n")
-        print(speechManager.voiceDatas)
         if let returncv = datas.coefficientOfVariation() {
             return "\(returncv)"
         } else {
@@ -76,7 +72,7 @@ struct VoiceAndFace: View {
         }
     }
     
-    @State private var position = [LookAtPosition]()
+    @State private var position = [LookAtPoint]()
     
     private func playingVoiceAndFace(in size: CGSize) -> some View {
         VStack {
@@ -123,7 +119,32 @@ struct VoiceAndFace: View {
         return text.components(separatedBy: removeCondition).joined().lowercased()
     }
     
-    private func finishOfFaceData(in size: CGSize) -> some View {
+    @State private var selectedResult = "Voice"
+    private let results = ["Voice", "Face"]
+    
+    private func finish(in size: CGSize) -> some View {
+        VStack {
+            Picker("Choose you want", selection: $selectedResult) {
+                ForEach(results, id: \.self) { result in
+                    Text(result)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+    
+    private var changeByResult: some View {
+        switch selectedResult {
+        case "Voice":
+            Text("Voice Chart")
+        case "Face":
+            Text("Face Chart")
+        default:
+            Text("Voice Chart")
+        }
+    }
+    
+    private func finishOfFaceData() -> some View {
         HStack {
             Chart(position, id: \.index) { item in
                 LineMark(x: .value("Index", item.index), y: .value("X", item.x))
@@ -154,12 +175,6 @@ struct VoiceAndFace: View {
 //            .foregroundStyle(.black)
 //        }
 //    }
-}
-
-struct LookAtPosition {
-    var index: Int
-    var x: Float
-    var y: Float
 }
 
 #Preview {
