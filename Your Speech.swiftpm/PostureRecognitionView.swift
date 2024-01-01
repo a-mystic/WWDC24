@@ -76,7 +76,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                         footDistance > shoulderDistance * 1.55 && footDistance < shoulderDistance * 2.2 {
                         postureManager.updatePosture("Initial Okay chagne mode after 3 second.")
                         postureManager.isChanging = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                             self.postureManager.changeModeToRehearsal()
                         }
                     } else {

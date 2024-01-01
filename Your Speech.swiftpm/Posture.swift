@@ -33,51 +33,58 @@ struct Posture: View {
     }
     
     private func recognizePosture(in size: CGSize) -> some View {
-        ZStack(alignment: .top) {
+        ZStack {
             PostureRecognitionViewRefer()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack {
-                HStack {
-                    Text("Mode: \(postureManager.currentPostureMode.rawValue)")
-                        .foregroundStyle(.red)
-                        .padding()
-                        .background(Color.black.opacity(0.3))
-                    Spacer()
-                }
-                .padding()
                 Spacer()
                 Text(postureManager.currentPosture)
-                    .font(.title)
+                    .font(.largeTitle)
                     .padding()
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.white)
                     .background {
-                        Color.black.opacity(0.3)
+                        Color.black.opacity(0.4)
                     }
-                Spacer()
-                    .frame(height: 100)
             }
-            countdownAnimation
+            countdownAnimation(in: size)
         }
     }
     
-    @State private var count = 3
+    @State private var count = 5
     @State private var isTimerShow = true
+    @State private var countdownAngle: Double = 0
     
     @ViewBuilder
-    private var countdownAnimation: some View {
+    private func countdownAnimation(in size: CGSize) -> some View {
         if postureManager.isChanging && isTimerShow {
             Text("\(count)")
                 .font(.largeTitle)
-                .onAppear {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                        count -= 1
-                        if count == 0 {
-                            timer.invalidate()
-                            isTimerShow = false
-                        }
-                    }
+                .background {
+                    Pie(endAngle: .degrees(countdownAngle * 360))
+                        .foregroundStyle(.black.opacity(0.7))
+                        .frame(width: size.width * 0.2, height: size.height * 0.2)
                 }
+            .onAppear {
+                startCountdown()
+            }
+        }
+    }
+    
+    private func startCountdown() {
+        withAnimation(.linear(duration: 1)) {
+            countdownAngle = 1
+        }
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            countdownAngle = 0
+            count -= 1
+            if count == 0 {
+                timer.invalidate()
+                isTimerShow = false
+            }
+            withAnimation(.linear(duration: 1)) {
+                countdownAngle = 1
+            }
         }
     }
     
