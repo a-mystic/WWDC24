@@ -44,9 +44,9 @@ struct PlayButton: View {
         var description: String {
             switch self {
             case .notPlay:
-                return "Play"
+                return "Start"
             case .play:
-                return "Stop"
+                return "Finish"
             case .finish:
                 return "Next"
             }

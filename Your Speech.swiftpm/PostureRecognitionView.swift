@@ -13,13 +13,11 @@ import Charts
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index = 0
+
+    var completion: (String) -> Void
     
-    @Binding var value: String
-    
-    init(
-        value: Binding<String>
-    ) {
-        _value = value
+    init(completion: @escaping (String) -> Void) {
+        self.completion = completion
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -80,9 +78,9 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 let footDistance = abs(leftFootPos.x - rightFootPos.x)
                 
                 if rightHandPosition > rightShoulderPos.y * 0.85 {
-                    value = "Over shoulder"
+                    completion("Over shoulder")
                 } else {
-                    value = "Not"
+                    completion("Not")
                 }
                 
 //                value = """
@@ -95,21 +93,23 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             }
     }
     
-//    func session(_ session: ARSession, didFailWithError error: Error) {   // 영상 두번 실행할때 대비해서 오류 방지 코드
-//        if let arError = error as? ARError {
-//            switch arError.errorCode {
-//            case 102: setUp()
-//            default: setUp()
-//            }
-//        }
-//    }
+    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
+        if let arError = error as? ARError {
+            switch arError.errorCode {
+            case 102: setUp()
+            default: setUp()
+            }
+        }
+    }
 }
 
-struct PostureRecognitionViewRefer: UIViewControllerRepresentable {    // replace posturerecognitionView later..
-    @Binding var value: String
-
+struct PostureRecognitionViewRefer: UIViewControllerRepresentable {
+    @EnvironmentObject var postureManager: PostureManager
+    
     func makeUIViewController(context: Context) -> PostureRecognitionViewController {
-        return PostureRecognitionViewController(value: $value)
+        return PostureRecognitionViewController { posture in
+            postureManager.updatePosture(posture)
+        }
     }
     
     func updateUIViewController(_ uiViewController: PostureRecognitionViewController, context: Context) { }

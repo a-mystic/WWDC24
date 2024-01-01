@@ -92,14 +92,14 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
         index += 1
     }
     
-//    func session(_ session: ARSession, didFailWithError error: Error) {   // 영상 두번 실행할때 대비해서 오류 방지 코드
-//        if let arError = error as? ARError {
-//            switch arError.errorCode {
-//            case 102: setUp()
-//            default: setUp()
-//            }
-//        }
-//    }
+    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
+        if let arError = error as? ARError {
+            switch arError.errorCode {
+            case 102: setUp()
+            default: setUp()
+            }
+        }
+    }
 }
 
 struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace posturerecognitionView later..

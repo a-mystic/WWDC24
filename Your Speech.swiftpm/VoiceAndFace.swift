@@ -10,7 +10,7 @@ import NaturalLanguage
 import Charts
 
 struct VoiceAndFace: View {
-    private var speechManager = VoiceManager()
+    @ObservedObject private var speechManager = VoiceManager()
     
     @State private var recognizedText = ""
     
@@ -199,6 +199,8 @@ struct VoiceAndFace: View {
             .frame(width: 300, height: 300)
         }
         .onAppear {
+            chartX = []
+            chartY = []
             withAnimation(.easeInOut(duration: 3)) {
                 faceManager.lookAtPoint.forEach { point in
                     chartX.append(point)

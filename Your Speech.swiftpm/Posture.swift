@@ -8,19 +8,37 @@
 import SwiftUI
 
 struct Posture: View {
+    @EnvironmentObject var postureManager: PostureManager
+    
     var body: some View {
-        VStack {
-            detectPosture
+        GeometryReader { geometry in
+            VStack(spacing: 40) {
+                statusView(in: geometry.size)
+                playButton
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
     
-    @State private var value = ""
+    @ViewBuilder
+    private func statusView(in size: CGSize) -> some View {
+        switch playStatus {
+        case .notPlay:
+            Text("This view is a..")
+        case .play:
+            recognizePosture(in: size)
+        case .finish:
+            Text("Your speech posture result is a..")
+        }
+    }
     
-    private var detectPosture: some View {
+    private func recognizePosture(in size: CGSize) -> some View {
         ZStack(alignment: .bottom) {
-            PostureRecognitionViewRefer(value: $value)
+//            RoundedRectangle(cornerRadius: 12)
+            PostureRecognitionViewRefer()
+                .frame(width: size.width * 0.9, height: size.height * 0.8)
             VStack {
-                Text(value)
+                Text(postureManager.currentPosture)
                     .font(.title)
                     .padding()
                     .foregroundStyle(.red)
@@ -32,8 +50,24 @@ struct Posture: View {
             }
         }
     }
+    
+    @State private var playStatus = PlayButton.PlayStatus.notPlay
+    
+    private var playButton: some View {
+        PlayButton(playStatus: $playStatus) {
+            withAnimation {
+                playStatus = .play
+            }
+        } stopAction: {
+            withAnimation {
+                playStatus = .finish
+            }
+        }
+    }
 }
 
 #Preview {
     Posture()
+        .preferredColorScheme(.dark)
+        .environmentObject(PostureManager())
 }
