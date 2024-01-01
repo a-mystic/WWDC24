@@ -41,7 +41,6 @@ struct PlayButton: View {
             }
             .padding()
             .font(.title2)
-            .foregroundStyle(.black)
         }
         .buttonStyle(.borderedProminent)
     }

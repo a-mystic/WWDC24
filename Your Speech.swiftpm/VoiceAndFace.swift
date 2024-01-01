@@ -79,7 +79,7 @@ struct VoiceAndFace: View {
         VStack {
             FaceRecognitionView(position: $position)
                 .frame(width: size.width * 0.7, height: size.height * 0.6)
-                .clipShape(RoundedRectangle(cornerRadius: 7))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             Chart(speechManager.voiceDatas, id: \.index) { data in
                 LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
             }

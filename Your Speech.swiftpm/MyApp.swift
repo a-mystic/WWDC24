@@ -11,7 +11,6 @@ struct MyApp: App {
                 .environmentObject(pageManager)
                 .environmentObject(faceManager)
                 .preferredColorScheme(.dark)
-                .tint(.white)
         }
     }
 }
