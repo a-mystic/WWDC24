@@ -14,16 +14,7 @@ final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index = 0
     
-    @EnvironmentObject var postureManager: PostureManager
-    
-    init(postureManager: EnvironmentObject<PostureManager>) {
-        _postureManager = postureManager
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    let postureManager = PostureManager.shared
     
     deinit {
         self.arView.session.pause()
@@ -75,26 +66,28 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 let rightHandPosition = rightHandPos.y
                 let leftHandPosition = leftHandPos.y
                 let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
-                let footDistance = abs(leftFootPos.x - rightFootPos.x)
-                if postureManager.currentPostureMode == .initial {
-                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
-                        leftHandPosition < leftShoulderPos.y * 0.85 &&
-                        footDistance > shoulderDistance * 1.7 &&
-                        footDistance < shoulderDistance * 2.2 {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            self.postureManager.updatePosture("Initial Okay")
-                            self.postureManager.changeMode(.rehearsal)
-                        }
-                    } else {
-                        postureManager.updatePosture("spread your legs shoulder width apart")
-                    }
-                } else if postureManager.currentPostureMode == .rehearsal {
-                    if rightHandPosition > rightShoulderPos.y * 0.85 || leftHandPosition > leftShoulderPos.y * 0.85 {
-                        postureManager.updatePosture("Over shoulder")
-                    } else {
-                        postureManager.updatePosture("Not")
-                    }
-                }
+                let footDistance = leftFootPos.x - rightFootPos.x
+                
+                postureManager.updatePosture("foot distance: \(footDistance)")
+//                if postureManager.currentPostureMode == .initial {
+//                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
+//                        leftHandPosition < leftShoulderPos.y * 0.85 &&
+//                        footDistance > shoulderDistance * 1.7 &&
+//                        footDistance < shoulderDistance * 2.2 {
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                            self.postureManager.updatePosture("Initial Okay")
+//                            self.postureManager.changeMode(.rehearsal)
+//                        }
+//                    } else {
+//                        postureManager.updatePosture("spread your legs shoulder width apart")
+//                    }
+//                } else if postureManager.currentPostureMode == .rehearsal {
+//                    if rightHandPosition > rightShoulderPos.y * 0.85 || leftHandPosition > leftShoulderPos.y * 0.85 {
+//                        postureManager.updatePosture("Over shoulder")
+//                    } else {
+//                        postureManager.updatePosture("Not")
+//                    }
+//                }
             }
         }
     }
@@ -110,10 +103,8 @@ extension PostureRecognitionViewController: ARSessionDelegate {
 }
 
 struct PostureRecognitionViewRefer: UIViewControllerRepresentable {
-    @EnvironmentObject var postureManager: PostureManager
-    
     func makeUIViewController(context: Context) -> PostureRecognitionViewController {
-        return PostureRecognitionViewController(postureManager: _postureManager)
+        return PostureRecognitionViewController()
     }
     
     func updateUIViewController(_ uiViewController: PostureRecognitionViewController, context: Context) { }

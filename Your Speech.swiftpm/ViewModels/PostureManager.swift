@@ -8,6 +8,8 @@
 import Foundation
 
 class PostureManager: ObservableObject {
+    static let shared = PostureManager()
+    
     @Published private(set) var currentPosture = ""
     @Published private(set) var currentPostureMode = PostureMode.initial
     

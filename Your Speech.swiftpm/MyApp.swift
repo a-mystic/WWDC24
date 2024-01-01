@@ -4,7 +4,7 @@ import SwiftUI
 struct MyApp: App {
     @StateObject private var pageManager = PageManager()
     @StateObject private var faceManager = FaceManager()
-    @StateObject private var postureManager = PostureManager()
+    @StateObject private var postureManager = PostureManager.shared
     
     var body: some Scene {
         WindowGroup {
