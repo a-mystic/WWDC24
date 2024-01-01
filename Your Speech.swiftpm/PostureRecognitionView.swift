@@ -68,26 +68,27 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
                 let footDistance = leftFootPos.x - rightFootPos.x
                 let isCrossLeg = footDistance < 0
-//                postureManager.updatePosture("foot distance: \(footDistance)")
-//                if postureManager.currentPostureMode == .initial {
-//                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
-//                        leftHandPosition < leftShoulderPos.y * 0.85 &&
-//                        footDistance > shoulderDistance * 1.7 &&
-//                        footDistance < shoulderDistance * 2.2 {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-//                            self.postureManager.updatePosture("Initial Okay")
-//                            self.postureManager.changeMode(.rehearsal)
-//                        }
-//                    } else {
-//                        postureManager.updatePosture("spread your legs shoulder width apart")
-//                    }
-//                } else if postureManager.currentPostureMode == .rehearsal {
-//                    if rightHandPosition > rightShoulderPos.y * 0.85 || leftHandPosition > leftShoulderPos.y * 0.85 {
-//                        postureManager.updatePosture("Over shoulder")
-//                    } else {
-//                        postureManager.updatePosture("Not")
-//                    }
-//                }
+                
+                postureManager.updatePosture("foot distance: \(footDistance)")
+                if postureManager.currentPostureMode == .initial {
+                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
+                        leftHandPosition < leftShoulderPos.y * 0.85 &&
+                        footDistance > shoulderDistance * 1.55 && footDistance < shoulderDistance * 2.2 {
+                        postureManager.updatePosture("Initial Okay chagne mode after 3 second.")
+                        postureManager.isChanging = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                            self.postureManager.changeModeToRehearsal()
+                        }
+                    } else {
+                        postureManager.updatePosture("spread your legs shoulder width apart")
+                    }
+                } else if postureManager.currentPostureMode == .rehearsal {
+                    if rightHandPosition > rightShoulderPos.y * 0.85 || leftHandPosition > leftShoulderPos.y * 0.85 {
+                        postureManager.updatePosture("Over shoulder")
+                    } else {
+                        postureManager.updatePosture("Not")
+                    }
+                }
             }
         }
     }

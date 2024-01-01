@@ -12,6 +12,7 @@ class PostureManager: ObservableObject {
     
     @Published private(set) var currentPosture = ""
     @Published private(set) var currentPostureMode = PostureMode.initial
+    @Published var isChanging = false
     
     enum PostureMode: String {
         case initial = "Initial"
@@ -22,7 +23,7 @@ class PostureManager: ObservableObject {
         currentPosture = posture
     }
     
-    func changeMode(_ mode: PostureMode) {
-        currentPostureMode = mode
+    func changeModeToRehearsal() {
+        currentPostureMode = .rehearsal
     }
 }

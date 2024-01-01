@@ -34,7 +34,6 @@ struct Posture: View {
     
     private func recognizePosture(in size: CGSize) -> some View {
         ZStack(alignment: .top) {
-//            RoundedRectangle(cornerRadius: 12)
             PostureRecognitionViewRefer()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -58,6 +57,27 @@ struct Posture: View {
                 Spacer()
                     .frame(height: 100)
             }
+            countdownAnimation
+        }
+    }
+    
+    @State private var count = 3
+    @State private var isTimerShow = true
+    
+    @ViewBuilder
+    private var countdownAnimation: some View {
+        if postureManager.isChanging && isTimerShow {
+            Text("\(count)")
+                .font(.largeTitle)
+                .onAppear {
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                        count -= 1
+                        if count == 0 {
+                            timer.invalidate()
+                            isTimerShow = false
+                        }
+                    }
+                }
         }
     }
     
