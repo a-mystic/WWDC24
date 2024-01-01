@@ -81,8 +81,10 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                         leftHandPosition < leftShoulderPos.y * 0.85 &&
                         footDistance > shoulderDistance * 1.7 &&
                         footDistance < shoulderDistance * 2.2 {
-                        postureManager.updatePosture("Initial Okay")
-                        postureManager.changeMode(.rehearsal)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            self.postureManager.updatePosture("Initial Okay")
+                            self.postureManager.changeMode(.rehearsal)
+                        }
                     } else {
                         postureManager.updatePosture("spread your legs shoulder width apart")
                     }
@@ -93,15 +95,8 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                         postureManager.updatePosture("Not")
                     }
                 }
-                
-//                value = """
-//                rightHandPos = \(rightHandPosition)
-//                rootPos = \(rootPos.y)
-//                shoulderDistance = \(shoulderDistance)
-//                footDistance = \(footDistance)
-//                """
-                }
             }
+        }
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
