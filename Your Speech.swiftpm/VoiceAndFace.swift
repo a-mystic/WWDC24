@@ -10,7 +10,7 @@ import NaturalLanguage
 import Charts
 
 struct VoiceAndFace: View {
-    private var speechManager = SpeechManager()
+    private var speechManager = VoiceManager()
     
     @State private var recognizedText = ""
     

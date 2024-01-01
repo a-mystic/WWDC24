@@ -54,23 +54,23 @@ class VoiceManager: ObservableObject {
     
     private func installTap() {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
-        DispatchQueue.global().async {
             self.inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-                self.recognitionRequest.append(buffer)
-                if let channelData = buffer.floatChannelData?[0] {
-                    let bufferLength = Int(buffer.frameLength)
-                    var sumOfStrength: Float = 0
-                    for i in 0..<bufferLength {
-                        sumOfStrength += abs(channelData[i])
-                    }
-                    let averageStrength = sumOfStrength / Float(bufferLength)
-                    DispatchQueue.main.async {
-                        self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
-                        self.voiceIndex += 1
+                DispatchQueue.global().async {
+                    self.recognitionRequest.append(buffer)
+                    if let channelData = buffer.floatChannelData?[0] {
+                        let bufferLength = Int(buffer.frameLength)
+                        var sumOfStrength: Float = 0
+                        for i in 0..<bufferLength {
+                            sumOfStrength += abs(channelData[i])
+                        }
+                        let averageStrength = sumOfStrength / Float(bufferLength)
+                        DispatchQueue.main.async {
+                            self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
+                            self.voiceIndex += 1
+                        }
                     }
                 }
             }
-        }
     }
     
     func stopRecording() {
