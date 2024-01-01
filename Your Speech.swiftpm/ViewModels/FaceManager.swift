@@ -17,9 +17,15 @@ class FaceManager: ObservableObject {
         "😮" : 0
     ]
     
+    @Published private(set) var lookAtPoint: [LookAtPoint] = []
+    
     func setEmotion(_ emotion: String) {
         if faceEmotions.keys.contains(emotion) {
             faceEmotions[emotion]! += 1
         }
+    }
+    
+    func addLookAtPoint(_ point: LookAtPoint) {
+        lookAtPoint.append(point)
     }
 }

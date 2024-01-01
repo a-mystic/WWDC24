@@ -73,11 +73,11 @@ struct VoiceAndFace: View {
         return ""
     }
     
-    @State private var position = [LookAtPoint]()
+    @EnvironmentObject var faceManager: FaceManager
     
     private func playingVoiceAndFace(in size: CGSize) -> some View {
         VStack {
-            FaceRecognitionView(position: $position)
+            FaceRecognitionView()
                 .frame(width: size.width * 0.7, height: size.height * 0.6)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             Chart(speechManager.voiceDatas, id: \.index) { data in
@@ -148,11 +148,11 @@ struct VoiceAndFace: View {
     
     private func finishOfFaceData() -> some View {
         HStack {
-            Chart(position, id: \.index) { item in
+            Chart(faceManager.lookAtPoint, id: \.index) { item in
                 LineMark(x: .value("Index", item.index), y: .value("X", item.x))
             }
             .frame(width: 300, height: 300)
-            Chart(position, id: \.index) { item in
+            Chart(faceManager.lookAtPoint, id: \.index) { item in
                 LineMark(x: .value("Index", item.index), y: .value("Y", item.y))
             }
             .frame(width: 300, height: 300)
@@ -182,5 +182,6 @@ struct VoiceAndFace: View {
 #Preview {
     VoiceAndFace()
         .environmentObject(PageManager())
+        .environmentObject(FaceManager())
         .preferredColorScheme(.dark)
 }

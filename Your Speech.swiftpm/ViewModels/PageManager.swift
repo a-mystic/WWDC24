@@ -8,7 +8,7 @@
 import Foundation
 
 class PageManager: ObservableObject {
-    @Published var currentPage: Int? = 0
+    @Published private(set) var currentPage: Int? = 0
     
     func addPage() {
         if let currentPage = currentPage, currentPage < 4 {

@@ -16,21 +16,18 @@ final class FaceRecognitionViewController: UIViewController {
     private var face = FaceAnchor()
     
     @Binding var expression: String
-    @Binding var expressionsOfRecognized: Set<String>
-    @Binding var position: [LookAtPoint]
     
     var setEmotion: (String) -> Void
+    var addLookAtPoint: (LookAtPoint) -> Void
     
     init(
         expression: Binding<String>,
-        expressionsOfRecognized: Binding<Set<String>>,
-        position: Binding<Array<LookAtPoint>>,
-        setEmotion: @escaping (String) -> Void
+        setEmotion: @escaping (String) -> Void,
+        addLookAtPoint: @escaping (LookAtPoint) -> Void
     ) {
         _expression = expression
-        _expressionsOfRecognized = expressionsOfRecognized
-        _position = position
         self.setEmotion = setEmotion
+        self.addLookAtPoint = addLookAtPoint
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -87,12 +84,11 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     
     func update(expression: String) {
         self.expression = expression
-        self.expressionsOfRecognized.insert(expression)
         setEmotion(expression)
     }
     
-    func updateLookat(x: Float, y: Float) {
-        position.append(LookAtPoint(index: index, x: x, y: y))
+    func addLookAtPoint(x: Float, y: Float) {
+        addLookAtPoint(LookAtPoint(index: index, x: x, y: y))
         index += 1
     }
     
@@ -110,12 +106,12 @@ struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace p
     @EnvironmentObject var faceManager: FaceManager
     
     @Binding var expression: String
-    @Binding var expressionsOfRecognized: Set<String>
-    @Binding var position: [LookAtPoint]
 
     func makeUIViewController(context: Context) -> FaceRecognitionViewController {
-        return FaceRecognitionViewController(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized, position: $position) { emotion in
+        return FaceRecognitionViewController(expression: $expression) { emotion in
             faceManager.setEmotion(emotion)
+        } addLookAtPoint: { point in
+            faceManager.addLookAtPoint(point)
         }
     }
     
@@ -124,18 +120,15 @@ struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace p
 
 struct FaceRecognitionView: View {  
     @State private var expression = ""
-    @Binding var position: [LookAtPoint]
         
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
-                FaceRecognitionViewRefer(expression: $expression, expressionsOfRecognized: $expressionsOfRecognized, position: $position)
+                FaceRecognitionViewRefer(expression: $expression)
                 currentExpression
             }
         }
     }
-    
-    @State private var expressionsOfRecognized = Set<String>()
     
     private var currentExpression: some View {
         VStack {

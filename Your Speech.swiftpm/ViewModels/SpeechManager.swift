@@ -15,7 +15,7 @@ class SpeechManager: ObservableObject {
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var voiceIndex: UInt64 = 0
     
-    @Published var voiceDatas = [VoiceModel]()
+    @Published private(set) var voiceDatas = [VoiceModel]()
     
     func requestPermission() {
         SFSpeechRecognizer.requestAuthorization { status in
