@@ -13,10 +13,12 @@ import Charts
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index = 0
-
+    
+    @Binding var postureMode: PostureManager.PostureMode
     var completion: (String) -> Void
     
-    init(completion: @escaping (String) -> Void) {
+    init(postureMode: Binding<PostureManager.PostureMode>, completion: @escaping (String) -> Void) {
+        _postureMode = postureMode
         self.completion = completion
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,10 +79,22 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
                 let footDistance = abs(leftFootPos.x - rightFootPos.x)
                 
-                if rightHandPosition > rightShoulderPos.y * 0.85 {
-                    completion("Over shoulder")
-                } else {
-                    completion("Not")
+                if postureMode == .initial {
+                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
+                        leftHandPosition < leftShoulderPos.y * 0.85 &&
+                        footDistance > shoulderDistance * 1.7 &&
+                        footDistance < shoulderDistance * 2.2 {
+                        completion("Initial Okay")
+                        postureMode = .rehearsal
+                    } else {
+                        completion("spread your legs shoulder width apart")
+                    }
+                } else if postureMode == .rehearsal {
+                    if rightHandPosition > rightShoulderPos.y * 0.85 || leftHandPosition > leftShoulderPos.y * 0.85 {
+                        completion("Over shoulder")
+                    } else {
+                        completion("Not")
+                    }
                 }
                 
 //                value = """
@@ -107,7 +121,7 @@ struct PostureRecognitionViewRefer: UIViewControllerRepresentable {
     @EnvironmentObject var postureManager: PostureManager
     
     func makeUIViewController(context: Context) -> PostureRecognitionViewController {
-        return PostureRecognitionViewController { posture in
+        return PostureRecognitionViewController(postureMode: $postureManager.currentPostureMode) { posture in
             postureManager.updatePosture(posture)
         }
     }

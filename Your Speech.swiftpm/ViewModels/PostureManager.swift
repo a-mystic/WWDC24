@@ -9,8 +9,18 @@ import Foundation
 
 class PostureManager: ObservableObject {
     @Published private(set) var currentPosture = ""
+    @Published var currentPostureMode = PostureMode.initial
+    
+    enum PostureMode: String {
+        case initial = "Initial"
+        case rehearsal = "Rehearsal"
+    }
     
     func updatePosture(_ posture: String) {
         currentPosture = posture
+    }
+    
+    func changeMode(_ mode: PostureMode) {
+        currentPostureMode = mode
     }
 }

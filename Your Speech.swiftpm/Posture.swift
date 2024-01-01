@@ -33,17 +33,27 @@ struct Posture: View {
     }
     
     private func recognizePosture(in size: CGSize) -> some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .top) {
 //            RoundedRectangle(cornerRadius: 12)
             PostureRecognitionViewRefer()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack {
+                HStack {
+                    Text("Mode: \(postureManager.currentPostureMode.rawValue)")
+                        .foregroundStyle(.red)
+                        .padding()
+                        .background(Color.black.opacity(0.3))
+                    Spacer()
+                }
+                .padding()
+                Spacer()
                 Text(postureManager.currentPosture)
                     .font(.title)
                     .padding()
                     .foregroundStyle(.red)
                     .background {
-                        Color.black.opacity(0.5)
+                        Color.black.opacity(0.3)
                     }
                 Spacer()
                     .frame(height: 100)
