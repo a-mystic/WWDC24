@@ -9,13 +9,13 @@ import Foundation
 import Speech
 
 class SpeechManager: ObservableObject {
+    @Published private(set) var voiceDatas = [VoiceModel]()
+
     private var audioEngine = AVAudioEngine()
     private var inputNode: AVAudioInputNode { audioEngine.inputNode }
     private var audioSession = AVAudioSession()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var voiceIndex: UInt64 = 0
-    
-    @Published private(set) var voiceDatas = [VoiceModel]()
     
     func requestPermission() {
         SFSpeechRecognizer.requestAuthorization { status in
@@ -27,22 +27,7 @@ class SpeechManager: ObservableObject {
     }
     
     func startRecording(completion: @escaping (String) -> Void) {
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-            self.recognitionRequest.append(buffer)
-            if let channelData = buffer.floatChannelData?[0] {
-                let bufferLength = Int(buffer.frameLength)
-                var sumOfStrength: Float = 0
-                for i in 0..<bufferLength {
-                    sumOfStrength += abs(channelData[i])
-                }
-                let averageStrength = sumOfStrength / Float(bufferLength)
-                DispatchQueue.main.async {
-                    self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
-                    self.voiceIndex += 1
-                }
-            }
-        }
+        installTap()
         audioEngine.prepare()
         guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")), recognizer.isAvailable else { return }
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -64,6 +49,27 @@ class SpeechManager: ObservableObject {
             try audioEngine.start()
         } catch {
             print(error)
+        }
+    }
+    
+    private func installTap() {
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        DispatchQueue.global().async {
+            self.inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+                self.recognitionRequest.append(buffer)
+                if let channelData = buffer.floatChannelData?[0] {
+                    let bufferLength = Int(buffer.frameLength)
+                    var sumOfStrength: Float = 0
+                    for i in 0..<bufferLength {
+                        sumOfStrength += abs(channelData[i])
+                    }
+                    let averageStrength = sumOfStrength / Float(bufferLength)
+                    DispatchQueue.main.async {
+                        self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
+                        self.voiceIndex += 1
+                    }
+                }
+            }
         }
     }
     

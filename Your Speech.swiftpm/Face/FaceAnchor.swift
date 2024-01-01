@@ -75,8 +75,8 @@ final class FaceAnchor: NSObject {
     
     private func isFret(value: CGFloat) {
         switch value {
-        case 0.6..<1: expression = "😡"
-        case 0.4..<0.6: expression = "😠"
+        case 0.5..<1: expression = "😡"
+        case 0.3..<0.5: expression = "😠"
         default: break
         }
         delegate?.update(expression: expression)

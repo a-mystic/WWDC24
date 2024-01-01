@@ -7,37 +7,29 @@
 
 import SwiftUI
 
-enum PlayStatus {
-    case notPlay
-    case play
-    case finish
-}
-
 struct PlayButton: View {
-    @State private var buttonState = PlayButtonState.start
     @EnvironmentObject var pageManager: PageManager
     
+    @Binding var playStatus: PlayStatus
     var startAction: () -> Void
     var stopAction: () -> Void
     
     var body: some View {
         Button {
             withAnimation {
-                switch buttonState {
-                case .start: 
+                switch playStatus {
+                case .notPlay:
                     startAction()
-                    buttonState = .stop
-                case .stop: 
+                case .play:
                     stopAction()
-                    buttonState = .next
-                case .next: 
+                case .finish:
                     pageManager.addPage()
                 }
             }
         } label: {
             HStack {
-                Image(systemName: buttonState.rawValue)
-                Text(buttonState.description)
+                Image(systemName: playStatus.rawValue)
+                Text(playStatus.description)
             }
             .padding()
             .font(.title2)
@@ -45,17 +37,17 @@ struct PlayButton: View {
         .buttonStyle(.borderedProminent)
     }
     
-    private enum PlayButtonState: String {
-        case start = "play.fill"
-        case stop = "stop.fill"
-        case next = "arrow.right"
+    enum PlayStatus: String {
+        case notPlay = "play.fill"
+        case play = "stop.fill"
+        case finish = "arrow.right"
         var description: String {
             switch self {
-            case .start:
+            case .notPlay:
                 return "Play"
-            case .stop:
+            case .play:
                 return "Stop"
-            case .next:
+            case .finish:
                 return "Next"
             }
         }
@@ -74,6 +66,29 @@ extension Array where Element == Float {
             let variance = self.map { pow($0 - self.mean(), 2) }.reduce(0, +) / Float(self.count)
             return sqrtf(variance) / self.mean()
         }
+    }
+}
+
+struct Shake: AnimatableModifier {
+    var shakes: CGFloat = 0
+    
+    var animatableData: CGFloat {
+        get {
+            shakes
+        } set {
+            shakes = newValue
+        }
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .offset(x: sin(shakes * .pi * 2) * 5)
+    }
+}
+
+extension View {
+    func shake(with shakes: CGFloat) -> some View {
+        self.modifier(Shake(shakes: shakes))
     }
 }
 
