@@ -67,8 +67,8 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 let leftHandPosition = leftHandPos.y
                 let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
                 let footDistance = leftFootPos.x - rightFootPos.x
-                
-                postureManager.updatePosture("foot distance: \(footDistance)")
+                let isCrossLeg = footDistance < 0
+//                postureManager.updatePosture("foot distance: \(footDistance)")
 //                if postureManager.currentPostureMode == .initial {
 //                    if rightHandPosition < rightShoulderPos.y * 0.85 &&
 //                        leftHandPosition < leftShoulderPos.y * 0.85 &&
