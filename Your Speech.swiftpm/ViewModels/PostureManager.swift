@@ -9,7 +9,7 @@ import Foundation
 
 class PostureManager: ObservableObject {
     @Published private(set) var currentPosture = ""
-    @Published var currentPostureMode = PostureMode.initial
+    @Published private(set) var currentPostureMode = PostureMode.initial
     
     enum PostureMode: String {
         case initial = "Initial"
