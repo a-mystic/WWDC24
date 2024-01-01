@@ -8,7 +8,7 @@
 import Foundation
 import Speech
 
-class SpeechManager: ObservableObject {
+class VoiceManager: ObservableObject {
     @Published private(set) var voiceDatas = [VoiceModel]()
 
     private var audioEngine = AVAudioEngine()
