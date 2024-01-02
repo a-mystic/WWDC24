@@ -13,6 +13,8 @@ import Charts
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index = 0
+    private let footDistanceSmallRatio: Float = 1.45
+    private let footDistanceLargeRatio: Float = 2.25
     
     let postureManager = PostureManager.shared
     
@@ -56,44 +58,59 @@ final class PostureRecognitionViewController: UIViewController {
 extension PostureRecognitionViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let bodyAnchor = anchor as? ARBodyAnchor,
-               let rightHandPos = bodyAnchor.skeleton.modelTransform(for: .rightHand)?.columns.3,
-               let leftHandPos = bodyAnchor.skeleton.modelTransform(for: .leftHand)?.columns.3,
-               let rightShoulderPos = bodyAnchor.skeleton.modelTransform(for: .rightShoulder)?.columns.3,
-               let leftShoulderPos = bodyAnchor.skeleton.modelTransform(for: .leftShoulder)?.columns.3,
-               let rightFootPos = bodyAnchor.skeleton.modelTransform(for: .rightFoot)?.columns.3,
-               let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 {
-                let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
-                let footDistance = leftFootPos.x - rightFootPos.x
-                let isCrossLeg = footDistance < 0
-                
-                postureManager.updatePosture("foot distance: \(footDistance)")
-                if postureManager.currentPostureMode == .initial {
-                    if rightHandPos.y < rightShoulderPos.y * 0.85 &&
-                        leftHandPos.y < leftShoulderPos.y * 0.85 &&
-                        footDistance > shoulderDistance * 1.55 && footDistance < shoulderDistance * 2.2 {
-                        postureManager.updatePosture("Initial Okay chagne mode after 5 second.")
-                        postureManager.isChanging = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-                            self.postureManager.changeModeToRehearsal()
-                        }
-                    } else if footDistance < shoulderDistance * 1.55 || footDistance > shoulderDistance * 2.2 {
-                        postureManager.updatePosture("Keep the space between your legs about shoulder width.")
-                    } else if rightHandPos.y > rightShoulderPos.y * 0.85 {
-                        postureManager.updatePosture("Down your right Hand")
-                    } else if leftHandPos.y > leftShoulderPos.y * 0.85 {
-                        postureManager.updatePosture("Down your left hand")
-                    }
-                } else if postureManager.currentPostureMode == .rehearsal {
-                    if rightHandPos.y > rightShoulderPos.y * 0.85 || leftHandPos.y > leftShoulderPos.y * 0.85 {
-                        postureManager.updatePosture("Over shoulder")
-                    } else {
-                        postureManager.updatePosture("Not")
-                    }
-                }
+            if let bodyAnchor = anchor as? ARBodyAnchor {
+                recognizePosture(bodyAnchor)
             }
         }
     }
+    
+    private func recognizePosture(_ bodyAnchor: ARBodyAnchor) {
+        if let rightHandPos = bodyAnchor.skeleton.modelTransform(for: .rightHand)?.columns.3,
+           let leftHandPos = bodyAnchor.skeleton.modelTransform(for: .leftHand)?.columns.3,
+           let rightShoulderPos = bodyAnchor.skeleton.modelTransform(for: .rightShoulder)?.columns.3,
+           let leftShoulderPos = bodyAnchor.skeleton.modelTransform(for: .leftShoulder)?.columns.3,
+           let rightFootPos = bodyAnchor.skeleton.modelTransform(for: .rightFoot)?.columns.3,
+           let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 {
+            let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
+            let footDistance = leftFootPos.x - rightFootPos.x
+            let isCrossLeg = footDistance < 0
+            let shoulderHeight = (leftShoulderPos.y + rightShoulderPos.y) / 2
+            
+         
+         postureManager.updatePosture("foot distance: \(footDistance)")
+         if postureManager.currentPostureMode == .initial {
+             if rightHandPos.y < shoulderHeight * 0.95 &&
+                leftHandPos.y < shoulderHeight * 0.95 &&
+                footDistance > shoulderDistance * footDistanceSmallRatio && footDistance < shoulderDistance * footDistanceLargeRatio {
+                 postureManager.updatePosture("Initial Okay chagne mode after 5 second.")
+                 postureManager.toggleIsChanging()
+                 DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                     self.postureManager.changeModeToRehearsal()
+                 }
+             } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
+                 if isCrossLeg {
+                     postureManager.updatePosture("Uncross your legs and keep them shoulder width apart.")
+                 } else {
+                     postureManager.updatePosture("Keep the space between your legs about shoulder width.")
+                 }
+             } else if rightHandPos.y > shoulderHeight * 0.95 {
+                 postureManager.updatePosture("Down your right Hand")
+             } else if leftHandPos.y > shoulderHeight * 0.95 {
+                 postureManager.updatePosture("Down your left hand")
+             }
+         } else if postureManager.currentPostureMode == .rehearsal {
+             if rightHandPos.y > shoulderHeight * 0.95 ||
+                leftHandPos.y > shoulderHeight * 0.95 ||
+                isCrossLeg ||
+                footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio
+             {
+                 postureManager.updatePosture("Bad")
+             } else {
+                 postureManager.updatePosture("Not")
+             }
+         }
+     }
+ }
     
     func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
         if let arError = error as? ARError {

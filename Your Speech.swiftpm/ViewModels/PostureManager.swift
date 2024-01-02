@@ -10,20 +10,45 @@ import Foundation
 class PostureManager: ObservableObject {
     static let shared = PostureManager()
     
-    @Published private(set) var currentPosture = ""
-    @Published private(set) var currentPostureMode = PostureMode.initial
-    @Published var isChanging = false
+    @Published private(set) var model = PostureModel()
     
-    enum PostureMode: String {
-        case initial = "Initial"
-        case rehearsal = "Rehearsal"
+    var currentPosture: String {
+        model.currentPosture
+    }
+    
+    var currentPostureMode: PostureModel.PostureMode {
+        model.currentPostureMode
+    }
+    
+    var handPositions: [PostureModel.Hand] {
+        model.handPositions
+    }
+    
+    var footPositions: [PostureModel.Foot] {
+        model.footPositions
+    }
+    
+    var isChanging: Bool {
+        model.isChanging
+    }
+    
+    func toggleIsChanging() {
+        model.toggleIsChanging()
     }
     
     func updatePosture(_ posture: String) {
-        currentPosture = posture
+        model.updatePosture(posture)
     }
     
     func changeModeToRehearsal() {
-        currentPostureMode = .rehearsal
+        model.changeModeToRehearsal()
+    }
+    
+    func addHandPosition(_ position: PostureModel.Hand) {
+        model.addHandPosition(position)
+    }
+    
+    func addFootPosition(_ position: PostureModel.Foot) {
+        model.addFootPosition(position)
     }
 }
