@@ -16,7 +16,7 @@ struct VoiceAndFace: View {
     
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+            VStack(spacing: 40) {
                 Text(TextConstants.voiceText)
                 statusView(in: geometry.size)
                 if playStatus != .finish {
@@ -50,7 +50,7 @@ struct VoiceAndFace: View {
         TextField("Enter your script", text: $script, axis: .vertical)
             .padding()
             .foregroundStyle(.black)
-            .background(Color.white)
+            .background(Color.brown.gradient)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .lineLimit(15...20)
             .autocorrectionDisabled()
@@ -209,24 +209,6 @@ struct VoiceAndFace: View {
             }
         }
     }
-    
-    
-//    private func facePlaceHolder(in size: CGSize) -> some View {
-//        ZStack {
-//            RoundedRectangle(cornerRadius: 14)
-//                .foregroundStyle(.white.gradient)
-//                .padding(.vertical)
-//                .frame(width: size.width, height: size.height * 0.77)
-//            VStack {
-//                Image(systemName: "face.smiling")
-//                    .imageScale(.large)
-//                    .font(.system(size: size.width * 0.3))
-//                Text("Please tap start!!")
-//                    .font(.largeTitle)
-//            }
-//            .foregroundStyle(.black)
-//        }
-//    }
 }
 
 #Preview {

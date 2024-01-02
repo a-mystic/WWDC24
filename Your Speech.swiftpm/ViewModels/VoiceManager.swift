@@ -55,7 +55,7 @@ class VoiceManager: ObservableObject {
     private func installTap() {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
             self.inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-                DispatchQueue.global().async {
+                DispatchQueue.global(qos: .background).async {
                     self.recognitionRequest.append(buffer)
                     if let channelData = buffer.floatChannelData?[0] {
                         let bufferLength = Int(buffer.frameLength)

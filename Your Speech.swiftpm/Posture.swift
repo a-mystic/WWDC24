@@ -24,11 +24,31 @@ struct Posture: View {
     private func statusView(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
-            Text("This view is a..")
+            VStack {
+                Text("This view is a..")
+                placeHolder(in: size)
+            }
         case .play:
             recognizePosture(in: size)
         case .finish:
             Text("Your speech posture result is a..")
+        }
+    }
+    
+    private func placeHolder(in size: CGSize) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 14)
+                .foregroundStyle(Color.brown.gradient)
+                .padding(.vertical)
+                .frame(width: size.width, height: size.height * 0.77)
+            VStack {
+                Image(systemName: "figure.arms.open")
+                    .imageScale(.large)
+                    .font(.system(size: size.width * 0.3))
+                Text("Please tap start!!")
+                    .font(.largeTitle)
+            }
+            .foregroundStyle(.black)
         }
     }
     
@@ -44,7 +64,9 @@ struct Posture: View {
                     .padding()
                     .foregroundStyle(.white)
                     .background {
-                        Color.black.opacity(0.4)
+                        RoundedRectangle(cornerRadius: 12)
+                            .padding()
+                            .foregroundStyle(.black.gradient.opacity(0.4))
                     }
             }
             countdownAnimation(in: size)

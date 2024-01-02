@@ -91,4 +91,3 @@ extension View {
         self.modifier(Shake(shakes: shakes))
     }
 }
-
