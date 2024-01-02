@@ -8,7 +8,7 @@
 import Foundation
 
 struct PostureModel {
-    private(set) var currentPosture = ""
+    private(set) var currentPostureMessage = ""
     private(set) var currentPostureMode = PostureMode.initial
     private(set) var isChanging = false
     private(set) var handPositions: [Hand] = []
@@ -35,8 +35,8 @@ struct PostureModel {
         case rehearsal = "Rehearsal"
     }
     
-    mutating func updatePosture(_ posture: String) {
-        currentPosture = posture
+    mutating func updatePostureMessage(_ posture: String) {
+        currentPostureMessage = posture
     }
     
     mutating func toggleIsChanging() {

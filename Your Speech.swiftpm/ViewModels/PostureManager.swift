@@ -13,7 +13,7 @@ class PostureManager: ObservableObject {
     @Published private(set) var model = PostureModel()
     
     var currentPosture: String {
-        model.currentPosture
+        model.currentPostureMessage
     }
     
     var currentPostureMode: PostureModel.PostureMode {
@@ -36,8 +36,8 @@ class PostureManager: ObservableObject {
         model.toggleIsChanging()
     }
     
-    func updatePosture(_ posture: String) {
-        model.updatePosture(posture)
+    func updatePostureMessage(_ posture: String) {
+        model.updatePostureMessage(posture)
     }
     
     func changeModeToRehearsal() {

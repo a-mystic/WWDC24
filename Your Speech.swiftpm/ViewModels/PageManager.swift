@@ -11,7 +11,7 @@ class PageManager: ObservableObject {
     @Published private(set) var currentPage: Int? = 0
     
     func addPage() {
-        if let currentPage = currentPage, currentPage < 4 {
+        if let currentPage = currentPage, currentPage < 3 {
             self.currentPage = currentPage + 1
         }
     }

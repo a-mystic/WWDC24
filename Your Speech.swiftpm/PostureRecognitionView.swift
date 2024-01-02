@@ -12,7 +12,7 @@ import Charts
 
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
-    private var index = 0
+    private var index: UInt64 = 0
     private let footDistanceSmallRatio: Float = 1.45
     private let footDistanceLargeRatio: Float = 2.25
     
@@ -77,36 +77,38 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             let shoulderHeight = (leftShoulderPos.y + rightShoulderPos.y) / 2
             
          
-         postureManager.updatePosture("foot distance: \(footDistance)")
+         postureManager.updatePostureMessage("foot distance: \(footDistance)")
          if postureManager.currentPostureMode == .initial {
              if rightHandPos.y < shoulderHeight * 0.95 &&
                 leftHandPos.y < shoulderHeight * 0.95 &&
                 footDistance > shoulderDistance * footDistanceSmallRatio && footDistance < shoulderDistance * footDistanceLargeRatio {
-                 postureManager.updatePosture("Initial Okay chagne mode after 5 second.")
+                 postureManager.updatePostureMessage("Initial Okay chagne mode after 5 second.")
                  postureManager.toggleIsChanging()
                  DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                      self.postureManager.changeModeToRehearsal()
                  }
              } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
                  if isCrossLeg {
-                     postureManager.updatePosture("Uncross your legs and keep them shoulder width apart.")
+                     postureManager.updatePostureMessage("Uncross your legs and keep them shoulder width apart.")
                  } else {
-                     postureManager.updatePosture("Keep the space between your legs about shoulder width.")
+                     postureManager.updatePostureMessage("Keep the space between your legs about shoulder width.")
                  }
              } else if rightHandPos.y > shoulderHeight * 0.95 {
-                 postureManager.updatePosture("Down your right Hand")
+                 postureManager.updatePostureMessage("Down your right Hand")
              } else if leftHandPos.y > shoulderHeight * 0.95 {
-                 postureManager.updatePosture("Down your left hand")
+                 postureManager.updatePostureMessage("Down your left hand")
              }
          } else if postureManager.currentPostureMode == .rehearsal {
+             postureManager.addHandPosition(PostureModel.Hand(rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y, index: index))
+             postureManager.addFootPosition(PostureModel.Foot(rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y, index: index))
+             index += 1
              if rightHandPos.y > shoulderHeight * 0.95 ||
                 leftHandPos.y > shoulderHeight * 0.95 ||
                 isCrossLeg ||
-                footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio
-             {
-                 postureManager.updatePosture("Bad")
+                footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
+                 postureManager.updatePostureMessage("Bad")
              } else {
-                 postureManager.updatePosture("Not")
+                 postureManager.updatePostureMessage("Not")
              }
          }
      }

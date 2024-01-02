@@ -32,6 +32,11 @@ struct Posture: View {
             recognizePosture(in: size)
         case .finish:
             Text("Your speech posture result is a..")
+                .onAppear {
+                    print(postureManager.handPositions)
+                    print("=============\n\n\n")
+                    print(postureManager.footPositions)
+                }
         }
     }
     
