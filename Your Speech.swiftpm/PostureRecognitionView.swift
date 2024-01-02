@@ -99,8 +99,8 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                  postureManager.updatePostureMessage("Down your left hand")
              }
          } else if postureManager.currentPostureMode == .rehearsal {
-             postureManager.addHandPosition(PostureModel.Hand(rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y, index: index))
-             postureManager.addFootPosition(PostureModel.Foot(rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y, index: index))
+             postureManager.addHandPosition(PostureModel.Hand(rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y, id: index))
+             postureManager.addFootPosition(PostureModel.Foot(rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y, id: index))
              index += 1
              if rightHandPos.y > shoulderHeight * 0.95 ||
                 leftHandPos.y > shoulderHeight * 0.95 ||

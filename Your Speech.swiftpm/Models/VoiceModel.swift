@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct VoiceModel {
+struct VoiceModel: Identifiable {
+    var id: UInt64
     var strength: Float
-    var index: UInt64
 }

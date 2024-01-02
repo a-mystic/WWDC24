@@ -65,7 +65,7 @@ class VoiceManager: ObservableObject {
                         }
                         let averageStrength = sumOfStrength / Float(bufferLength)
                         DispatchQueue.main.async {
-                            self.voiceDatas.append(VoiceModel(strength: averageStrength, index: self.voiceIndex))
+                            self.voiceDatas.append(VoiceModel(strength: averageStrength, id: self.voiceIndex))
                             self.voiceIndex += 1
                         }
                     }

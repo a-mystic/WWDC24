@@ -88,7 +88,7 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     }
     
     func addLookAtPoint(x: Float, y: Float) {
-        addLookAtPoint(LookAtPoint(index: index, x: x, y: y))
+        addLookAtPoint(LookAtPoint(id: index, x: x, y: y))
         index += 1
     }
     

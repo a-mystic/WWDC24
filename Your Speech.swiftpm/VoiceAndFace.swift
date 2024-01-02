@@ -178,8 +178,8 @@ struct VoiceAndFace: View {
     }
     
     private func finishOfVoiceData() -> some View {
-        Chart(speechManager.voiceDatas, id: \.index) { data in
-            LineMark(x: .value("Index", data.index), y: .value("Strength", data.strength))
+        Chart(speechManager.voiceDatas) { data in
+            LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
         }
         .frame(width: 300, height: 300)
     }
@@ -189,12 +189,12 @@ struct VoiceAndFace: View {
     
     private func finishOfFaceData() -> some View {
         HStack {
-            Chart(chartX, id: \.index) { item in
-                LineMark(x: .value("Index", item.index), y: .value("X", item.x))
+            Chart(chartX) { item in
+                LineMark(x: .value("Index", item.id), y: .value("X", item.x))
             }
             .frame(width: 300, height: 300)
-            Chart(chartY, id: \.index) { item in
-                LineMark(x: .value("Index", item.index), y: .value("Y", item.y))
+            Chart(chartY) { item in
+                LineMark(x: .value("Index", item.id), y: .value("Y", item.y))
             }
             .frame(width: 300, height: 300)
         }

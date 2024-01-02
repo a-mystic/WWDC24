@@ -14,20 +14,20 @@ struct PostureModel {
     private(set) var handPositions: [Hand] = []
     private(set) var footPositions: [Foot] = []
     
-    struct Hand {
+    struct Hand: Identifiable {
+        var id: UInt64
         var rightX: Float
         var rightY: Float
         var leftX: Float
         var leftY: Float
-        var index: UInt64
     }
     
-    struct Foot {
+    struct Foot: Identifiable {
+        var id: UInt64
         var rightX: Float
         var rightY: Float
         var leftX: Float
         var leftY: Float
-        var index: UInt64
     }
     
     enum PostureMode: String {
