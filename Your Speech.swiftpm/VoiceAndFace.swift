@@ -25,6 +25,9 @@ struct VoiceAndFace: View {
                 playButton
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            .overlay {
+                loading
+            }
         }
     }
     
@@ -81,12 +84,14 @@ struct VoiceAndFace: View {
                 }
             } else {
                 DispatchQueue.global(qos: .background).async {
+                    isLoading = true
                     speechManager.requestPermission()
                     withAnimation {
+                        playStatus = .play
                         speechManager.startRecording { text in
                             recognizedText = text
                         }
-                        playStatus = .play
+                        isLoading = false
                     }
                 }
             }
@@ -210,6 +215,17 @@ struct VoiceAndFace: View {
                     chartY.append(point)
                 }
             }
+        }
+    }
+    
+    @State private var isLoading = false
+
+    @ViewBuilder
+    private var loading: some View {
+        if isLoading {
+            ProgressView()
+                .tint(.red)
+                .scaleEffect(2)
         }
     }
 }

@@ -93,7 +93,7 @@ struct Intro: View {
             } label: {
                 HStack {
                     Image(systemName: "arrow.right")
-                    Text("Next")
+                    Text("Let's Go")
                 }
                 .padding()
                 .font(.title)

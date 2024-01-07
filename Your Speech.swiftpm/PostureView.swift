@@ -9,13 +9,16 @@ import SwiftUI
 
 struct PostureView: View {
     @EnvironmentObject var postureManager: PostureManager
-    
+        
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 40) {
+            VStack {
                 statusView(in: geometry.size)
                 playButton
             }
+            .overlay(content: {
+                loading
+            })
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
@@ -70,8 +73,7 @@ struct PostureView: View {
                     .foregroundStyle(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 12)
-                            .padding()
-                            .foregroundStyle(.black.gradient.opacity(0.4))
+                            .foregroundStyle(.ultraThinMaterial)
                     }
             }
             countdownAnimation(in: size)
@@ -120,14 +122,27 @@ struct PostureView: View {
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
             DispatchQueue.global(qos: .background).async {
+                isLoading = true
                 withAnimation {
                     playStatus = .play
                 }
+                isLoading = false
             }
         } stopAction: {
             withAnimation {
                 playStatus = .finish
             }
+        }
+    }
+    
+    @State private var isLoading = false
+
+    @ViewBuilder
+    private var loading: some View {
+        if isLoading {
+            ProgressView()
+                .tint(.black)
+                .scaleEffect(2)
         }
     }
 }
