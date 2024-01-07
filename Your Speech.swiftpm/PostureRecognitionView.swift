@@ -46,13 +46,25 @@ final class PostureRecognitionViewController: UIViewController {
         }
     }
     
+//    private var anchorEntity = AnchorEntity()
+//    private var sphere = ModelEntity()
+    
     private func setUp() {
         let configuration = ARBodyTrackingConfiguration()
         arView.frame = view.frame
         arView.session.run(configuration)
         arView.session.delegate = self
         self.view.addSubview(self.arView)
+//        setSphere()
+//        arView.scene.addAnchor(anchorEntity)
     }
+    
+//    private func setSphere() {
+//        let sphereMesh = MeshResource.generateSphere(radius: 0.1)
+//        let material = SimpleMaterial(color: .red, roughness: 0, isMetallic: true)
+//        sphere = ModelEntity(mesh: sphereMesh, materials: [material])
+//        anchorEntity.addChild(sphere)
+//    }
 }
 
 extension PostureRecognitionViewController: ARSessionDelegate {
@@ -63,6 +75,10 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             }
         }
     }
+    
+//    private func moveSphere(_ location: simd_float3) {
+//        sphere.position = location
+//    }
     
     private func recognizePosture(_ bodyAnchor: ARBodyAnchor) {
         if let rightHandPos = bodyAnchor.skeleton.modelTransform(for: .rightHand)?.columns.3,
@@ -83,6 +99,10 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 footDistance > shoulderDistance * footDistanceSmallRatio && footDistance < shoulderDistance * footDistanceLargeRatio &&
                 !isCrossLeg
             }
+            
+//            let rootPosition = bodyAnchor.transform.columns.3
+//            let rightHandPosition = rootPosition + rightHandPos
+//            moveSphere(simd_make_float3(rightHandPosition))
             
             // MARK: - Posture ready func
             if postureManager.currentPostureMode == .ready {
