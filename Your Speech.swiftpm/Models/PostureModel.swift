@@ -9,7 +9,7 @@ import Foundation
 
 struct PostureModel {
     private(set) var currentPostureMessage = ""
-    private(set) var currentPostureMode = PostureMode.initial
+    private(set) var currentPostureMode = PostureMode.ready
     private(set) var isChanging = false
     private(set) var handPositions: [Hand] = []
     private(set) var footPositions: [Foot] = []
@@ -31,7 +31,7 @@ struct PostureModel {
     }
     
     enum PostureMode: String {
-        case initial = "Initial"
+        case ready = "Ready"
         case rehearsal = "Rehearsal"
     }
     

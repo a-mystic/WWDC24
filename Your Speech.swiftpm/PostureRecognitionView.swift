@@ -70,35 +70,45 @@ extension PostureRecognitionViewController: ARSessionDelegate {
            let rightShoulderPos = bodyAnchor.skeleton.modelTransform(for: .rightShoulder)?.columns.3,
            let leftShoulderPos = bodyAnchor.skeleton.modelTransform(for: .leftShoulder)?.columns.3,
            let rightFootPos = bodyAnchor.skeleton.modelTransform(for: .rightFoot)?.columns.3,
-           let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 {
+           let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 
+        {
             let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
             let footDistance = leftFootPos.x - rightFootPos.x
             let isCrossLeg = footDistance < 0
             let shoulderHeight = (leftShoulderPos.y + rightShoulderPos.y) / 2
             
-         
-         postureManager.updatePostureMessage("foot distance: \(footDistance)")
-         if postureManager.currentPostureMode == .initial {
-             if rightHandPos.y < shoulderHeight * 0.95 &&
+            var readyCondition: Bool {
+                rightHandPos.y < shoulderHeight * 0.95 &&
                 leftHandPos.y < shoulderHeight * 0.95 &&
-                footDistance > shoulderDistance * footDistanceSmallRatio && footDistance < shoulderDistance * footDistanceLargeRatio {
-                 postureManager.updatePostureMessage("Initial Okay chagne mode after 5 second.")
-                 postureManager.toggleIsChanging()
-                 DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-                     self.postureManager.changeModeToRehearsal()
-                 }
-             } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
-                 if isCrossLeg {
-                     postureManager.updatePostureMessage("Uncross your legs and keep them shoulder width apart.")
-                 } else {
-                     postureManager.updatePostureMessage("Keep the space between your legs about shoulder width.")
-                 }
-             } else if rightHandPos.y > shoulderHeight * 0.95 {
-                 postureManager.updatePostureMessage("Down your right Hand")
-             } else if leftHandPos.y > shoulderHeight * 0.95 {
-                 postureManager.updatePostureMessage("Down your left hand")
-             }
-         } else if postureManager.currentPostureMode == .rehearsal {
+                footDistance > shoulderDistance * footDistanceSmallRatio && footDistance < shoulderDistance * footDistanceLargeRatio &&
+                !isCrossLeg
+            }
+            
+            // MARK: - Posture ready func
+            if postureManager.currentPostureMode == .ready {
+                if readyCondition {
+                    postureManager.updatePostureMessage("Initial Okay chagne mode after 5 second.")
+                    postureManager.toggleIsChanging()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                        self.postureManager.changeModeToRehearsal()
+                    }
+                } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
+                    if isCrossLeg {
+                        postureManager.updatePostureMessage("Uncross your legs and Keep the space between your legs about shoulder width.")
+                    } else {
+                        postureManager.updatePostureMessage("Keep the space between your legs about shoulder width.")
+                    }
+                } else if rightHandPos.y > shoulderHeight * 0.95 {
+                    postureManager.updatePostureMessage("Down your right Hand")
+                } else if leftHandPos.y > shoulderHeight * 0.95 {
+                    postureManager.updatePostureMessage("Down your left hand")
+                } else if isCrossLeg {
+                    postureManager.updatePostureMessage("Uncross your legs.")
+                }
+            }
+            
+            // MARK: - Posture rehearsal func
+            if postureManager.currentPostureMode == .rehearsal {
              postureManager.addHandPosition(PostureModel.Hand(id: index, rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y))
              postureManager.addFootPosition(PostureModel.Foot(id: index, rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y))
              index += 1

@@ -80,12 +80,14 @@ struct VoiceAndFace: View {
                     shakeCount = 5
                 }
             } else {
-                speechManager.requestPermission()
-                withAnimation {
-                    speechManager.startRecording { text in
-                        recognizedText = text
+                DispatchQueue.global(qos: .background).async {
+                    speechManager.requestPermission()
+                    withAnimation {
+                        speechManager.startRecording { text in
+                            recognizedText = text
+                        }
+                        playStatus = .play
                     }
-                    playStatus = .play
                 }
             }
         } stopAction: {

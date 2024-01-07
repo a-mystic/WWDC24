@@ -119,8 +119,10 @@ struct PostureView: View {
     
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
-            withAnimation {
-                playStatus = .play
+            DispatchQueue.global(qos: .background).async {
+                withAnimation {
+                    playStatus = .play
+                }
             }
         } stopAction: {
             withAnimation {
