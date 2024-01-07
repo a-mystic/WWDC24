@@ -13,7 +13,6 @@ struct MyApp: App {
                 .environmentObject(faceManager)
                 .environmentObject(postureManager)
                 .preferredColorScheme(.dark)
-                .tint(.white)
         }
     }
 }

@@ -32,7 +32,6 @@ struct PlayButton: View {
                 Image(systemName: playStatus.rawValue)
                 Text(playStatus.description)
             }
-            .foregroundStyle(.black)
             .padding()
             .font(.title2)
         }

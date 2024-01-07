@@ -68,9 +68,9 @@ struct PostureView: View {
             VStack {
                 Spacer()
                 Text(postureManager.currentPosture)
-                    .font(.largeTitle)
+                    .font(.title)
                     .padding()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                     .background {
                         RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(.ultraThinMaterial)

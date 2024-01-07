@@ -224,7 +224,7 @@ struct VoiceAndFace: View {
     private var loading: some View {
         if isLoading {
             ProgressView()
-                .tint(.red)
+                .tint(.black)
                 .scaleEffect(2)
         }
     }
