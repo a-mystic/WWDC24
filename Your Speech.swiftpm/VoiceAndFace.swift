@@ -50,13 +50,14 @@ struct VoiceAndFace: View {
         TextField("Enter your script", text: $script, axis: .vertical)
             .padding()
             .foregroundStyle(.black)
-            .background(Color.brown.gradient)
+            .background(Color.white.gradient)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .lineLimit(15...20)
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
             .padding(.horizontal, 200)
             .shake(with: shakeCount)
+            .tint(.black)
     }
     
     @EnvironmentObject var faceManager: FaceManager

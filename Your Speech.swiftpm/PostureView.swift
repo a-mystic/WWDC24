@@ -1,5 +1,5 @@
 //
-//  Posture.swift
+//  PostureView.swift
 //  Your Speech
 //
 //  Created by a mystic on 11/29/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Posture: View {
+struct PostureView: View {
     @EnvironmentObject var postureManager: PostureManager
     
     var body: some View {
@@ -43,7 +43,7 @@ struct Posture: View {
     private func placeHolder(in size: CGSize) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
-                .foregroundStyle(Color.brown.gradient)
+                .foregroundStyle(Color.white.gradient)
                 .padding(.vertical)
                 .frame(width: size.width, height: size.height * 0.77)
             VStack {
@@ -131,7 +131,7 @@ struct Posture: View {
 }
 
 #Preview {
-    Posture()
+    PostureView()
         .preferredColorScheme(.dark)
         .environmentObject(PostureManager())
 }

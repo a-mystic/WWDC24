@@ -38,7 +38,7 @@ struct Controller: View {
         switch pageManager.currentPage {
         case 0: Intro()
         case 1: VoiceAndFace()
-        case 2: Posture()
+        case 2: PostureView()
         case 3: Finish()
         default: Intro()
         }
