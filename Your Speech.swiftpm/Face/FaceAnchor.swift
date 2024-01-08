@@ -122,13 +122,4 @@ final class FaceAnchor: NSObject {
         delegate?.updateExpression(expression)
         delegate?.addColor(faceColor)
     }
-    
-    private struct EmotionColor {
-        static let idle = Color.white
-        static let smile = Color.mint
-        static let verySmile = Color.blue
-        static let angry = Color.orange
-        static let veryAngry = Color.red
-        static let tongue = Color.purple
-    }
 }

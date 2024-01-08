@@ -33,7 +33,7 @@ struct PlayButton: View {
                 Text(playStatus.description)
             }
             .padding()
-            .font(.title2)
+            .font(.title3)
         }
         .buttonStyle(.borderedProminent)
     }
@@ -151,4 +151,13 @@ extension String {
         }
         return false
     }
+}
+
+struct EmotionColor {
+    static let idle = Color.white
+    static let smile = Color.mint
+    static let verySmile = Color.blue
+    static let angry = Color.orange
+    static let veryAngry = Color.red
+    static let tongue = Color.purple
 }

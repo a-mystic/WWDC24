@@ -27,7 +27,19 @@ struct Intro: View {
                 needTap = false
             }
         }
+//        .alert("Error", isPresented: $alertIsShow) {
+//            Button("okay", role: .cancel) {
+//                print("Okay")
+//            }
+//        } message: {
+//            Text("Hello error")
+//        }
+//        .onAppear(perform: {
+//            alertIsShow = true
+//        })
     }
+    
+//    @State private var alertIsShow = false
     
     @State private var currentTextIndex = 0
     @State private var isAnimation = true

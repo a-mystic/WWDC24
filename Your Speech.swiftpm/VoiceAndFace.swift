@@ -69,8 +69,9 @@ struct VoiceAndFace: View {
     
     private func analyzer(in size: CGSize) -> some View {
         VStack {
+            Spacer()
             FaceRecognitionView()
-                .frame(width: size.width * 0.5, height: size.height * 0.4)
+                .frame(width: size.width * 0.6, height: size.height * 0.5)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             voiceChart(in: size)
         }
@@ -190,9 +191,43 @@ struct VoiceAndFace: View {
         }
     }
     
-    private func faceChart(in size: CGSize) -> some View {
-        
+    private var faceDatas: [String:Int] {
+        var datas = [String:Int]()
+        faceManager.faceEmotions.forEach { key, value in
+            if key != "😐" && key != "😮" {
+                datas[key] = value
+            }
+        }
+        return datas
     }
+    
+    private func faceChart(in size: CGSize) -> some View {
+        Chart(faceDatas.sorted(by: <), id: \.key) { emotion in
+            BarMark(x: .value("emotion", emotion.key), y: .value("value", emotion.value))
+                .foregroundStyle(colorByEmotion(emotion.key))
+        }
+        .frame(width: 300, height: 300)
+    }
+    
+    private func colorByEmotion(_ key: String) -> Color {
+        switch key {
+        case "😡":
+            return EmotionColor.veryAngry
+        case "😠":
+            return EmotionColor.angry
+        case "😐", "😮":
+            return EmotionColor.idle
+        case "🙂":
+            return EmotionColor.smile
+        case "😁":
+            return EmotionColor.verySmile
+        case "😛":
+            return EmotionColor.tongue
+        default:
+            return EmotionColor.idle
+        }
+    }
+    
     
     private func voiceChart(in size: CGSize) -> some View {
         Chart(voiceManager.voiceDatas) { data in

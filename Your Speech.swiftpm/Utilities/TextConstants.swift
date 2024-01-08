@@ -18,5 +18,5 @@ struct TextConstants {
     
     static let voiceText = "input your script and test your part of all script."
     
-    static let finishText = "I hope your ideas reach the world."
+    static let finishText = "I hope your ideas reach the world"
 }
