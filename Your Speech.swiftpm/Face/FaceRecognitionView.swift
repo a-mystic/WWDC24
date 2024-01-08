@@ -101,8 +101,6 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
 }
 
 struct FaceRecognitionViewRefer: UIViewControllerRepresentable { 
-    @EnvironmentObject var faceManager: FaceManager
-    
     @Binding var expression: String
 
     func makeUIViewController(context: Context) -> FaceRecognitionViewController {

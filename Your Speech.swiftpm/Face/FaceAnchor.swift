@@ -71,13 +71,13 @@ final class FaceAnchor: NSObject {
         switch value {
         case 0.5..<1: 
             expression = "😁"
-            faceColor = .blue
+            faceColor = EmotionColor.verySmile
         case 0.2..<0.5:
             expression = "🙂"
-            faceColor = .mint
+            faceColor = EmotionColor.smile
         default:
-            expression = ""
-            faceColor = .white
+            expression = "😐"
+            faceColor = EmotionColor.idle
         }
         delegate?.updateExpression(expression)
         delegate?.addColor(faceColor)
@@ -85,14 +85,14 @@ final class FaceAnchor: NSObject {
     
     private func isFret(value: CGFloat) {
         switch value {
-        case 0.5..<1: 
+        case 0.6..<1: 
             expression = "😡"
-            faceColor = .red
-        case 0.3..<0.5:
+            faceColor = EmotionColor.veryAngry
+        case 0.35..<0.6:
             expression = "😠"
-            faceColor = .orange
+            faceColor = EmotionColor.angry
         default:
-            break
+            return
         }
         delegate?.updateExpression(expression)
         delegate?.addColor(faceColor)
@@ -102,9 +102,9 @@ final class FaceAnchor: NSObject {
         switch value {
         case 0.1..<1: 
             expression = "😛"
-            faceColor = .purple
+            faceColor = EmotionColor.tongue
         default:
-            break
+            return
         }
         delegate?.updateExpression(expression)
         delegate?.addColor(faceColor)
@@ -114,11 +114,21 @@ final class FaceAnchor: NSObject {
         switch value {
         case 0.2..<1: 
             expression = "😮"
-            faceColor = .white
+            faceColor = EmotionColor.idle
         default:
-            break
+            faceColor = EmotionColor.idle
+            return
         }
         delegate?.updateExpression(expression)
         delegate?.addColor(faceColor)
+    }
+    
+    private struct EmotionColor {
+        static let idle = Color.white
+        static let smile = Color.mint
+        static let verySmile = Color.blue
+        static let angry = Color.orange
+        static let veryAngry = Color.red
+        static let tongue = Color.purple
     }
 }

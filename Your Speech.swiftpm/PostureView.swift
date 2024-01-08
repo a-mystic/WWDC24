@@ -151,5 +151,4 @@ struct PostureView: View {
 #Preview {
     PostureView()
         .preferredColorScheme(.dark)
-        .environmentObject(PostureManager())
 }

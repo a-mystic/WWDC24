@@ -71,7 +71,7 @@ struct Controller: View {
         }
         .sheet(isPresented: $showCurrentProgress) {
             NavigationStack {
-                CurrentProgressView()
+                Description()
             }
         }
     }

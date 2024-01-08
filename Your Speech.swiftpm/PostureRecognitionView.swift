@@ -4,6 +4,7 @@
 //
 //  Created by a mystic on 12/30/23.
 //
+// The magic numbers used in the code were obtained through numerous tests.
 
 import SwiftUI
 import ARKit

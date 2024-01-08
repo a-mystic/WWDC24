@@ -17,8 +17,10 @@ struct VoiceAndFace: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 40) {
-                Text(TextConstants.voiceText)
-                statusView(in: geometry.size)
+                if playStatus == .notPlay {
+                    Text(TextConstants.voiceText)
+                }
+                contents(in: geometry.size)
                 if playStatus != .finish {
                     Text(recognizedText)
                 }
@@ -35,14 +37,14 @@ struct VoiceAndFace: View {
     @State private var similarity = ""
     
     @ViewBuilder
-    private func statusView(in size: CGSize) -> some View {
+    private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
             textInput
         case .play:
-            playingVoiceAndFace(in: size)
+            analyzer(in: size)
         case .finish:
-            finish(in: size)
+            result(in: size)
         }
     }
 
@@ -65,12 +67,12 @@ struct VoiceAndFace: View {
     
     @StateObject private var faceManager = FaceManager.shared
     
-    private func playingVoiceAndFace(in size: CGSize) -> some View {
+    private func analyzer(in size: CGSize) -> some View {
         VStack {
             FaceRecognitionView()
-                .frame(width: size.width * 0.6, height: size.height * 0.5)
+                .frame(width: size.width * 0.5, height: size.height * 0.4)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-            finishOfVoiceData()
+            voiceChart(in: size)
         }
         .transition(.asymmetric(insertion: .scale, removal: .opacity))
     }
@@ -83,8 +85,8 @@ struct VoiceAndFace: View {
                     shakeCount = 7
                 }
             } else {
+                isLoading = true
                 DispatchQueue.global(qos: .background).async {
-                    isLoading = true
                     voiceManager.requestPermission()
                     withAnimation {
                         playStatus = .play
@@ -101,6 +103,7 @@ struct VoiceAndFace: View {
                 voiceManager.stopRecording()
                 playStatus = .finish
             }
+            print(faceManager.faceEmotions)
         }
     }
 
@@ -118,10 +121,10 @@ struct VoiceAndFace: View {
         return text.components(separatedBy: removeCondition).joined().lowercased()
     }
     
-    @State private var selectedResult = "Voice"
-    private let results = ["Voice", "Face"]
+    @State private var selectedResult = "Face"
+    private let results = ["Face", "Voice", "Eyes"]
     
-    private func finish(in size: CGSize) -> some View {
+    private func result(in size: CGSize) -> some View {
         VStack {
             Picker("Choose you want", selection: $selectedResult) {
                 ForEach(results, id: \.self) { result in
@@ -129,7 +132,7 @@ struct VoiceAndFace: View {
                 }
             }
             .pickerStyle(.segmented)
-            changeByResult
+            charts(in: size)
         }
     }
     
@@ -143,7 +146,7 @@ struct VoiceAndFace: View {
         }
     }
     
-    private var faceCVX: String {
+    private var eyesCVX: String {
         var datas: [Float] = []
         faceManager.lookAtPoint.forEach { datas.append($0.x) }
         if let returncv = datas.coefficientOfVariation() {
@@ -153,7 +156,7 @@ struct VoiceAndFace: View {
         }
     }
     
-    private var faceCVY: String {
+    private var eyesCVY: String {
         var datas: [Float] = []
         faceManager.lookAtPoint.forEach { datas.append($0.y) }
         if let returncv = datas.coefficientOfVariation() {
@@ -164,20 +167,22 @@ struct VoiceAndFace: View {
     }
     
     @ViewBuilder
-    private var changeByResult: some View {
+    private func charts(in size: CGSize) -> some View {
         switch selectedResult {
+        case "Face":
+            faceChart(in: size)
         case "Voice":
             VStack {
-                finishOfVoiceData()
+                voiceChart(in: size)
                 Text("CV: \(voiceCV)")
                 Text("Similarity: \(similarity)")
             }
-        case "Face":
+        case "Eyes":
             VStack {
-                finishOfFaceData()
+                eyesChart(in: size)
                 HStack {
-                    Text("CVX: \(faceCVX)")
-                    Text("CVY: \(faceCVY)")
+                    Text("CVX: \(eyesCVX)")
+                    Text("CVY: \(eyesCVY)")
                 }
             }
         default:
@@ -185,7 +190,11 @@ struct VoiceAndFace: View {
         }
     }
     
-    private func finishOfVoiceData() -> some View {
+    private func faceChart(in size: CGSize) -> some View {
+        
+    }
+    
+    private func voiceChart(in size: CGSize) -> some View {
         Chart(voiceManager.voiceDatas) { data in
             LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
         }
@@ -196,7 +205,7 @@ struct VoiceAndFace: View {
     @State private var chartX = [LookAtPoint]()
     @State private var chartY = [LookAtPoint]()
     
-    private func finishOfFaceData() -> some View {
+    private func eyesChart(in size: CGSize) -> some View {
         HStack {
             Chart(chartX) { item in
                 LineMark(x: .value("Index", item.id), y: .value("X", item.x))

@@ -1,5 +1,5 @@
 //
-//  CurrentProgressView.swift
+//  Description.swift
 //  Your Speech
 //
 //  Created by a mystic on 12/26/23.
@@ -7,21 +7,18 @@
 
 import SwiftUI
 
-struct CurrentProgressView: View {
+struct Description: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         Form {
-            Section("VoiceAndFace") {
+            Section("App") {
                 Text("Not yet")
             }
-            Section("Script") {
-                Text("Not yet")
+            Section("Voice&Face") {
+                Text("Not yet, the voice chart have some secret.")
             }
-            Section("Face") {
-                Text("Not yet")
-            }
-            Section("Attitude") {
+            Section("Posture") {
                 Text("Not yet")
             }
         }
@@ -36,5 +33,5 @@ struct CurrentProgressView: View {
 }
 
 #Preview {
-    CurrentProgressView()
+    Description()
 }

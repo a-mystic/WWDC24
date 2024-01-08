@@ -16,7 +16,8 @@ class FaceManager: ObservableObject {
         "😡" : 0,
         "😠" : 0,
         "😛" : 0,
-        "😮" : 0
+        "😮" : 0,
+        "😐" : 0
     ]
     
     @Published private(set) var lookAtPoint: [LookAtPoint] = []
