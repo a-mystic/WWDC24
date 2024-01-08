@@ -73,12 +73,7 @@ struct VoiceAndFace: View {
             FaceRecognitionView()
                 .frame(width: size.width * 0.6, height: size.height * 0.5)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-            voiceChart(in: size)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(lineWidth: 2)
-                        .foregroundStyle(.white)
-                }
+            playingVoiceChart(in: size)
         }
         .transition(.asymmetric(insertion: .scale, removal: .opacity))
     }
@@ -140,12 +135,12 @@ struct VoiceAndFace: View {
                 }
                 .pickerStyle(.segmented)
                 charts(in: size)
+                    .padding()
                     .background {
                         RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(.brown.gradient)
                     }
                     .frame(height: size.height * 0.5)
-                    .padding()
                 resultFeedback
             }
         }
@@ -203,7 +198,7 @@ struct VoiceAndFace: View {
             faceChart(in: size)
         case "Voice":
             VStack {
-                voiceChart(in: size)
+                resultVoiceChart(in: size)
                 Text("CV: \(voiceCV)")
                 Text("Similarity: \(similarity)")
             }
@@ -258,12 +253,20 @@ struct VoiceAndFace: View {
     }
     
     
-    private func voiceChart(in size: CGSize) -> some View {
+    private func playingVoiceChart(in size: CGSize) -> some View {
         Chart(voiceManager.voiceDatas) { data in
             LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
         }
         .foregroundStyle(faceManager.faceColor)
         .frame(width: size.width * 0.9, height: size.height * 0.2)
+    }
+    
+    private func resultVoiceChart(in size: CGSize) -> some View {
+        Chart(voiceManager.voiceDatas) { data in
+            LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
+        }
+        .foregroundStyle(faceManager.faceColor)
+        .frame(width: size.width * 0.9, height: size.height * 0.3)
     }
     
     private func eyesChart(in size: CGSize) -> some View {

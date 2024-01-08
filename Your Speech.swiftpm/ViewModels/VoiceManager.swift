@@ -35,8 +35,8 @@ class VoiceManager: ObservableObject {
         recognitionRequest.requiresOnDeviceRecognition = true
         
         recognizer.recognitionTask(with: recognitionRequest) { result, error in
-            if error != nil {
-                print("Error")
+            if let error = error {
+                print(error)
                 return
             }
             guard let result = result else { return }
