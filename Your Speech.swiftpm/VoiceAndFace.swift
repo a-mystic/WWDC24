@@ -16,12 +16,12 @@ struct VoiceAndFace: View {
     
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 40) {
+            VStack(spacing: geometry.size.height * 0.05) {
                 if playStatus == .notPlay {
                     Text(TextConstants.voiceText)
                 }
                 contents(in: geometry.size)
-                if playStatus != .finish {
+                if playStatus == .play {
                     Text(recognizedText)
                 }
                 playButton
@@ -68,12 +68,17 @@ struct VoiceAndFace: View {
     @StateObject private var faceManager = FaceManager.shared
     
     private func analyzer(in size: CGSize) -> some View {
-        VStack {
+        VStack(spacing: size.height * 0.05) {
             Spacer()
             FaceRecognitionView()
                 .frame(width: size.width * 0.6, height: size.height * 0.5)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             voiceChart(in: size)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(lineWidth: 2)
+                        .foregroundStyle(.white)
+                }
         }
         .transition(.asymmetric(insertion: .scale, removal: .opacity))
     }
@@ -86,8 +91,8 @@ struct VoiceAndFace: View {
                     shakeCount = 7
                 }
             } else {
-                isLoading = true
                 DispatchQueue.global(qos: .background).async {
+                    isLoading = true
                     voiceManager.requestPermission()
                     withAnimation {
                         playStatus = .play
@@ -126,14 +131,38 @@ struct VoiceAndFace: View {
     private let results = ["Face", "Voice", "Eyes"]
     
     private func result(in size: CGSize) -> some View {
-        VStack {
-            Picker("Choose you want", selection: $selectedResult) {
-                ForEach(results, id: \.self) { result in
-                    Text(result)
+        ScrollView {
+            VStack {
+                Picker("Choose you want", selection: $selectedResult) {
+                    ForEach(results, id: \.self) { result in
+                        Text(result)
+                    }
                 }
+                .pickerStyle(.segmented)
+                charts(in: size)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .foregroundStyle(.brown.gradient)
+                    }
+                    .frame(height: size.height * 0.5)
+                    .padding()
+                resultFeedback
             }
-            .pickerStyle(.segmented)
-            charts(in: size)
+        }
+    }
+    
+    private var resultFeedback: some View {
+        VStack {
+            Text("Your result")
+            Text("1.")
+            Divider()
+            Text("2.")
+        }
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
         }
     }
     
@@ -206,7 +235,7 @@ struct VoiceAndFace: View {
             BarMark(x: .value("emotion", emotion.key), y: .value("value", emotion.value))
                 .foregroundStyle(colorByEmotion(emotion.key))
         }
-        .frame(width: 300, height: 300)
+        .frame(width: size.width * 0.8, height: size.height * 0.4)
     }
     
     private func colorByEmotion(_ key: String) -> Color {
@@ -234,33 +263,21 @@ struct VoiceAndFace: View {
             LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
         }
         .foregroundStyle(faceManager.faceColor)
-        .frame(width: 300, height: 300)
+        .frame(width: size.width * 0.9, height: size.height * 0.2)
     }
     
-    @State private var chartX = [LookAtPoint]()
-    @State private var chartY = [LookAtPoint]()
-    
     private func eyesChart(in size: CGSize) -> some View {
-        HStack {
-            Chart(chartX) { item in
-                LineMark(x: .value("Index", item.id), y: .value("X", item.x))
+        HStack(spacing: 40) {
+            Chart(faceManager.lookAtPoint) { point in
+                LineMark(x: .value("Index", point.id), y: .value("X", point.x))
             }
-            .frame(width: 300, height: 300)
-            Chart(chartY) { item in
-                LineMark(x: .value("Index", item.id), y: .value("Y", item.y))
+            .frame(width: size.width * 0.3, height: size.height * 0.3)
+            Chart(faceManager.lookAtPoint) { point in
+                LineMark(x: .value("Index", point.id), y: .value("Y", point.y))
             }
-            .frame(width: 300, height: 300)
+            .frame(width: size.width * 0.3, height: size.height * 0.3)
         }
-        .onAppear {
-            chartX = []
-            chartY = []
-            withAnimation(.easeInOut(duration: 3)) {
-                faceManager.lookAtPoint.forEach { point in
-                    chartX.append(point)
-                    chartY.append(point)
-                }
-            }
-        }
+        .foregroundStyle(.white)
     }
     
     @State private var isLoading = false

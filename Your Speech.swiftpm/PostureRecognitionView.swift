@@ -77,8 +77,9 @@ extension PostureRecognitionViewController: ARSessionDelegate {
         }
     }
     
-    private func moveSphere(_ location: simd_float3) {
-        sphere.position = location
+    private func moveSphere(_ location: simd_float4) {
+        anchorEntity.position = simd_float3(x: 0, y: 0, z: 0)
+        sphere.position = simd_make_float3(location)
     }
     
     private func recognizePosture(_ bodyAnchor: ARBodyAnchor) {
@@ -93,6 +94,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             let footDistance = leftFootPos.x - rightFootPos.x
             let isCrossLeg = footDistance < 0
             let shoulderHeight = (leftShoulderPos.y + rightShoulderPos.y) / 2
+            let rootPosition = bodyAnchor.transform.columns.3
             
             var readyCondition: Bool {
                 rightHandPos.y < shoulderHeight * 0.95 &&
@@ -101,13 +103,10 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 !isCrossLeg
             }
             
-            let rootPosition = bodyAnchor.transform.columns.3
-            let rightHandPosition = rootPosition + rightHandPos
-            moveSphere(simd_make_float3(rightHandPosition))
-            
             // MARK: - Posture ready func
             if postureManager.currentPostureMode == .ready {
                 if readyCondition {
+                    arView.scene.removeAnchor(anchorEntity)
                     postureManager.updatePostureMessage("Initial Okay chagne mode after 5 second.")
                     postureManager.toggleIsChanging()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
@@ -119,12 +118,16 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                     } else {
                         postureManager.updatePostureMessage("Keep the space between your legs about shoulder width.")
                     }
+                    moveSphere(rootPosition + rightFootPos)
                 } else if rightHandPos.y > shoulderHeight * 0.95 {
                     postureManager.updatePostureMessage("Down your right Hand")
+                    moveSphere(rootPosition + rightHandPos)
                 } else if leftHandPos.y > shoulderHeight * 0.95 {
                     postureManager.updatePostureMessage("Down your left hand")
+                    moveSphere(rootPosition + leftHandPos)
                 } else if isCrossLeg {
                     postureManager.updatePostureMessage("Uncross your legs.")
+                    moveSphere(rootPosition + rightFootPos)
                 }
             }
             
@@ -133,13 +136,14 @@ extension PostureRecognitionViewController: ARSessionDelegate {
              postureManager.addHandPosition(PostureModel.Hand(id: index, rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y))
              postureManager.addFootPosition(PostureModel.Foot(id: index, rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y))
              index += 1
+             
              if rightHandPos.y > shoulderHeight * 0.95 ||
                 leftHandPos.y > shoulderHeight * 0.95 ||
                 isCrossLeg ||
                 footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
-                 postureManager.updatePostureMessage("Bad")
+                 postureManager.updatePostureMessage("Not good")
              } else {
-                 postureManager.updatePostureMessage("Not")
+                 postureManager.updatePostureMessage("Good")
              }
          }
      }

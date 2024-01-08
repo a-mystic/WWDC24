@@ -34,12 +34,7 @@ struct PostureView: View {
         case .play:
             recognizePosture(in: size)
         case .finish:
-            Text("Your speech posture result is a..")
-                .onAppear {
-                    print(postureManager.handPositions)
-                    print("=============\n\n\n")
-                    print(postureManager.footPositions)
-                }
+            result(in: size)
         }
     }
     
@@ -47,8 +42,8 @@ struct PostureView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .foregroundStyle(Color.white.gradient)
-                .padding(.vertical)
-                .frame(width: size.width, height: size.height * 0.77)
+                .frame(width: size.width * 0.9, height: size.height * 0.77)
+                .padding()
             VStack {
                 Image(systemName: "figure.arms.open")
                     .imageScale(.large)
@@ -126,14 +121,18 @@ struct PostureView: View {
                 isLoading = true
                 withAnimation {
                     playStatus = .play
+                    isLoading = false
                 }
-                isLoading = false
             }
         } stopAction: {
             withAnimation {
                 playStatus = .finish
             }
         }
+    }
+    
+    private func result(in size: CGSize) -> some View {
+        Text("the result is..")
     }
     
     @State private var isLoading = false

@@ -33,7 +33,7 @@ struct PlayButton: View {
                 Text(playStatus.description)
             }
             .padding()
-            .font(.title3)
+            .font(.headline)
         }
         .buttonStyle(.borderedProminent)
     }
