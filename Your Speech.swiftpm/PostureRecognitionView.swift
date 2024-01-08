@@ -16,7 +16,7 @@ final class PostureRecognitionViewController: UIViewController {
     private let footDistanceSmallRatio: Float = 1.45
     private let footDistanceLargeRatio: Float = 2.25
     
-    let postureManager = PostureManager.shared
+    private var postureManager = PostureManager.shared
     
     deinit {
         self.arView.session.pause()

@@ -10,7 +10,7 @@ import NaturalLanguage
 import Charts
 
 struct VoiceAndFace: View {
-    @ObservedObject private var speechManager = VoiceManager()
+    @ObservedObject private var voiceManager = VoiceManager()
     
     @State private var recognizedText = ""
     
@@ -63,7 +63,7 @@ struct VoiceAndFace: View {
             .tint(.black)
     }
     
-    @EnvironmentObject var faceManager: FaceManager
+    @StateObject private var faceManager = FaceManager.shared
     
     private func playingVoiceAndFace(in size: CGSize) -> some View {
         VStack {
@@ -77,18 +77,18 @@ struct VoiceAndFace: View {
     
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
-            if script.isEmpty {
+            if script.isEmpty || script.isContainEmoji {
                 shakeCount = 0
                 withAnimation(.easeInOut(duration: 1)) {
-                    shakeCount = 5
+                    shakeCount = 7
                 }
             } else {
                 DispatchQueue.global(qos: .background).async {
                     isLoading = true
-                    speechManager.requestPermission()
+                    voiceManager.requestPermission()
                     withAnimation {
                         playStatus = .play
-                        speechManager.startRecording { text in
+                        voiceManager.startRecording { text in
                             recognizedText = text
                         }
                         isLoading = false
@@ -98,7 +98,7 @@ struct VoiceAndFace: View {
         } stopAction: {
             withAnimation {
                 similarity(recognizedText, and: script)
-                speechManager.stopRecording()
+                voiceManager.stopRecording()
                 playStatus = .finish
             }
         }
@@ -135,7 +135,7 @@ struct VoiceAndFace: View {
     
     private var voiceCV: String {
         var datas: [Float] = []
-        speechManager.voiceDatas.forEach { datas.append($0.strength) }
+        voiceManager.voiceDatas.forEach { datas.append($0.strength) }
         if let returncv = datas.coefficientOfVariation() {
             return "\(returncv)"
         } else {
@@ -186,9 +186,10 @@ struct VoiceAndFace: View {
     }
     
     private func finishOfVoiceData() -> some View {
-        Chart(speechManager.voiceDatas) { data in
+        Chart(voiceManager.voiceDatas) { data in
             LineMark(x: .value("Index", data.id), y: .value("Strength", data.strength))
         }
+        .foregroundStyle(faceManager.faceColor)
         .frame(width: 300, height: 300)
     }
     
@@ -224,7 +225,7 @@ struct VoiceAndFace: View {
     private var loading: some View {
         if isLoading {
             ProgressView()
-                .tint(.black)
+                .tint(.gray)
                 .scaleEffect(2)
         }
     }
@@ -233,6 +234,5 @@ struct VoiceAndFace: View {
 #Preview {
     VoiceAndFace()
         .environmentObject(PageManager())
-        .environmentObject(FaceManager())
         .preferredColorScheme(.dark)
 }

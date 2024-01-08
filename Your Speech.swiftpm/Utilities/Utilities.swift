@@ -131,3 +131,24 @@ struct Pie: Shape {
         return p
     }
 }
+
+extension Character {
+    var isEmoji: Bool {
+        if let firstScalar = unicodeScalars.first, firstScalar.properties.isEmoji {
+            return (firstScalar.value >= 0x238d || unicodeScalars.count > 1)
+        } else {
+            return false
+        }
+    }
+}
+
+extension String {
+    var isContainEmoji: Bool {
+        for char in self {
+            if char.isEmoji {
+                return true
+            }
+        }
+        return false
+    }
+}

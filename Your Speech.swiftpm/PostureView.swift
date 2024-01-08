@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostureView: View {
-    @EnvironmentObject var postureManager: PostureManager
+    @StateObject private var postureManager = PostureManager.shared
         
     var body: some View {
         GeometryReader { geometry in
@@ -16,9 +16,9 @@ struct PostureView: View {
                 statusView(in: geometry.size)
                 playButton
             }
-            .overlay(content: {
+            .overlay {
                 loading
-            })
+            }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
@@ -61,21 +61,18 @@ struct PostureView: View {
     }
     
     private func recognizePosture(in size: CGSize) -> some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             PostureRecognitionViewRefer()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-            VStack {
-                Spacer()
-                Text(postureManager.currentPosture)
-                    .font(.title)
-                    .padding()
-                    .foregroundStyle(.black)
-                    .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .foregroundStyle(.ultraThinMaterial)
-                    }
-            }
+            Text(postureManager.currentPosture)
+                .font(.title)
+                .padding()
+                .foregroundStyle(.white)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.ultraThinMaterial)
+                }
             countdownAnimation(in: size)
         }
     }
@@ -87,15 +84,19 @@ struct PostureView: View {
     @ViewBuilder
     private func countdownAnimation(in size: CGSize) -> some View {
         if postureManager.isChanging && isTimerShow {
-            Text("\(count)")
-                .font(.largeTitle)
-                .background {
-                    Pie(endAngle: .degrees(countdownAngle * 360))
-                        .foregroundStyle(.black.opacity(0.7))
-                        .frame(width: size.width * 0.2, height: size.height * 0.2)
-                }
-            .onAppear {
-                startCountdown()
+            VStack {
+                Spacer()
+                Text("\(count)")
+                    .font(.largeTitle)
+                    .background {
+                        Pie(endAngle: .degrees(countdownAngle * 360))
+                            .foregroundStyle(.ultraThinMaterial)
+                            .frame(width: size.width * 0.2, height: size.height * 0.2)
+                    }
+                    .onAppear {
+                        startCountdown()
+                    }
+                Spacer()
             }
         }
     }
@@ -141,7 +142,7 @@ struct PostureView: View {
     private var loading: some View {
         if isLoading {
             ProgressView()
-                .tint(.black)
+                .tint(.gray)
                 .scaleEffect(2)
         }
     }

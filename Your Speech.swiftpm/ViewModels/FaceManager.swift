@@ -8,6 +8,8 @@
 import SwiftUI
 
 class FaceManager: ObservableObject {
+    static let shared = FaceManager()
+    
     @Published private(set) var faceEmotions: [String:Int] = [
         "😁" : 0,
         "🙂" : 0,
@@ -18,6 +20,17 @@ class FaceManager: ObservableObject {
     ]
     
     @Published private(set) var lookAtPoint: [LookAtPoint] = []
+    @Published private(set) var faceColors: Set<Color> = [.white]
+    
+    var faceColor: LinearGradient {
+        LinearGradient(colors: Array(faceColors), startPoint: .bottomLeading, endPoint: .topTrailing)
+    }
+    
+    func addColor(_ color: Color) {
+        if !faceColors.contains(color) {
+            faceColors.insert(color)
+        }
+    }
     
     func setEmotion(_ emotion: String) {
         if faceEmotions.keys.contains(emotion) {

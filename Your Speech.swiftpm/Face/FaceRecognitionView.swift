@@ -14,20 +14,12 @@ final class FaceRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index: UInt64 = 0
     private var face = FaceAnchor()
+    private var faceManager = FaceManager.shared
     
     @Binding var expression: String
     
-    var setEmotion: (String) -> Void
-    var addLookAtPoint: (LookAtPoint) -> Void
-    
-    init(
-        expression: Binding<String>,
-        setEmotion: @escaping (String) -> Void,
-        addLookAtPoint: @escaping (LookAtPoint) -> Void
-    ) {
+    init(expression: Binding<String>) {
         _expression = expression
-        self.setEmotion = setEmotion
-        self.addLookAtPoint = addLookAtPoint
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -82,14 +74,20 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
         }
     }
     
-    func update(expression: String) {
+    func updateExpression(_ expression: String) {
         self.expression = expression
-        setEmotion(expression)
+        faceManager.setEmotion(expression)
     }
     
+    
+    
     func addLookAtPoint(x: Float, y: Float) {
-        addLookAtPoint(LookAtPoint(id: index, x: x, y: y))
+        faceManager.addLookAtPoint(LookAtPoint(id: index, x: x, y: y))
         index += 1
+    }
+    
+    func addColor(_ color: Color) {
+        faceManager.addColor(color)
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
@@ -102,17 +100,13 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     }
 }
 
-struct FaceRecognitionViewRefer: UIViewControllerRepresentable {    // replace posturerecognitionView later..
+struct FaceRecognitionViewRefer: UIViewControllerRepresentable { 
     @EnvironmentObject var faceManager: FaceManager
     
     @Binding var expression: String
 
     func makeUIViewController(context: Context) -> FaceRecognitionViewController {
-        return FaceRecognitionViewController(expression: $expression) { emotion in
-            faceManager.setEmotion(emotion)
-        } addLookAtPoint: { point in
-            faceManager.addLookAtPoint(point)
-        }
+        return FaceRecognitionViewController(expression: $expression)
     }
     
     func updateUIViewController(_ uiViewController: FaceRecognitionViewController, context: Context) { }

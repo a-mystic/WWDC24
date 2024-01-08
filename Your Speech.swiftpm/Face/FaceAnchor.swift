@@ -6,16 +6,19 @@
 //
 
 import ARKit
+import SwiftUI
 
 protocol FaceAnchorDelegate: AnyObject {
-    func update(expression: String)
+    func updateExpression(_ expression: String)
     func addLookAtPoint(x: Float, y: Float)
+    func addColor(_ color: Color)
 }
 
 final class FaceAnchor: NSObject {
     weak var delegate: FaceAnchorDelegate?
     
     private var expression = ""
+    private var faceColor = Color.white
     
     func analyze(faceAnchor: ARFaceAnchor) {
         DispatchQueue.main.async { [weak self] in
@@ -59,42 +62,63 @@ final class FaceAnchor: NSObject {
         let eyeWideRight = faceAnchor.blendShapes[.eyeWideRight] as? CGFloat ?? 0
         let openValue = (mouthFunnel + jawOpen + eyeWideLeft + eyeWideRight) / 4
         DispatchQueue.main.async { [weak self] in
-            self?.isSurprise(value: openValue)
+            self?.isMouthOpen(value: openValue)
         }
     }
 
     
     private func isSmile(value: CGFloat) {
         switch value {
-        case 0.5..<1: expression = "😁"
-        case 0.2..<0.5: expression = "🙂"
-        default: expression = ""
+        case 0.5..<1: 
+            expression = "😁"
+            faceColor = .blue
+        case 0.2..<0.5:
+            expression = "🙂"
+            faceColor = .mint
+        default:
+            expression = ""
+            faceColor = .white
         }
-        delegate?.update(expression: expression)
+        delegate?.updateExpression(expression)
+        delegate?.addColor(faceColor)
     }
     
     private func isFret(value: CGFloat) {
         switch value {
-        case 0.5..<1: expression = "😡"
-        case 0.3..<0.5: expression = "😠"
-        default: break
+        case 0.5..<1: 
+            expression = "😡"
+            faceColor = .red
+        case 0.3..<0.5:
+            expression = "😠"
+            faceColor = .orange
+        default:
+            break
         }
-        delegate?.update(expression: expression)
+        delegate?.updateExpression(expression)
+        delegate?.addColor(faceColor)
     }
     
     private func isTongueOut(value:  CGFloat) {
         switch value {
-        case 0.1..<1: expression = "😛"
-        default: break
+        case 0.1..<1: 
+            expression = "😛"
+            faceColor = .purple
+        default:
+            break
         }
-        delegate?.update(expression: expression)
+        delegate?.updateExpression(expression)
+        delegate?.addColor(faceColor)
     }
     
-    private func isSurprise(value: CGFloat) {
+    private func isMouthOpen(value: CGFloat) {
         switch value {
-        case 0.2..<1: expression = "😮"
-        default: break
+        case 0.2..<1: 
+            expression = "😮"
+            faceColor = .white
+        default:
+            break
         }
-        delegate?.update(expression: expression)
+        delegate?.updateExpression(expression)
+        delegate?.addColor(faceColor)
     }
 }
