@@ -15,82 +15,58 @@ struct Intro: View {
             Color.black
             VStack(spacing: 40) {
                 Spacer()
-                text
+                currentText
                 next
                 Spacer()
                 tapToStart
             }
         }
         .onTapGesture {
-            if needTap {
-                startAnimation()
-                needTap = false
+            withAnimation {
+                currentTextIndex += 1
+                needStart = false
+            }
+            if currentTextIndex == TextConstants.introTexts.count - 1 {
+                hideGuideMessage = true
+                withAnimation(.easeInOut(duration: 1)) {
+                    showButton = true
+                }
             }
         }
-//        .alert("Error", isPresented: $alertIsShow) {
-//            Button("okay", role: .cancel) {
-//                print("Okay")
-//            }
-//        } message: {
-//            Text("Hello error")
-//        }
-//        .onAppear(perform: {
-//            alertIsShow = true
-//        })
     }
-    
-//    @State private var alertIsShow = false
     
     @State private var currentTextIndex = 0
-    @State private var isAnimation = true
-    private var currentText: String {
-        TextConstants.introTexts[currentTextIndex]
-    }
     
-    private var text: some View {
-        Text(currentText)
+    private var currentText: some View {
+        Text(TextConstants.introTexts[currentTextIndex])
             .font(.largeTitle)
             .fontWeight(.black)
-            .opacity(isAnimation ? 1 : 0)
     }
     
-    @State private var needTap = false
+    @State private var showGuideMessage = true
+    @State private var needStart = true
+    @State private var hideGuideMessage = false
+    
+    private var guideMessage: String {
+        if needStart {
+            return "Tap to start"
+        } else {
+            return "Tap to continue"
+        }
+    }
     
     private var tapToStart: some View {
-        Text("Tap to start")
+        Text(guideMessage)
             .foregroundStyle(.white.opacity(0.8))
             .font(.largeTitle)
-            .opacity(needTap ? 1 : 0)
-            .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: needTap)
-            .opacity(needTap ? 1 : 0)
+            .opacity(showGuideMessage ? 1 : 0)
+            .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: showGuideMessage)
+            .opacity(hideGuideMessage ? 0 : 1)
             .onAppear {
                 withAnimation {
-                    needTap = true
+                    showGuideMessage = false
                 }
             }
-    }
-    
-    private func startAnimation() {
-        isAnimation = false
-        withAnimation(.linear(duration: 4)) {
-            isAnimation = true
-        }
-        currentTextIndex += 1
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
-            isAnimation = false
-            withAnimation(.linear(duration: 4)) {
-                isAnimation = true
-            }
-            currentTextIndex += 1
-            if currentTextIndex == TextConstants.introTexts.count - 1 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                    withAnimation {
-                        showButton = true
-                    }
-                }
-                timer.invalidate()
-            }
-        }
     }
     
     @State private var showButton = false
