@@ -147,6 +147,7 @@ struct PostureView: View {
     private func result(in size: CGSize) -> some View {
         ScrollView {
             VStack(spacing: 50) {
+                Text("good/bad").font(.largeTitle)
                 ZStack {
                     Pie(endAngle: .degrees(360))
                         .foregroundStyle(.black)
@@ -154,62 +155,77 @@ struct PostureView: View {
                         .foregroundStyle(.white)
                 }
                 .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.brown.gradient)
-                }
-                .frame(width: size.width, height: 500)
+                .frame(width: size.width * 0.9, height: 300)
                 
+                Text("recognized Postures").font(.largeTitle)
                 Chart(postureDatas.sorted(by: <), id: \.key) { posture in
                     BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
                         .foregroundStyle(.white)
                 }
-                .frame(width: size.width, height: 500)
+                .padding()
+                .frame(width: size.width * 0.9, height: 300)
                 
-                HStack {
-                    ZStack {
-                        Chart(postureManager.handPositions) { position in
-                            LineMark(x: .value("Index", position.id), y: .value("value", (position.rightX + position.rightY) / 2))
-                                .foregroundStyle(.black)
-                        }
-                        Chart(postureManager.handPositions) { position in
-                            LineMark(x: .value("Index", position.id), y: .value("value", (position.leftX + position.leftY) / 2))
-                                .foregroundStyle(.white)
-                        }
+                Text("hand/foot moves").font(.largeTitle)
+                HStack(spacing: 40) {
+                    Chart(postureManager.handPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", (position.rightX + position.rightY) / 2),
+                            series: .value("", "Right")
+                        )
+                        .foregroundStyle(.white)
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", (position.leftX + position.leftY) / 2),
+                            series: .value("", "Left")
+                        )
+                        .foregroundStyle(.black)
                     }
-                    
-                    ZStack {
-                        Chart(postureManager.footPositions) { position in
-                            LineMark(x: .value("Index", position.id), y: .value("value", (position.rightX + position.rightY) / 2))
-                                .foregroundStyle(.black)
-                        }
-                        Chart(postureManager.footPositions) { position in
-                            LineMark(x: .value("Index", position.id), y: .value("value", (position.leftX + position.leftY) / 2))
-                                .foregroundStyle(.white)
-                        }
+                    Chart(postureManager.footPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", (position.rightX + position.rightY) / 2),
+                            series: .value("", "Right")
+                        )
+                        .foregroundStyle(.white)
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", (position.leftX + position.leftY) / 2),
+                            series: .value("", "Left")
+                        )
+                        .foregroundStyle(.black)
                     }
                 }
+                .padding()
+                .frame(width: size.width * 0.9, height: 300)
+                
+                VStack {
+                    Text("the result is..")
+                    HStack {
+                        Text("your hand cv: ")
+                        if handCV.isEmpty {
+                            ProgressView().foregroundStyle(.gray)
+                        }
+                        Text(handCV)
+                    }
+                    HStack {
+                        Text("your foot cv: ")
+                        if footCV.isEmpty {
+                            ProgressView().foregroundStyle(.gray)
+                        }
+                        Text(footCV)
+                    }
+                }
+                .foregroundStyle(.black)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.brown.gradient)
+                        .foregroundStyle(.white.gradient)
                 }
-                .frame(width: size.width, height: size.width)
-                
-                Text("the result is..")
-                HStack {
-                    Text("your hand cv: ")
-                    if handCV.isEmpty {
-                        ProgressView().foregroundStyle(.gray)
-                    }
-                    Text(handCV)
-                }
-                HStack {
-                    Text("your foot cv: ")
-                    if footCV.isEmpty {
-                        ProgressView().foregroundStyle(.gray)
-                    }
-                    Text(footCV)
-                }
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .foregroundStyle(.brown.gradient)
             }
             .onAppear {
                 calcHandCV()
