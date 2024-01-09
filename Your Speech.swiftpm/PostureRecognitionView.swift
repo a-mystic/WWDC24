@@ -107,7 +107,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             if postureManager.currentPostureMode == .ready {
                 if readyCondition {
                     arView.scene.removeAnchor(anchorEntity)
-                    postureManager.updatePostureMessage("Initial Okay chagne mode after 5 second.")
+                    postureManager.updatePostureMessage("Okay your done. ready to rehearsal start after 5 second.")
                     postureManager.toggleIsChanging()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                         self.postureManager.changeModeToRehearsal()
