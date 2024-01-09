@@ -126,25 +126,21 @@ struct VoiceAndFace: View {
     private let results = ["Face", "Voice", "Eyes"]
     
     private func result(in size: CGSize) -> some View {
-        Form {
-            Section("detected") {
-                VStack {
-                    Picker("Choose you want", selection: $selectedResult) {
-                        ForEach(results, id: \.self) { result in
-                            Text(result)
-                        }
+        ScrollView {
+            VStack {
+                Picker("Choose you want", selection: $selectedResult) {
+                    ForEach(results, id: \.self) { result in
+                        Text(result)
                     }
-                    .pickerStyle(.segmented)
-                    charts(in: size)
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 12)
-                                .foregroundStyle(.brown.gradient)
-                        }
-                        .frame(height: size.height * 0.5)
                 }
-            }
-            Section("Feedback") {
+                .pickerStyle(.segmented)
+                charts(in: size)
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 6)
+                            .foregroundStyle(.brown.gradient)
+                    }
+                    .frame(height: size.height * 0.5)
                 resultFeedback
             }
         }
