@@ -16,9 +16,6 @@ struct PostureView: View {
                 statusView(in: geometry.size)
                 playButton
             }
-            .overlay {
-                loading
-            }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
@@ -52,6 +49,7 @@ struct PostureView: View {
                     .font(.largeTitle)
             }
             .foregroundStyle(.black)
+            loading
         }
     }
     
@@ -68,6 +66,8 @@ struct PostureView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.ultraThinMaterial)
                 }
+        }
+        .overlay {
             countdownAnimation(in: size)
         }
     }
@@ -79,20 +79,16 @@ struct PostureView: View {
     @ViewBuilder
     private func countdownAnimation(in size: CGSize) -> some View {
         if postureManager.isChanging && isTimerShow {
-            VStack {
-                Spacer()
-                Text("\(count)")
-                    .font(.largeTitle)
-                    .background {
-                        Pie(endAngle: .degrees(countdownAngle * 360))
-                            .foregroundStyle(.ultraThinMaterial)
-                            .frame(width: size.width * 0.2, height: size.height * 0.2)
-                    }
-                    .onAppear {
-                        startCountdown()
-                    }
-                Spacer()
-            }
+            Text("\(count)")
+                .font(.largeTitle)
+                .background {
+                    Pie(endAngle: .degrees(countdownAngle * 360))
+                        .foregroundStyle(.ultraThinMaterial)
+                        .frame(width: size.width * 0.2, height: size.height * 0.2)
+                }
+                .onAppear {
+                    startCountdown()
+                }
         }
     }
     
@@ -131,8 +127,65 @@ struct PostureView: View {
         }
     }
     
+    @State private var handCV = "Calculating..."
+    @State private var footCV = "Calculating..."
+    
     private func result(in size: CGSize) -> some View {
-        Text("the result is..")
+        VStack {
+            Text("the result is..")
+            HStack {
+                Text("your hand cv: ")
+                if handCV == "Calculating..." {
+                    ProgressView().foregroundStyle(.gray)
+                }
+                Text(handCV)
+            }
+            HStack {
+                Text("your foot cv: ")
+                if footCV == "Calculating..." {
+                    ProgressView().foregroundStyle(.gray)
+                }
+                Text(footCV)
+            }
+        }
+        .onAppear {
+            calcHandCV()
+            calcFootCV()
+        }
+    }
+    
+    private func calcHandCV() {
+        var rightDatas = [Float]()
+        var leftDatas = [Float]()
+        DispatchQueue.global(qos: .background).async {
+            postureManager.handPositions.forEach { position in
+                rightDatas += [position.rightX, position.rightY]
+                leftDatas += [position.leftX, position.leftY]
+            }
+            if let rightCV = rightDatas.coefficientOfVariation(), let leftCV = leftDatas.coefficientOfVariation() {
+                let meanCV = abs((rightCV + leftCV) / 2)
+                handCV = "\(meanCV)"
+            } else {
+                handCV = "error can't calculate"
+            }
+        }
+    }
+    
+    private func calcFootCV() {
+        var rightDatas = [Float]()
+        var leftDatas = [Float]()
+        DispatchQueue.global(qos: .background).async {
+            postureManager.footPositions.forEach { position in
+                rightDatas += [position.rightX, position.rightY]
+                leftDatas += [position.leftX, position.leftY]
+            }
+            if let rightCV = rightDatas.coefficientOfVariation(), let leftCV = leftDatas.coefficientOfVariation() {
+                let meanCV = abs((rightCV + leftCV) / 2)
+                footCV = "\(meanCV)"
+            } else {
+                footCV = "error can't calculate"
+            }
+        }
     }
     
     @State private var isLoading = false
