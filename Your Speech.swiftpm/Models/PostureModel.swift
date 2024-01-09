@@ -13,6 +13,8 @@ struct PostureModel {
     private(set) var isChanging = false
     private(set) var handPositions: [Hand] = []
     private(set) var footPositions: [Foot] = []
+    private(set) var notGoodPoint: Int = 0
+    private(set) var goodPoint: Int = 0
     
     struct Hand: Identifiable {
         var id: UInt64
@@ -53,5 +55,13 @@ struct PostureModel {
     
     mutating func addFootPosition(_ position: PostureModel.Foot) {
         footPositions.append(position)
+    }
+    
+    mutating func notGood() {
+        notGoodPoint += 1
+    }
+    
+    mutating func good() {
+        goodPoint += 1
     }
 }

@@ -32,6 +32,14 @@ class PostureManager: ObservableObject {
         model.isChanging
     }
     
+    var goodPoint: Int {
+        model.goodPoint
+    }
+    
+    var notGoodPoint: Int {
+        model.notGoodPoint
+    }
+    
     func toggleIsChanging() {
         model.toggleIsChanging()
     }
@@ -50,5 +58,13 @@ class PostureManager: ObservableObject {
     
     func addFootPosition(_ position: PostureModel.Foot) {
         model.addFootPosition(position)
+    }
+    
+    func notGood() {
+        model.notGood()
+    }
+    
+    func good() {
+        model.good()
     }
 }

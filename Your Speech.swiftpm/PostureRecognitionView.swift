@@ -141,8 +141,10 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 leftHandPos.y > shoulderHeight * 0.95 ||
                 isCrossLeg ||
                 footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
+                 postureManager.notGood()
                  postureManager.updatePostureMessage("Not good")
              } else {
+                 postureManager.good()
                  postureManager.updatePostureMessage("Good")
              }
          }

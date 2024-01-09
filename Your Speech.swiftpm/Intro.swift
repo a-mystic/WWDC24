@@ -18,7 +18,7 @@ struct Intro: View {
                 text
                 next
                 Spacer()
-                tap
+                tapToStart
             }
         }
         .onTapGesture {
@@ -56,7 +56,7 @@ struct Intro: View {
     
     @State private var needTap = false
     
-    private var tap: some View {
+    private var tapToStart: some View {
         Text("Tap to start")
             .foregroundStyle(.white.opacity(0.8))
             .font(.largeTitle)
@@ -109,7 +109,7 @@ struct Intro: View {
                 }
                 .padding()
                 .font(.title)
-                .foregroundStyle(.black)
+                .foregroundStyle(.white)
             }
             .buttonStyle(.borderedProminent)
             .transition(.scale)

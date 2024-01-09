@@ -130,27 +130,44 @@ struct PostureView: View {
     @State private var handCV = "Calculating..."
     @State private var footCV = "Calculating..."
     
+    private var goodRatio: Double {
+        let sum = postureManager.goodPoint + postureManager.notGoodPoint
+        return Double(postureManager.goodPoint / sum)
+    }
+    
     private func result(in size: CGSize) -> some View {
-        VStack {
-            Text("the result is..")
-            HStack {
-                Text("your hand cv: ")
-                if handCV == "Calculating..." {
-                    ProgressView().foregroundStyle(.gray)
+        ScrollView {
+            VStack {
+                ZStack {
+                    Pie(endAngle: .degrees(360))
+                        .foregroundStyle(.black)
+                    Pie(endAngle: .degrees(360 * goodRatio))
+                        .foregroundStyle(.white)
                 }
-                Text(handCV)
-            }
-            HStack {
-                Text("your foot cv: ")
-                if footCV == "Calculating..." {
-                    ProgressView().foregroundStyle(.gray)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.brown.gradient)
                 }
-                Text(footCV)
+                Text("the result is..")
+                HStack {
+                    Text("your hand cv: ")
+                    if handCV == "Calculating..." {
+                        ProgressView().foregroundStyle(.gray)
+                    }
+                    Text(handCV)
+                }
+                HStack {
+                    Text("your foot cv: ")
+                    if footCV == "Calculating..." {
+                        ProgressView().foregroundStyle(.gray)
+                    }
+                    Text(footCV)
+                }
             }
-        }
-        .onAppear {
-            calcHandCV()
-            calcFootCV()
+            .onAppear {
+                calcHandCV()
+                calcFootCV()
+            }
         }
     }
     
