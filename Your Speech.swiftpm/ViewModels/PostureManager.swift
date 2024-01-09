@@ -40,6 +40,10 @@ class PostureManager: ObservableObject {
         model.notGoodPoint
     }
     
+    var recognizedPostures: [PostureModel.BadPostures:Int] {
+        model.recognizedPosture
+    }
+    
     func toggleIsChanging() {
         model.toggleIsChanging()
     }
@@ -66,5 +70,9 @@ class PostureManager: ObservableObject {
     
     func good() {
         model.good()
+    }
+    
+    func updatePostures(_ posture: PostureModel.BadPostures) {
+        model.updatePosture(posture)
     }
 }

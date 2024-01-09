@@ -104,7 +104,6 @@ struct VoiceAndFace: View {
                 voiceManager.stopRecording()
                 playStatus = .finish
             }
-            print(faceManager.faceEmotions)
         }
     }
 

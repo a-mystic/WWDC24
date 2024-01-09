@@ -15,6 +15,13 @@ struct PostureModel {
     private(set) var footPositions: [Foot] = []
     private(set) var notGoodPoint: Int = 0
     private(set) var goodPoint: Int = 0
+    private(set) var recognizedPosture: [BadPostures:Int] = [
+        .rightHand : 0,
+        .leftHand : 0,
+        .footDistance : 0,
+        .isCrossLeg : 0
+    ]
+    
     
     struct Hand: Identifiable {
         var id: UInt64
@@ -63,5 +70,18 @@ struct PostureModel {
     
     mutating func good() {
         goodPoint += 1
+    }
+    
+    mutating func updatePosture(_ posture: BadPostures) {
+        if recognizedPosture.keys.contains(posture) {
+            recognizedPosture[posture]! += 1
+        }
+    }
+    
+    enum BadPostures: String {
+        case footDistance = "footDistance"
+        case rightHand = "rightHand"
+        case leftHand = "leftHand"
+        case isCrossLeg = "isCrossLeg"
     }
 }

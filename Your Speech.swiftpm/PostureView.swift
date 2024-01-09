@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct PostureView: View {
     @StateObject private var postureManager = PostureManager.shared
@@ -127,38 +128,84 @@ struct PostureView: View {
         }
     }
     
-    @State private var handCV = "Calculating..."
-    @State private var footCV = "Calculating..."
+    @State private var handCV = ""
+    @State private var footCV = ""
     
     private var goodRatio: Double {
         let sum = postureManager.goodPoint + postureManager.notGoodPoint
-        return Double(postureManager.goodPoint / sum)
+        return Double(postureManager.goodPoint) / Double(sum)
+    }
+    
+    private var postureDatas: [String:Int] {
+        var datas = [String:Int]()
+        postureManager.recognizedPostures.forEach { key, value in
+            datas[key.rawValue] = value
+        }
+        return datas
     }
     
     private func result(in size: CGSize) -> some View {
         ScrollView {
-            VStack {
+            VStack(spacing: 50) {
                 ZStack {
                     Pie(endAngle: .degrees(360))
                         .foregroundStyle(.black)
                     Pie(endAngle: .degrees(360 * goodRatio))
                         .foregroundStyle(.white)
                 }
+                .padding()
                 .background {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.brown.gradient)
                 }
+                .frame(width: size.width, height: 500)
+                
+                Chart(postureDatas.sorted(by: <), id: \.key) { posture in
+                    BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: size.width, height: 500)
+                
+                HStack {
+                    ZStack {
+                        Chart(postureManager.handPositions) { position in
+                            LineMark(x: .value("Index", position.id), y: .value("value", (position.rightX + position.rightY) / 2))
+                                .foregroundStyle(.black)
+                        }
+                        Chart(postureManager.handPositions) { position in
+                            LineMark(x: .value("Index", position.id), y: .value("value", (position.leftX + position.leftY) / 2))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    
+                    ZStack {
+                        Chart(postureManager.footPositions) { position in
+                            LineMark(x: .value("Index", position.id), y: .value("value", (position.rightX + position.rightY) / 2))
+                                .foregroundStyle(.black)
+                        }
+                        Chart(postureManager.footPositions) { position in
+                            LineMark(x: .value("Index", position.id), y: .value("value", (position.leftX + position.leftY) / 2))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.brown.gradient)
+                }
+                .frame(width: size.width, height: size.width)
+                
                 Text("the result is..")
                 HStack {
                     Text("your hand cv: ")
-                    if handCV == "Calculating..." {
+                    if handCV.isEmpty {
                         ProgressView().foregroundStyle(.gray)
                     }
                     Text(handCV)
                 }
                 HStack {
                     Text("your foot cv: ")
-                    if footCV == "Calculating..." {
+                    if footCV.isEmpty {
                         ProgressView().foregroundStyle(.gray)
                     }
                     Text(footCV)

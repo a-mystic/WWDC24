@@ -64,6 +64,7 @@ final class PostureRecognitionViewController: UIViewController {
         let sphereMesh = MeshResource.generateSphere(radius: 0.05)
         let material = SimpleMaterial(color: .red, roughness: 0, isMetallic: true)
         sphere = ModelEntity(mesh: sphereMesh, materials: [material])
+        sphere.position = simd_float3(x: 100, y: 100, z: 100)
         anchorEntity.addChild(sphere)
     }
 }
@@ -137,15 +138,25 @@ extension PostureRecognitionViewController: ARSessionDelegate {
              postureManager.addFootPosition(PostureModel.Foot(id: index, rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y))
              index += 1
              
-             if rightHandPos.y > shoulderHeight * 0.95 ||
-                leftHandPos.y > shoulderHeight * 0.95 ||
-                isCrossLeg ||
-                footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
-                 postureManager.notGood()
-                 postureManager.updatePostureMessage("Not good")
-             } else {
-                 postureManager.good()
-                 postureManager.updatePostureMessage("Good")
+                if rightHandPos.y > shoulderHeight * 0.95 {
+                    postureManager.notGood()
+                    postureManager.updatePostureMessage("Not good")
+                    postureManager.updatePostures(.rightHand)
+                } else if leftHandPos.y > shoulderHeight * 0.95 {
+                    postureManager.notGood()
+                    postureManager.updatePostureMessage("Not good")
+                    postureManager.updatePostures(.leftHand)
+                } else if isCrossLeg {
+                    postureManager.notGood()
+                    postureManager.updatePostureMessage("Not good")
+                    postureManager.updatePostures(.isCrossLeg)
+                } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
+                    postureManager.notGood()
+                    postureManager.updatePostureMessage("Not good")
+                    postureManager.updatePostures(.footDistance)
+                } else {
+                    postureManager.good()
+                    postureManager.updatePostureMessage("Good")
              }
          }
      }
