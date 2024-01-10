@@ -122,7 +122,16 @@ struct PostureView: View {
                     isLoading = false
                 }
             }
+            testModeFunc()
         } stopAction: {
+            withAnimation {
+                playStatus = .finish
+            }
+        }
+    }
+    
+    private func testModeFunc() {
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 10) {
             withAnimation {
                 playStatus = .finish
             }
