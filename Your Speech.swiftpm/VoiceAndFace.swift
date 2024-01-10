@@ -11,9 +11,7 @@ import Charts
 
 struct VoiceAndFace: View {
     @ObservedObject private var voiceManager = VoiceManager()
-    
-    @State private var recognizedText = ""
-    
+        
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: geometry.size.height * 0.05) {
@@ -21,9 +19,6 @@ struct VoiceAndFace: View {
                     Text(TextConstants.voiceText)
                 }
                 contents(in: geometry.size)
-                if playStatus == .play {
-                    Text(recognizedText)
-                }
                 playButton
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -75,8 +70,10 @@ struct VoiceAndFace: View {
             voiceChart
                 .frame(width: size.width * 0.9, height: size.height * 0.15)
         }
-        .transition(.asymmetric(insertion: .scale, removal: .opacity))
+        .transition(.scale)
     }
+    
+    @State private var recognizedText = ""
     
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
@@ -90,10 +87,10 @@ struct VoiceAndFace: View {
                     isLoading = true
                     voiceManager.requestPermission()
                     withAnimation {
-                        playStatus = .play
                         voiceManager.startRecording { text in
                             recognizedText = text
                         }
+                        playStatus = .play
                         isLoading = false
                     }
                 }
@@ -135,20 +132,23 @@ struct VoiceAndFace: View {
                 .pickerStyle(.segmented)
                 charts(in: size)
                     .padding()
+                    .padding(.vertical)
                     .background {
                         RoundedRectangle(cornerRadius: 6)
                             .foregroundStyle(.brown.gradient)
+                            .frame(width: size.width * 0.9)
                     }
                     .frame(height: size.height * 0.5)
-                resultFeedback
+                resultFeedback(in: size)
             }
         }
     }
     
     private var feedbacks = ["1.", "2.", "3.", "4.", "5.", "6."]
     
-    private var resultFeedback: some View {
+    private func resultFeedback(in size: CGSize) -> some View {
         VStack {
+            Text("Your recognized Text: \(recognizedText)")
             Text("Your result")
             ForEach(feedbacks, id: \.self) { feedback in
                 Text(feedback)
@@ -160,6 +160,7 @@ struct VoiceAndFace: View {
         .background {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.white.gradient)
+                .frame(width: size.width * 0.9)
         }
     }
     

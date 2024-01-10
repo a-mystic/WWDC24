@@ -14,7 +14,7 @@ struct PostureView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                statusView(in: geometry.size)
+                contents(in: geometry.size)
                 playButton
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -22,7 +22,7 @@ struct PostureView: View {
     }
     
     @ViewBuilder
-    private func statusView(in size: CGSize) -> some View {
+    private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
             VStack {
@@ -33,6 +33,9 @@ struct PostureView: View {
             recognizePosture(in: size)
         case .finish:
             result(in: size)
+                .onAppear {
+                    print(postureManager.handPositions)
+                }
         }
     }
     
@@ -131,9 +134,45 @@ struct PostureView: View {
     @State private var handCV = ""
     @State private var footCV = ""
     
+    private func result(in size: CGSize) -> some View {
+        ScrollView {
+            VStack(spacing: size.height * 0.05) {
+                Text("good/bad").font(.largeTitle)
+                goodAndNotGoodChart(in: size)
+                Text("recognized Postures").font(.largeTitle)
+                recognizedPostureChart(in: size)
+                Text("hand/foot moves").font(.largeTitle)
+                leftAndRightMoveChart(in: size)
+                feedBack(in: size)
+            }
+            .padding()
+            .onAppear {
+                calcHandCV()
+                calcFootCV()
+            }
+        }
+    }
+    
     private var goodRatio: Double {
         let sum = postureManager.goodPoint + postureManager.notGoodPoint
         return Double(postureManager.goodPoint) / Double(sum)
+    }
+    
+    private func goodAndNotGoodChart(in size: CGSize) -> some View {
+        ZStack {
+            Pie(endAngle: .degrees(360))
+                .foregroundStyle(.black)
+            Pie(endAngle: .degrees(360 * goodRatio))
+                .foregroundStyle(.white)
+        }
+        .padding()
+        .frame(width: size.width * 0.9, height: 300)
+        .padding(.vertical)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.brown.gradient)
+                .frame(width: size.width * 0.9)
+        }
     }
     
     private var postureDatas: [String:Int] {
@@ -144,106 +183,79 @@ struct PostureView: View {
         return datas
     }
     
-    private func result(in size: CGSize) -> some View {
-        ScrollView {
-            VStack(spacing: 50) {
-                Text("good/bad").font(.largeTitle)
-                ZStack {
-                    Pie(endAngle: .degrees(360))
-                        .foregroundStyle(.black)
-                    Pie(endAngle: .degrees(360 * goodRatio))
-                        .foregroundStyle(.white)
-                }
-                .padding()
-                .frame(width: size.width * 0.9, height: 300)
-                
-                Text("recognized Postures").font(.largeTitle)
-                Chart(postureDatas.sorted(by: <), id: \.key) { posture in
-                    BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
-                        .foregroundStyle(.white)
-                }
-                .padding()
-                .frame(width: size.width * 0.9, height: 300)
-                
-                Text("hand/foot moves").font(.largeTitle)
-                HStack(spacing: 40) {
-                    Chart(postureManager.handPositions) { position in
-                        LineMark(
-                            x: .value("Index", position.id),
-                            y: .value("Value", (position.rightX + position.rightY) / 2),
-                            series: .value("", "Right")
-                        )
-                        .foregroundStyle(.white)
-                        LineMark(
-                            x: .value("Index", position.id),
-                            y: .value("Value", (position.leftX + position.leftY) / 2),
-                            series: .value("", "Left")
-                        )
-                        .foregroundStyle(.black)
-                    }
-                    Chart(postureManager.footPositions) { position in
-                        LineMark(
-                            x: .value("Index", position.id),
-                            y: .value("Value", (position.rightX + position.rightY) / 2),
-                            series: .value("", "Right")
-                        )
-                        .foregroundStyle(.white)
-                        LineMark(
-                            x: .value("Index", position.id),
-                            y: .value("Value", (position.leftX + position.leftY) / 2),
-                            series: .value("", "Left")
-                        )
-                        .foregroundStyle(.black)
-                    }
-                }
-                .padding()
-                .frame(width: size.width * 0.9, height: 300)
-                
-                VStack {
-                    Text("the result is..")
-                    HStack {
-                        Text("your hand cv: ")
-                        if handCV.isEmpty {
-                            ProgressView().foregroundStyle(.gray)
-                        }
-                        Text(handCV)
-                    }
-                    HStack {
-                        Text("your foot cv: ")
-                        if footCV.isEmpty {
-                            ProgressView().foregroundStyle(.gray)
-                        }
-                        Text(footCV)
-                    }
-                }
+    private func recognizedPostureChart(in size: CGSize) -> some View {
+        Chart(postureDatas.sorted(by: <), id: \.key) { posture in
+            BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
+                .foregroundStyle(.white)
+        }
+        .padding()
+        .frame(width: size.width * 0.9, height: 300)
+        .padding(.vertical)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.brown.gradient)
+                .frame(width: size.width * 0.9)
+        }
+    }
+    
+    private func leftAndRightMoveChart(in size: CGSize) -> some View {
+        HStack(spacing: 40) {
+            Chart(postureManager.handPositions) { position in
+                LineMark(
+                    x: .value("Index", position.id),
+                    y: .value("Value", (position.rightX + position.rightY) / 2),
+                    series: .value("", "Right")
+                )
+                .foregroundStyle(.white)
+                LineMark(
+                    x: .value("Index", position.id),
+                    y: .value("Value", (position.leftX + position.leftY) / 2),
+                    series: .value("", "Left")
+                )
                 .foregroundStyle(.black)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.white.gradient)
-                }
             }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.brown.gradient)
+            Chart(postureManager.footPositions) { position in
+                LineMark(
+                    x: .value("Index", position.id),
+                    y: .value("Value", (position.rightX + position.rightY) / 2),
+                    series: .value("", "Right")
+                )
+                .foregroundStyle(.white)
+                LineMark(
+                    x: .value("Index", position.id),
+                    y: .value("Value", (position.leftX + position.leftY) / 2),
+                    series: .value("", "Left")
+                )
+                .foregroundStyle(.black)
             }
-            .onAppear {
-                calcHandCV()
-                calcFootCV()
-            }
+        }
+        .padding()
+        .frame(width: size.width * 0.9, height: 300)
+        .padding(.vertical)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.brown.gradient)
+                .frame(width: size.width * 0.9)
         }
     }
     
     private func calcHandCV() {
-        var rightDatas = [Float]()
-        var leftDatas = [Float]()
+        var rightXDatas = [Float]()
+        var rightYDatas = [Float]()
+        var leftXDatas = [Float]()
+        var leftYDatas = [Float]()
         DispatchQueue.global(qos: .background).async {
             postureManager.handPositions.forEach { position in
-                rightDatas += [position.rightX, position.rightY]
-                leftDatas += [position.leftX, position.leftY]
+                rightXDatas.append(position.rightX)
+                rightYDatas.append(position.rightY)
+                leftXDatas.append(position.leftX)
+                leftYDatas.append(position.leftY)
             }
-            if let rightCV = rightDatas.coefficientOfVariation(), let leftCV = leftDatas.coefficientOfVariation() {
-                let meanCV = abs((rightCV + leftCV) / 2)
+            if let rightXCV = rightXDatas.coefficientOfVariation(),
+               let rightYCV = rightYDatas.coefficientOfVariation(),
+               let leftXCV = leftXDatas.coefficientOfVariation(),
+               let leftYCV = leftYDatas.coefficientOfVariation() {
+                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / 4
                 handCV = "\(meanCV)"
             } else {
                 handCV = "error can't calculate"
@@ -252,19 +264,54 @@ struct PostureView: View {
     }
     
     private func calcFootCV() {
-        var rightDatas = [Float]()
-        var leftDatas = [Float]()
+        var rightXDatas = [Float]()
+        var rightYDatas = [Float]()
+        var leftXDatas = [Float]()
+        var leftYDatas = [Float]()
         DispatchQueue.global(qos: .background).async {
             postureManager.footPositions.forEach { position in
-                rightDatas += [position.rightX, position.rightY]
-                leftDatas += [position.leftX, position.leftY]
+                rightXDatas.append(position.rightX)
+                rightYDatas.append(position.rightY)
+                leftXDatas.append(position.leftX)
+                leftYDatas.append(position.leftY)
             }
-            if let rightCV = rightDatas.coefficientOfVariation(), let leftCV = leftDatas.coefficientOfVariation() {
-                let meanCV = abs((rightCV + leftCV) / 2)
+            if let rightXCV = rightXDatas.coefficientOfVariation(),
+               let rightYCV = rightYDatas.coefficientOfVariation(),
+               let leftXCV = leftXDatas.coefficientOfVariation(),
+               let leftYCV = leftYDatas.coefficientOfVariation() {
+                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / 4
                 footCV = "\(meanCV)"
             } else {
                 footCV = "error can't calculate"
             }
+        }
+    }
+    
+    private func feedBack(in size: CGSize) -> some View {
+        VStack {
+            Text("the result is..")
+            HStack {
+                Text("your hand cv: ")
+                if handCV.isEmpty {
+                    ProgressView().foregroundStyle(.gray)
+                }
+                Text(handCV)
+            }
+            HStack {
+                Text("your foot cv: ")
+                if footCV.isEmpty {
+                    ProgressView().foregroundStyle(.gray)
+                }
+                Text(footCV)
+            }
+        }
+        .foregroundStyle(.black)
+        .font(.body)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+                .frame(width: size.width * 0.9)
         }
     }
     

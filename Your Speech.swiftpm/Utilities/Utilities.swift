@@ -65,7 +65,7 @@ extension Array where Element == Float {
             return nil
         } else {
             let variance = self.map { pow($0 - self.mean(), 2) }.reduce(0, +) / Float(self.count)
-            return sqrtf(variance) / self.mean()
+            return abs(sqrtf(variance) / self.mean())
         }
     }
 }
