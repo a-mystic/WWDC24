@@ -80,8 +80,8 @@ struct PostureModel {
     
     enum BadPostures: String {
         case footDistance = "footDistance"
-        case rightHand = "rightHand"
-        case leftHand = "leftHand"
-        case isCrossLeg = "isCrossLeg"
+        case rightHand = "rightHandPosition"
+        case leftHand = "leftHandPosition"
+        case isCrossLeg = "CrossLeg"
     }
 }

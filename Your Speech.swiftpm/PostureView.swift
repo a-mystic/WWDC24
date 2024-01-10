@@ -63,6 +63,7 @@ struct PostureView: View {
                 .font(.title)
                 .padding()
                 .foregroundStyle(.white)
+//                .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.ultraThinMaterial)
@@ -128,8 +129,8 @@ struct PostureView: View {
         }
     }
     
-    @State private var handCV = ""
-    @State private var footCV = ""
+    @State private var handCV: Float?
+    @State private var footCV: Float?
     
     private func result(in size: CGSize) -> some View {
         ScrollView {
@@ -198,7 +199,7 @@ struct PostureView: View {
             .frame(width: size.width * 0.8, alignment: .leading)
         }
         .padding()
-        .frame(width: size.width * 0.9, height: 500)
+        .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -222,7 +223,7 @@ struct PostureView: View {
         }
         .fontWeight(.medium)
         .padding()
-        .frame(width: size.width * 0.9, height: 300)
+        .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -232,7 +233,7 @@ struct PostureView: View {
     }
     
     private func handChart(in size: CGSize) -> some View {
-        VStack {
+        VStack(spacing: size.height * 0.01) {
             Text("Horizontal").font(.title)
             HStack(spacing: size.width * 0.05) {
                 VStack {
@@ -275,11 +276,19 @@ struct PostureView: View {
                     }
                 }
             }
+            HStack(spacing: 10) {
+                Text("your hand cv:")
+                if let handCV = handCV {
+                    Text("\(handCV)")
+                } else {
+                    ProgressView().tint(.black)
+                }
+            }
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
         .padding()
-        .frame(width: size.width * 0.9, height: 300)
+        .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -332,11 +341,19 @@ struct PostureView: View {
                     }
                 }
             }
+            HStack(spacing: 10) {
+                Text("your hand cv:")
+                if let footCV = footCV {
+                    Text("\(footCV)")
+                } else {
+                    ProgressView().tint(.black)
+                }
+            }
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
         .padding()
-        .frame(width: size.width * 0.9, height: 300)
+        .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -361,10 +378,10 @@ struct PostureView: View {
                let rightYCV = rightYDatas.coefficientOfVariation(),
                let leftXCV = leftXDatas.coefficientOfVariation(),
                let leftYCV = leftYDatas.coefficientOfVariation() {
-                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / 4
-                handCV = "\(meanCV)"
+                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / Float(4)
+                handCV = meanCV
             } else {
-                handCV = "error can't calculate"
+                handCV = nil
             }
         }
     }
@@ -385,31 +402,29 @@ struct PostureView: View {
                let rightYCV = rightYDatas.coefficientOfVariation(),
                let leftXCV = leftXDatas.coefficientOfVariation(),
                let leftYCV = leftYDatas.coefficientOfVariation() {
-                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / 4
-                footCV = "\(meanCV)"
+                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / Float(4)
+                footCV = meanCV
             } else {
-                footCV = "error can't calculate"
+                footCV = nil
             }
         }
     }
     
+    @State private var feedbacks: [String] = []
+    
     private func feedBack(in size: CGSize) -> some View {
         VStack {
-            Text("the result is..")
-            HStack {
-                Text("your hand cv: ")
-                if handCV.isEmpty {
-                    ProgressView().foregroundStyle(.gray)
+            Text("detected problems")
+            if feedbacks.isEmpty {
+                ProgressView()
+                    .tint(.black)
+                    .scaleEffect(2)
+            } else {
+                ForEach(feedbacks.indices, id: \.self) { index in
+                    Text(feedbacks[index])
                 }
-                Text(handCV)
             }
-            HStack {
-                Text("your foot cv: ")
-                if footCV.isEmpty {
-                    ProgressView().foregroundStyle(.gray)
-                }
-                Text(footCV)
-            }
+            Text("Your final score...")
         }
         .foregroundStyle(.black)
         .font(.body)
@@ -418,6 +433,33 @@ struct PostureView: View {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.white.gradient)
                 .frame(width: size.width * 0.9)
+        }
+        .onAppear {
+            DispatchQueue.global(qos: .background).async {
+                postureFeedback()
+                handAndFootFeedback()
+            }
+        }
+    }
+    
+    private func postureFeedback() {
+        let sum = postureManager.recognizedPostures.values.reduce(0, +)
+        postureManager.recognizedPostures.forEach { key, value in
+            if (Double(value) / Double(sum)) > 0.15 {
+                feedbacks.append(key.rawValue + "Problem")
+            }
+        }
+    }
+    
+    private func handAndFootFeedback() {
+        guard let handCV = handCV, let footCV = footCV else { return }
+        if handCV > 0.65 {
+            feedbacks.append("Moving too much hand")
+        } else if handCV < 0.15 {
+            feedbacks.append("Moving too less hand")
+        }
+        if footCV > 0.65 {
+            feedbacks.append("move too much when giving a presentation.")
         }
     }
     

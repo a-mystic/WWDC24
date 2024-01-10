@@ -29,7 +29,7 @@ struct VoiceAndFace: View {
     }
     
     @State private var playStatus = PlayButton.PlayStatus.notPlay
-    @State private var similarity = ""
+    @State private var similarity: Float?
     
     @ViewBuilder
     private func contents(in size: CGSize) -> some View {
@@ -113,7 +113,11 @@ struct VoiceAndFace: View {
             let shortInput = onlyString(input)
             let shortCompare = onlyString(compare)
             let distance = sentenceEmbedding.distance(between: shortInput, and: shortCompare)
-            similarity = distance.description
+            if let distance = Float(distance.description) {
+                similarity = distance
+            } else {
+                similarity = nil
+            }
         }
     }
     
@@ -156,35 +160,33 @@ struct VoiceAndFace: View {
         .scrollIndicators(.hidden)
     }
     
-    private var feedbacks = ["1.", "2.", "3.", "4.", "5.", "6."]
-    
-    private var voiceCV: String {
+    private var voiceCV: Float? {
         var datas: [Float] = []
         voiceManager.voiceDatas.forEach { datas.append($0.strength) }
         if let returncv = datas.coefficientOfVariation() {
-            return "\(returncv)"
+            return returncv
         } else {
-            return ""
+            return nil
         }
     }
     
-    private var eyesCVX: String {
+    private var eyesCVX: Float? {
         var datas: [Float] = []
         faceManager.lookAtPoint.forEach { datas.append($0.x) }
         if let returncv = datas.coefficientOfVariation() {
-            return "\(returncv)"
+            return returncv
         } else {
-            return ""
+            return nil
         }
     }
     
-    private var eyesCVY: String {
+    private var eyesCVY: Float? {
         var datas: [Float] = []
         faceManager.lookAtPoint.forEach { datas.append($0.y) }
         if let returncv = datas.coefficientOfVariation() {
-            return "\(returncv)"
+            return returncv
         } else {
-            return ""
+            return nil
         }
     }
     
@@ -196,16 +198,20 @@ struct VoiceAndFace: View {
         case "🎙️ Voice":
             VStack {
                 voiceChart
-                Text("CV: \(voiceCV)")
-                Text("Similarity: \(similarity)")
+                if let voiceCV = voiceCV, let similarity = similarity {
+                    Text("CV: \(voiceCV)")
+                    Text("Similarity: \(similarity)")
+                }
             }
             .frame(width: size.width * 0.9, height: size.height * 0.3)
         case "👀 Eyes":
             VStack {
                 eyesChart(in: size)
                 HStack {
-                    Text("CVX: \(eyesCVX)")
-                    Text("CVY: \(eyesCVY)")
+                    if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
+                        Text("CVX: \(eyesCVX)")
+                        Text("CVY: \(eyesCVY)")
+                    }
                 }
             }
         default:
@@ -273,13 +279,20 @@ struct VoiceAndFace: View {
         .foregroundStyle(.white)
     }
     
+    @State private var feedbacks: [String] = []
+    
     private func resultFeedback(in size: CGSize) -> some View {
         VStack {
-            Text("Your result")
-            ForEach(feedbacks, id: \.self) { feedback in
-                Text(feedback)
-                Divider()
+            Text("Your detected problems")
+            if feedbacks.isEmpty {
+                ProgressView().tint(.black)
+            } else {
+                ForEach(feedbacks.indices, id: \.self) { index in
+                    Text("\(index + 1). \(feedbacks[index])")
+                    Divider()
+                }
             }
+            Text("Your final score")
         }
         .foregroundStyle(.black)
         .padding()
@@ -287,6 +300,56 @@ struct VoiceAndFace: View {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.white.gradient)
                 .frame(width: size.width * 0.9)
+        }
+        .onAppear {
+            print(recognizedText)
+            DispatchQueue.global(qos: .background).async {
+                faceFeedback()
+                voiceFeedback()
+                eyesFeedback()
+            }
+        }
+    }
+    
+    private func faceFeedback() {
+        let sum = faceManager.faceEmotions.values.reduce(0, +)
+        faceManager.faceEmotions.forEach { key, value in
+            if key != "😐" && key != "😮" && (Double(value) / Double(sum)) > 0.15 {
+                feedbacks.append(convertEmoji(key))
+            }
+        }
+    }
+    
+    private func convertEmoji(_ emoji: String) -> String {
+        switch emoji {
+        case "😁":
+            return "😁 too much very smile"
+        case "🙂":
+            return "🙂 too much smile"
+        case "😡":
+            return "😡 too much very fret"
+        case "😠":
+            return "😠 too much fret"
+        case "😛":
+            return "😛 too much tongue out"
+        default:
+            return "😱 unrecognizable emotions"
+        }
+    }
+    private func voiceFeedback() {
+        if let voiceCV = voiceCV, voiceCV > 0.8 {
+            feedbacks.append("Voice is unstable")
+        }
+        if let similarity = similarity, similarity > 1.5 {
+            feedbacks.append("Can't present the script properly")
+        }
+    }
+    
+    private func eyesFeedback() {
+        if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
+            if (eyesCVX + eyesCVY) > 2.5 {
+                feedbacks.append("Moving eyes too much.")
+            }
         }
     }
     

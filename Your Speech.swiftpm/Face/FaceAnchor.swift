@@ -85,10 +85,10 @@ final class FaceAnchor: NSObject {
     
     private func isFret(value: CGFloat) {
         switch value {
-        case 0.6..<1: 
+        case 0.55..<1:
             expression = "😡"
             faceColor = EmotionColor.veryAngry
-        case 0.35..<0.6:
+        case 0.35..<0.55:
             expression = "😠"
             faceColor = EmotionColor.angry
         default:
