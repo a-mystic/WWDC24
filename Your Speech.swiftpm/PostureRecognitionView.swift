@@ -141,17 +141,22 @@ extension PostureRecognitionViewController: ARSessionDelegate {
                 if rightHandPos.y > shoulderHeight * 0.95 {
                     postureManager.notGood()
                     postureManager.updatePostures(.rightHand)
+                    postureManager.updatePostureMessage("Not Good")
                 } else if leftHandPos.y > shoulderHeight * 0.95 {
                     postureManager.notGood()
                     postureManager.updatePostures(.leftHand)
+                    postureManager.updatePostureMessage("Not Good")
                 } else if isCrossLeg {
                     postureManager.notGood()
                     postureManager.updatePostures(.isCrossLeg)
+                    postureManager.updatePostureMessage("Not Good")
                 } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
                     postureManager.notGood()
                     postureManager.updatePostures(.footDistance)
+                    postureManager.updatePostureMessage("Not Good")
                 } else {
                     postureManager.good()
+                    postureManager.updatePostureMessage("Good")
              }
          }
      }
@@ -167,7 +172,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
     }
 }
 
-struct PostureRecognitionViewRefer: UIViewControllerRepresentable {
+struct PostureRecognitionView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> PostureRecognitionViewController {
         return PostureRecognitionViewController()
     }

@@ -50,13 +50,15 @@ struct PostureView: View {
                     .font(.largeTitle)
             }
             .foregroundStyle(.black)
-            loading
+            .overlay {
+                loading
+            }
         }
     }
     
     private func recognizePosture(in size: CGSize) -> some View {
         ZStack(alignment: .bottom) {
-            PostureRecognitionViewRefer()
+            PostureRecognitionView()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             Text(postureManager.currentPosture)
@@ -72,6 +74,7 @@ struct PostureView: View {
         .overlay {
             countdownAnimation(in: size)
         }
+        .transition(.scale)
     }
     
     @State private var count = 5
@@ -122,16 +125,18 @@ struct PostureView: View {
                     isLoading = false
                 }
             }
-            testModeFunc()
         } stopAction: {
             withAnimation {
                 playStatus = .finish
             }
         }
+        .onChange(of: postureManager.currentPostureMode) { _ in
+            testModeFunc()
+        }
     }
     
     private func testModeFunc() {
-        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 10) {
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 15) {
             withAnimation {
                 playStatus = .finish
             }
@@ -478,7 +483,7 @@ struct PostureView: View {
     private var loading: some View {
         if isLoading {
             ProgressView()
-                .tint(.black)
+                .tint(.gray)
                 .scaleEffect(2)
         }
     }
