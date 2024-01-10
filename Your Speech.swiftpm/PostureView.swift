@@ -427,7 +427,7 @@ struct PostureView: View {
     private var loading: some View {
         if isLoading {
             ProgressView()
-                .tint(.gray)
+                .tint(.black)
                 .scaleEffect(2)
         }
     }

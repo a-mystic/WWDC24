@@ -69,12 +69,14 @@ struct VoiceAndFace: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             voiceChart
                 .frame(width: size.width * 0.9, height: size.height * 0.15)
+            Text(recognizedText)
+                .font(.body)
         }
         .transition(.scale)
     }
     
     @State private var recognizedText = ""
-    
+
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
             if script.isEmpty || script.isContainEmoji {
@@ -87,11 +89,13 @@ struct VoiceAndFace: View {
                     isLoading = true
                     voiceManager.requestPermission()
                     withAnimation {
-                        voiceManager.startRecording { text in
-                            recognizedText = text
-                        }
                         playStatus = .play
                         isLoading = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            voiceManager.startRecording { text in
+                                recognizedText = text
+                            }
+                        }
                     }
                 }
             }
@@ -109,7 +113,7 @@ struct VoiceAndFace: View {
             let shortInput = onlyString(input)
             let shortCompare = onlyString(compare)
             let distance = sentenceEmbedding.distance(between: shortInput, and: shortCompare)
-            similarity += "Similarity: " + distance.description
+            similarity = distance.description
         }
     }
     
@@ -118,18 +122,22 @@ struct VoiceAndFace: View {
         return text.components(separatedBy: removeCondition).joined().lowercased()
     }
     
-    @State private var selectedResult = "Face"
-    private let results = ["Face", "Voice", "Eyes"]
+    @State private var selectedResult = "😀 Face"
+    private let results = ["😀 Face", "🎙️ Voice", "👀 Eyes"]
     
     private func result(in size: CGSize) -> some View {
         ScrollView {
             VStack {
+                Text("Chart")
+                    .font(.largeTitle)
+                    .frame(width: size.width * 0.9, alignment: .leading)
                 Picker("Choose you want", selection: $selectedResult) {
                     ForEach(results, id: \.self) { result in
                         Text(result)
                     }
                 }
                 .pickerStyle(.segmented)
+                .frame(width: size.width * 0.9)
                 charts(in: size)
                     .padding()
                     .padding(.vertical)
@@ -139,6 +147,9 @@ struct VoiceAndFace: View {
                             .frame(width: size.width * 0.9)
                     }
                     .frame(height: size.height * 0.5)
+                Text("FeedBack")
+                    .font(.largeTitle)
+                    .frame(width: size.width * 0.9, alignment: .leading)
                 resultFeedback(in: size)
             }
         }
@@ -146,24 +157,6 @@ struct VoiceAndFace: View {
     }
     
     private var feedbacks = ["1.", "2.", "3.", "4.", "5.", "6."]
-    
-    private func resultFeedback(in size: CGSize) -> some View {
-        VStack {
-            Text("Your recognized Text: \(recognizedText)")
-            Text("Your result")
-            ForEach(feedbacks, id: \.self) { feedback in
-                Text(feedback)
-                Divider()
-            }
-        }
-        .foregroundStyle(.black)
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.gradient)
-                .frame(width: size.width * 0.9)
-        }
-    }
     
     private var voiceCV: String {
         var datas: [Float] = []
@@ -198,16 +191,16 @@ struct VoiceAndFace: View {
     @ViewBuilder
     private func charts(in size: CGSize) -> some View {
         switch selectedResult {
-        case "Face":
+        case "😀 Face":
             faceChart(in: size)
-        case "Voice":
+        case "🎙️ Voice":
             VStack {
                 voiceChart
                 Text("CV: \(voiceCV)")
                 Text("Similarity: \(similarity)")
             }
             .frame(width: size.width * 0.9, height: size.height * 0.3)
-        case "Eyes":
+        case "👀 Eyes":
             VStack {
                 eyesChart(in: size)
                 HStack {
@@ -278,6 +271,23 @@ struct VoiceAndFace: View {
             .frame(width: size.width * 0.3, height: size.height * 0.3)
         }
         .foregroundStyle(.white)
+    }
+    
+    private func resultFeedback(in size: CGSize) -> some View {
+        VStack {
+            Text("Your result")
+            ForEach(feedbacks, id: \.self) { feedback in
+                Text(feedback)
+                Divider()
+            }
+        }
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+                .frame(width: size.width * 0.9)
+        }
     }
     
     @State private var isLoading = false
