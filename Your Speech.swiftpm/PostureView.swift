@@ -33,9 +33,6 @@ struct PostureView: View {
             recognizePosture(in: size)
         case .finish:
             result(in: size)
-                .onAppear {
-                    print(postureManager.handPositions)
-                }
         }
     }
     
@@ -137,20 +134,35 @@ struct PostureView: View {
     private func result(in size: CGSize) -> some View {
         ScrollView {
             VStack(spacing: size.height * 0.05) {
-                Text("good/bad").font(.largeTitle)
+                Text("good/bad")
+                    .frame(width: size.width * 0.9, alignment: .leading)
                 goodAndNotGoodChart(in: size)
-                Text("recognized Postures").font(.largeTitle)
+                Text("recognized Postures")
+                    .frame(width: size.width * 0.9, alignment: .leading)
                 recognizedPostureChart(in: size)
-                Text("hand/foot moves").font(.largeTitle)
-                leftAndRightMoveChart(in: size)
+                DisclosureGroup("Hand") {
+                    handChart(in: size)
+                }
+                .frame(width: size.width * 0.9)
+                .tint(.white)
+                DisclosureGroup("Foot") {
+                    footChart(in: size)
+                }
+                .frame(width: size.width * 0.9)
+                .tint(.white)
+                Text("FeedBack")
+                    .frame(width: size.width * 0.9, alignment: .leading)
                 feedBack(in: size)
             }
+            .font(.largeTitle)
+            .fontWeight(.black)
             .padding()
             .onAppear {
                 calcHandCV()
                 calcFootCV()
             }
         }
+        .scrollIndicators(.hidden)
     }
     
     private var goodRatio: Double {
@@ -159,14 +171,34 @@ struct PostureView: View {
     }
     
     private func goodAndNotGoodChart(in size: CGSize) -> some View {
-        ZStack {
-            Pie(endAngle: .degrees(360))
-                .foregroundStyle(.black)
-            Pie(endAngle: .degrees(360 * goodRatio))
-                .foregroundStyle(.white)
+        VStack(spacing: size.height * 0.01) {
+            ZStack {
+                Pie(endAngle: .degrees(360))
+                    .foregroundStyle(.black)
+                Pie(endAngle: .degrees(360 * goodRatio))
+                    .foregroundStyle(.white)
+            }
+            HStack {
+                Circle()
+                    .frame(width: size.width * 0.01, height: size.height * 0.01)
+                    .foregroundStyle(.white)
+                Text("Good")
+                    .font(.body)
+                    .fontWeight(.medium)
+            }
+            .frame(width: size.width * 0.8, alignment: .leading)
+            HStack {
+                Circle()
+                    .frame(width: size.width * 0.01, height: size.height * 0.01)
+                    .foregroundStyle(.black)
+                Text("Not Good")
+                    .font(.body)
+                    .fontWeight(.medium)
+            }
+            .frame(width: size.width * 0.8, alignment: .leading)
         }
         .padding()
-        .frame(width: size.width * 0.9, height: 300)
+        .frame(width: size.width * 0.9, height: 500)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -188,6 +220,7 @@ struct PostureView: View {
             BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
                 .foregroundStyle(.white)
         }
+        .fontWeight(.medium)
         .padding()
         .frame(width: size.width * 0.9, height: 300)
         .padding(.vertical)
@@ -198,37 +231,110 @@ struct PostureView: View {
         }
     }
     
-    private func leftAndRightMoveChart(in size: CGSize) -> some View {
-        HStack(spacing: 40) {
-            Chart(postureManager.handPositions) { position in
-                LineMark(
-                    x: .value("Index", position.id),
-                    y: .value("Value", (position.rightX + position.rightY) / 2),
-                    series: .value("", "Right")
-                )
-                .foregroundStyle(.white)
-                LineMark(
-                    x: .value("Index", position.id),
-                    y: .value("Value", (position.leftX + position.leftY) / 2),
-                    series: .value("", "Left")
-                )
-                .foregroundStyle(.black)
+    private func handChart(in size: CGSize) -> some View {
+        VStack {
+            Text("Horizontal").font(.title)
+            HStack(spacing: size.width * 0.05) {
+                VStack {
+                    Text("Left").font(.body)
+                    Chart(postureManager.handPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.leftX)
+                        )
+                    }
+                }
+                VStack {
+                    Text("Right").font(.body)
+                    Chart(postureManager.handPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.rightX)
+                        )
+                    }
+                }
             }
-            Chart(postureManager.footPositions) { position in
-                LineMark(
-                    x: .value("Index", position.id),
-                    y: .value("Value", (position.rightX + position.rightY) / 2),
-                    series: .value("", "Right")
-                )
-                .foregroundStyle(.white)
-                LineMark(
-                    x: .value("Index", position.id),
-                    y: .value("Value", (position.leftX + position.leftY) / 2),
-                    series: .value("", "Left")
-                )
-                .foregroundStyle(.black)
+            Text("Vertical").font(.title)
+            HStack(spacing: size.width * 0.05) {
+                VStack {
+                    Text("Left").font(.body)
+                    Chart(postureManager.handPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.leftY)
+                        )
+                    }
+                }
+                VStack {
+                    Text("Right").font(.body)
+                    Chart(postureManager.handPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.rightY)
+                        )
+                    }
+                }
             }
         }
+        .fontWeight(.light)
+        .foregroundStyle(.white)
+        .padding()
+        .frame(width: size.width * 0.9, height: 300)
+        .padding(.vertical)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.brown.gradient)
+                .frame(width: size.width * 0.9)
+        }
+    }
+    
+    private func footChart(in size: CGSize) -> some View {
+        VStack {
+            Text("Horizontal").font(.title)
+            HStack(spacing: size.width * 0.05) {
+                VStack {
+                    Text("Left").font(.body)
+                    Chart(postureManager.footPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.leftX)
+                        )
+                    }
+                }
+                VStack {
+                    Text("Right").font(.body)
+                    Chart(postureManager.footPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.rightX)
+                        )
+                    }
+                }
+            }
+            Text("Vertical").font(.title)
+            HStack(spacing: size.width * 0.05) {
+                VStack {
+                    Text("Left").font(.body)
+                    Chart(postureManager.footPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.leftY)
+                        )
+                    }
+                }
+                VStack {
+                    Text("Right").font(.body)
+                    Chart(postureManager.footPositions) { position in
+                        LineMark(
+                            x: .value("Index", position.id),
+                            y: .value("Value", position.rightY)
+                        )
+                    }
+                }
+            }
+        }
+        .fontWeight(.light)
+        .foregroundStyle(.white)
         .padding()
         .frame(width: size.width * 0.9, height: 300)
         .padding(.vertical)
