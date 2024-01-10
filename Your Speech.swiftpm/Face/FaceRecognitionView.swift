@@ -16,17 +16,6 @@ final class FaceRecognitionViewController: UIViewController {
     private var face = FaceAnchor()
     private var faceManager = FaceManager.shared
     
-    @Binding var expression: String
-    
-    init(expression: Binding<String>) {
-        _expression = expression
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     deinit {
         self.arView.session.pause()
         self.arView.removeFromSuperview()
@@ -75,7 +64,6 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     }
     
     func updateExpression(_ expression: String) {
-        self.expression = expression
         faceManager.setEmotion(expression)
     }
     
@@ -100,35 +88,11 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
     }
 }
 
-struct FaceRecognitionViewRefer: UIViewControllerRepresentable { 
-    @Binding var expression: String
-
+struct FaceRecognitionView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> FaceRecognitionViewController {
-        return FaceRecognitionViewController(expression: $expression)
+        return FaceRecognitionViewController()
     }
     
     func updateUIViewController(_ uiViewController: FaceRecognitionViewController, context: Context) { }
-}
-
-struct FaceRecognitionView: View {  
-    @State private var expression = ""
-        
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .bottom) {
-                FaceRecognitionViewRefer(expression: $expression)
-                currentExpression
-            }
-        }
-    }
-    
-    private var currentExpression: some View {
-        VStack {
-            Text(expression)
-                .font(.largeTitle)
-                .frame(alignment: .bottom)
-            Spacer().frame(height: 100)
-        }
-    }
 }
 
