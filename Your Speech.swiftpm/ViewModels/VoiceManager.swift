@@ -17,11 +17,18 @@ class VoiceManager: ObservableObject {
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var voiceIndex: UInt64 = 0
     
-    func requestPermission() {
+    @Published var voiceErrorStatus = VoiceError.notError
+    @Published var showVoiceError = false
+    
+    func requestPermission(changeScreen: @escaping () -> Void) {
         SFSpeechRecognizer.requestAuthorization { status in
             switch status {
-            case .authorized: break
-            default: print("Auth error")
+            case .authorized: 
+                changeScreen()
+                break
+            default: 
+                self.voiceErrorStatus = .authError
+                self.showVoiceError = true
             }
         }
     }
@@ -29,14 +36,17 @@ class VoiceManager: ObservableObject {
     func startRecording(completion: @escaping (String) -> Void) {
         installTap()
         audioEngine.prepare()
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")), recognizer.isAvailable else { return }
+        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")), recognizer.isAvailable else {
+            voiceErrorStatus = .recognizerError
+            showVoiceError = true
+            return
+        }
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         recognitionRequest.shouldReportPartialResults = true
         recognitionRequest.requiresOnDeviceRecognition = true
         
         recognizer.recognitionTask(with: recognitionRequest) { result, error in
             if let error = error {
-                print(error)
                 return
             }
             guard let result = result else { return }
@@ -48,7 +58,8 @@ class VoiceManager: ObservableObject {
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
             try audioEngine.start()
         } catch {
-            print(error)
+            voiceErrorStatus = .audioSessionError
+            showVoiceError = true
         }
     }
     
@@ -74,9 +85,37 @@ class VoiceManager: ObservableObject {
     }
     
     func stopRecording() {
-        recognitionRequest.endAudio()
-        audioEngine.stop()
-        inputNode.removeTap(onBus: 0)
-        try? audioSession.setActive(false)
+        do {
+            recognitionRequest.endAudio()
+            audioEngine.stop()
+            inputNode.removeTap(onBus: 0)
+            try audioSession.setActive(false)
+        } catch {
+            voiceErrorStatus = .audioSessionSetActiveError
+            showVoiceError = true
+        }
+    }
+    
+    enum VoiceError: Error {
+        case notError
+        case authError
+        case recognizerError
+        case audioSessionError
+        case audioSessionSetActiveError
+        
+        var errorMessage: String {
+            switch self {
+            case .authError:
+                return "authError"
+            case .recognizerError:
+                return "recognizerError"
+            case .audioSessionError:
+                return "audio session error"
+            case .audioSessionSetActiveError:
+                return "audioSessionSetActiveError"
+            default:
+                return "something can't recognized error occured"
+            }
+        }
     }
 }

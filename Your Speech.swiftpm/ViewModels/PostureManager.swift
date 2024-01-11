@@ -11,6 +11,8 @@ class PostureManager: ObservableObject {
     static let shared = PostureManager()
     
     @Published private(set) var model = PostureModel()
+    @Published var postureErrorStatus = PostureError.notError
+    @Published var showpostureError = false
     
     var currentPosture: String {
         model.currentPostureMessage
@@ -74,5 +76,22 @@ class PostureManager: ObservableObject {
     
     func updatePostures(_ posture: PostureModel.BadPostures) {
         model.updatePosture(posture)
+    }
+    
+    enum PostureError: Error {
+        case notError
+        case ARTrackingSupportedError
+        case videoRequestError
+        
+        var errorMessage: String {
+            switch self {
+            case .ARTrackingSupportedError:
+                return "ARTrackingSupportedError"
+            case .videoRequestError:
+                return "videoRequestError"
+            default:
+                return "something can't recognized error occured"
+            }
+        }
     }
 }

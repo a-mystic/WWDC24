@@ -22,6 +22,9 @@ class FaceManager: ObservableObject {
     
     @Published private(set) var lookAtPoint: [LookAtPoint] = []
     @Published private(set) var faceColors: Set<Color> = [.white]
+    @Published var faceErrorStatus = FaceError.notError
+    @Published var showfaceError = false
+    
     
     var faceColor: LinearGradient {
         LinearGradient(colors: Array(faceColors), startPoint: .bottomLeading, endPoint: .topTrailing)
@@ -41,5 +44,22 @@ class FaceManager: ObservableObject {
     
     func addLookAtPoint(_ point: LookAtPoint) {
         lookAtPoint.append(point)
+    }
+    
+    enum FaceError: Error {
+        case notError
+        case ARTrackingSupportedError
+        case videoRequestError
+        
+        var errorMessage: String {
+            switch self {
+            case .ARTrackingSupportedError:
+                return "ARTrackingSupportedError"
+            case .videoRequestError:
+                return "videoRequestError"
+            default:
+                return "something can't recognized error occured"
+            }
+        }
     }
 }

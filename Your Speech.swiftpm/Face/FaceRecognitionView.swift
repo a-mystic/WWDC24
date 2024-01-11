@@ -27,7 +27,8 @@ final class FaceRecognitionViewController: UIViewController {
         if ARFaceTrackingConfiguration.isSupported {
             requestPermission()
         } else {
-            print("ARTrackingSupported error")
+            faceManager.faceErrorStatus = .ARTrackingSupportedError
+            faceManager.showfaceError = true
         }
         self.view.addSubview(arView)
     }
@@ -39,7 +40,8 @@ final class FaceRecognitionViewController: UIViewController {
                     self?.setUp()
                 }
             } else {
-                print("Video request error")
+                self?.faceManager.faceErrorStatus = .videoRequestError
+                self?.faceManager.showfaceError = true
             }
         }
     }

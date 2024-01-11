@@ -4,12 +4,14 @@
 //
 //  Created by a mystic on 11/29/23.
 //
+// The magic numbers used in the code were obtained through numerous tests.
 
 import SwiftUI
 import Charts
 
 struct PostureView: View {
     @StateObject private var postureManager = PostureManager.shared
+    @EnvironmentObject var pageManager: PageManager
         
     var body: some View {
         GeometryReader { geometry in
@@ -18,6 +20,14 @@ struct PostureView: View {
                 playButton
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            .alert("Posture Error", isPresented: $postureManager.showpostureError) {
+                Button("Okay", role: .cancel) {
+                    pageManager.addPage()
+                }
+            } message: {
+                Text(postureManager.postureErrorStatus.errorMessage)
+            }
+
         }
     }
     
@@ -118,15 +128,23 @@ struct PostureView: View {
     
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {           // test func
-                DispatchQueue.global(qos: .background).async {
-                    isLoading = true
-                    withAnimation {
-                        playStatus = .play
-                        isLoading = false
-                    }
+            DispatchQueue.global(qos: .background).async {    // real
+                isLoading = true
+                withAnimation {
+                    playStatus = .play
+                    isLoading = false
                 }
             }
+            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {           // test func
+//                DispatchQueue.global(qos: .background).async {
+//                    isLoading = true
+//                    withAnimation {
+//                        playStatus = .play
+//                        isLoading = false
+//                    }
+//                }
+//            }
         } stopAction: {
             withAnimation {
                 playStatus = .finish
@@ -236,6 +254,7 @@ struct PostureView: View {
         Chart(postureDatas.sorted(by: <), id: \.key) { posture in
             BarMark(x: .value("Index", posture.key), y: .value("Value", posture.value))
                 .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
         }
         .fontWeight(.medium)
         .padding()
@@ -450,7 +469,8 @@ struct PostureView: View {
                     .tint(.gray)
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
-                    Text(feedbacks[index])
+                    Text("\(index + 1). \(feedbacks[index])")
+                    Divider()
                 }
             }
             Text("Your final score...")

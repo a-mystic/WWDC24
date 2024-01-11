@@ -4,6 +4,7 @@
 //
 //  Created by a mystic on 11/29/23.
 //
+// The magic numbers used in the code were obtained through numerous tests.
 
 import SwiftUI
 import NaturalLanguage
@@ -11,6 +12,8 @@ import Charts
 
 struct VoiceAndFace: View {
     @ObservedObject private var voiceManager = VoiceManager()
+    
+    @EnvironmentObject var pageManager: PageManager
         
     var body: some View {
         GeometryReader { geometry in
@@ -24,6 +27,20 @@ struct VoiceAndFace: View {
             .frame(width: geometry.size.width, height: geometry.size.height)
             .overlay {
                 loading
+            }
+            .alert("Voice Error", isPresented: $voiceManager.showVoiceError) {
+                Button("Okay", role: .cancel) {
+                    pageManager.addPage()
+                }
+            } message: {
+                Text(voiceManager.voiceErrorStatus.errorMessage)
+            }
+            .alert("Face Error", isPresented: $faceManager.showfaceError) {
+                Button("Okay", role: .cancel) {
+                    pageManager.addPage()
+                }
+            } message: {
+                Text(faceManager.faceErrorStatus.errorMessage)
             }
         }
     }
@@ -87,19 +104,21 @@ struct VoiceAndFace: View {
             } else {
                 DispatchQueue.global(qos: .background).async {
                     isLoading = true
-                    voiceManager.requestPermission()
-                    withAnimation {
-                        playStatus = .play
-                        isLoading = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            voiceManager.startRecording { text in
-                                recognizedText = text
+                    voiceManager.requestPermission {
+                        withAnimation {
+                            playStatus = .play
+                            isLoading = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                voiceManager.startRecording { text in
+                                    recognizedText = text
+                                }
                             }
                         }
                     }
                 }
             }
         } stopAction: {
+            recognizedTextCopy = recognizedText
             withAnimation {
                 similarity(recognizedText, and: script)
                 voiceManager.stopRecording()
@@ -108,7 +127,7 @@ struct VoiceAndFace: View {
         }
     }
 
-    func similarity(_ input: String, and compare: String) {
+    private func similarity(_ input: String, and compare: String) {
         if let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english) {
             let shortInput = onlyString(input)
             let shortCompare = onlyString(compare)
@@ -190,6 +209,8 @@ struct VoiceAndFace: View {
         }
     }
     
+    @State private var recognizedTextCopy = ""
+    
     @ViewBuilder
     private func charts(in size: CGSize) -> some View {
         switch selectedResult {
@@ -211,8 +232,15 @@ struct VoiceAndFace: View {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.white.gradient)
                 }
+                DisclosureGroup {
+                    Text(recognizedTextCopy)
+                } label: {
+                    Text("Recognized text")
+                }
+                .foregroundStyle(.white)
             }
-            .frame(width: size.width * 0.9, height: size.height * 0.3)
+            .padding()
+            .frame(width: size.width * 0.9, height: size.height * 0.4)
         case "👀 Eyes":
             VStack {
                 eyesChart(in: size)
@@ -249,7 +277,7 @@ struct VoiceAndFace: View {
         Chart(faceDatas.sorted(by: <), id: \.key) { emotion in
             BarMark(x: .value("emotion", emotion.key), y: .value("value", emotion.value))
                 .foregroundStyle(colorByEmotion(emotion.key))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
         }
         .frame(width: size.width * 0.8, height: size.height * 0.4)
     }
@@ -353,17 +381,17 @@ struct VoiceAndFace: View {
     }
     
     private func voiceFeedback() {
-        if let voiceCV = voiceCV, voiceCV > 0.8 {
+        if let voiceCV = voiceCV, voiceCV > 1.65 {
             feedbacks.append("Voice is unstable")
         }
-        if let similarity = similarity, similarity > 1.5 {
+        if let similarity = similarity, similarity > 0.95 {
             feedbacks.append("Can't present the script properly")
         }
     }
     
     private func eyesFeedback() {
         if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
-            if (eyesCVX + eyesCVY) > 2.5 {
+            if ((eyesCVX + eyesCVY) / Float(2)) > 5.1 {
                 feedbacks.append("Moving eyes too much.")
             }
         }

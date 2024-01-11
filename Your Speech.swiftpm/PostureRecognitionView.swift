@@ -30,7 +30,8 @@ final class PostureRecognitionViewController: UIViewController {
         if ARFaceTrackingConfiguration.isSupported {
             requestPermission()
         } else {
-            print("ARTrackingSupported error")
+            postureManager.postureErrorStatus = .ARTrackingSupportedError
+            postureManager.showpostureError = true
         }
         self.view.addSubview(arView)
     }
@@ -42,7 +43,8 @@ final class PostureRecognitionViewController: UIViewController {
                     self?.setUp()
                 }
             } else {
-                print("Video request error")
+                self?.postureManager.postureErrorStatus = .videoRequestError
+                self?.postureManager.showpostureError = true
             }
         }
     }
