@@ -45,7 +45,9 @@ struct PostureModel {
     }
     
     mutating func updatePostureMessage(_ posture: String) {
-        currentPostureMessage = posture
+        if !isChanging {
+            currentPostureMessage = posture
+        }
     }
     
     mutating func toggleIsChanging() {

@@ -11,25 +11,30 @@ struct Intro: View {
     @EnvironmentObject var pageManager: PageManager
     
     var body: some View {
-        ZStack {
-            Color.black
-            VStack(spacing: 40) {
+        GeometryReader { geometry in
+            VStack(spacing: geometry.size.height * 0.02) {
                 Spacer()
                 currentText
                 next
                 Spacer()
-                tapToStart
+                guideMessage
+                Spacer()
+                    .frame(height: geometry.size.height * 0.05)
             }
-        }
-        .onTapGesture {
-            withAnimation {
-                currentTextIndex += 1
-                needStart = false
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .background {
+                Color.black
             }
-            if currentTextIndex == TextConstants.introTexts.count - 1 {
-                hideGuideMessage = true
-                withAnimation(.easeInOut(duration: 1)) {
-                    showButton = true
+            .onTapGesture {
+                withAnimation {
+                    currentTextIndex += 1
+                    needStart = false
+                }
+                if currentTextIndex == TextConstants.introTexts.count - 1 {
+                    hideGuideMessage = true
+                    withAnimation(.easeInOut(duration: 1)) {
+                        showButton = true
+                    }
                 }
             }
         }
@@ -47,7 +52,7 @@ struct Intro: View {
     @State private var needStart = true
     @State private var hideGuideMessage = false
     
-    private var guideMessage: String {
+    private var guideMessageText: String {
         if needStart {
             return "Tap to start"
         } else {
@@ -55,18 +60,20 @@ struct Intro: View {
         }
     }
     
-    private var tapToStart: some View {
-        Text(guideMessage)
-            .foregroundStyle(.white.opacity(0.8))
-            .font(.largeTitle)
-            .opacity(showGuideMessage ? 1 : 0)
-            .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: showGuideMessage)
-            .opacity(hideGuideMessage ? 0 : 1)
-            .onAppear {
-                withAnimation {
-                    showGuideMessage = false
+    @ViewBuilder
+    private var guideMessage: some View {
+        if !hideGuideMessage {
+            Text(guideMessageText)
+                .foregroundStyle(.white.opacity(0.8))
+                .font(.largeTitle)
+                .opacity(showGuideMessage ? 1 : 0)
+                .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: showGuideMessage)
+                .onAppear {
+                    withAnimation {
+                        showGuideMessage = false
+                    }
                 }
-            }
+        }
     }
     
     @State private var showButton = false

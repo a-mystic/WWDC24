@@ -14,7 +14,7 @@ class PostureManager: ObservableObject {
     @Published var postureErrorStatus = PostureError.notError
     @Published var showpostureError = false
     
-    var currentPosture: String {
+    var currentPostureMessage: String {
         model.currentPostureMessage
     }
     

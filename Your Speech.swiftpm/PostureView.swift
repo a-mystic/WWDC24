@@ -71,15 +71,17 @@ struct PostureView: View {
             PostureRecognitionView()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-            Text(postureManager.currentPosture)
-                .font(.title)
-                .padding()
-                .foregroundStyle(.white)
-//                .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.ultraThinMaterial)
-                }
+            if !postureManager.currentPostureMessage.isEmpty {
+                Text(postureManager.currentPostureMessage)
+                    .font(.title)
+                    .padding()
+                    .foregroundStyle(.white)
+                    .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .foregroundStyle(.ultraThinMaterial)
+                    }
+            }
         }
         .overlay {
             countdownAnimation(in: size)
