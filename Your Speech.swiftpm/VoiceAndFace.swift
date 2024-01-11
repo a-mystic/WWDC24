@@ -108,7 +108,7 @@ struct VoiceAndFace: View {
                         withAnimation {
                             playStatus = .play
                             isLoading = false
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 voiceManager.startRecording { text in
                                     recognizedText = text
                                 }

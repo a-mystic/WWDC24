@@ -47,6 +47,7 @@ class VoiceManager: ObservableObject {
         
         recognizer.recognitionTask(with: recognitionRequest) { result, error in
             if let error = error {
+                print(error)
                 return
             }
             guard let result = result else { return }
@@ -76,8 +77,10 @@ class VoiceManager: ObservableObject {
                         }
                         let averageStrength = sumOfStrength / Float(bufferLength)
                         DispatchQueue.main.async {
-                            self.voiceDatas.append(VoiceModel(id: self.voiceIndex, strength: averageStrength))
-                            self.voiceIndex += 1
+                            if averageStrength != 0 {
+                                self.voiceDatas.append(VoiceModel(id: self.voiceIndex, strength: averageStrength))
+                                self.voiceIndex += 1
+                            }
                         }
                     }
                 }
