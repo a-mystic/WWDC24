@@ -182,7 +182,11 @@ struct VoiceAndFace: View {
     private var voiceCV: Float? {
         var datas: [Float] = []
         voiceManager.voiceDatas.forEach { datas.append($0.strength) }
-        if let returncv = datas.coefficientOfVariation() {
+        // Remove unnecessary data.
+        let drop = Int(Double(datas.count) * 0.04)
+        var shortFormDatas = Array(datas.dropFirst(drop))
+        shortFormDatas = Array(shortFormDatas.dropLast(drop))
+        if let returncv = shortFormDatas.coefficientOfVariation() {
             return returncv
         } else {
             return nil
