@@ -155,8 +155,8 @@ extension String {
 
 struct EmotionColor {
     static let idle = Color.white
-    static let smile = Color.mint
-    static let verySmile = Color.blue
+    static let smile = Color.teal
+    static let verySmile = Color.mint
     static let angry = Color.orange
     static let veryAngry = Color.red
     static let tongue = Color.purple

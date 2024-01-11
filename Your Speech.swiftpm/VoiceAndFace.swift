@@ -198,9 +198,18 @@ struct VoiceAndFace: View {
         case "🎙️ Voice":
             VStack {
                 voiceChart
-                if let voiceCV = voiceCV, let similarity = similarity {
-                    Text("CV: \(voiceCV)")
-                    Text("Similarity: \(similarity)")
+                HStack {
+                    if let voiceCV = voiceCV, let similarity = similarity {
+                        Text("CV: \(voiceCV)")
+                        Text("Similarity: \(similarity)")
+                    }
+                }
+                .font(.body)
+                .foregroundStyle(.black)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.white.gradient)
                 }
             }
             .frame(width: size.width * 0.9, height: size.height * 0.3)
@@ -212,6 +221,13 @@ struct VoiceAndFace: View {
                         Text("CVX: \(eyesCVX)")
                         Text("CVY: \(eyesCVY)")
                     }
+                }
+                .font(.body)
+                .foregroundStyle(.black)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(.white.gradient)
                 }
             }
         default:
@@ -285,7 +301,7 @@ struct VoiceAndFace: View {
         VStack {
             Text("Your detected problems")
             if feedbacks.isEmpty {
-                ProgressView().tint(.black)
+                ProgressView().tint(.gray)
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
                     Text("\(index + 1). \(feedbacks[index])")
@@ -302,7 +318,6 @@ struct VoiceAndFace: View {
                 .frame(width: size.width * 0.9)
         }
         .onAppear {
-            print(recognizedText)
             DispatchQueue.global(qos: .background).async {
                 faceFeedback()
                 voiceFeedback()
@@ -336,6 +351,7 @@ struct VoiceAndFace: View {
             return "😱 unrecognizable emotions"
         }
     }
+    
     private func voiceFeedback() {
         if let voiceCV = voiceCV, voiceCV > 0.8 {
             feedbacks.append("Voice is unstable")

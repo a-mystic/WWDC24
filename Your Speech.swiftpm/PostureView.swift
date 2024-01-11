@@ -118,11 +118,13 @@ struct PostureView: View {
     
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
-            DispatchQueue.global(qos: .background).async {
-                isLoading = true
-                withAnimation {
-                    playStatus = .play
-                    isLoading = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {           // test func
+                DispatchQueue.global(qos: .background).async {
+                    isLoading = true
+                    withAnimation {
+                        playStatus = .play
+                        isLoading = false
+                    }
                 }
             }
         } stopAction: {
@@ -130,13 +132,13 @@ struct PostureView: View {
                 playStatus = .finish
             }
         }
-        .onChange(of: postureManager.currentPostureMode) { _ in
-            testModeFunc()
+        .onChange(of: postureManager.currentPostureMode) { _ in     // test func
+            testFunc()
         }
     }
     
-    private func testModeFunc() {
-        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 15) {
+    private func testFunc() {
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 30) {
             withAnimation {
                 playStatus = .finish
             }
@@ -295,14 +297,21 @@ struct PostureView: View {
                 if let handCV = handCV {
                     Text("\(handCV)")
                 } else {
-                    ProgressView().tint(.black)
+                    ProgressView().tint(.gray)
                 }
+            }
+            .font(.body)
+            .foregroundStyle(.black)
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .foregroundStyle(.white.gradient)
             }
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
         .padding()
-        .frame(width: size.width * 0.9, height: size.height * 0.4)
+        .frame(width: size.width * 0.9, height: size.height * 0.5)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -356,18 +365,25 @@ struct PostureView: View {
                 }
             }
             HStack(spacing: 10) {
-                Text("your hand cv:")
+                Text("your foot cv:")
                 if let footCV = footCV {
                     Text("\(footCV)")
                 } else {
-                    ProgressView().tint(.black)
+                    ProgressView().tint(.gray)
                 }
+            }
+            .font(.body)
+            .foregroundStyle(.black)
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .foregroundStyle(.white.gradient)
             }
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
         .padding()
-        .frame(width: size.width * 0.9, height: size.height * 0.4)
+        .frame(width: size.width * 0.9, height: size.height * 0.5)
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -431,8 +447,7 @@ struct PostureView: View {
             Text("detected problems")
             if feedbacks.isEmpty {
                 ProgressView()
-                    .tint(.black)
-                    .scaleEffect(2)
+                    .tint(.gray)
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
                     Text(feedbacks[index])
@@ -457,7 +472,7 @@ struct PostureView: View {
     }
     
     private func postureFeedback() {
-        let sum = postureManager.recognizedPostures.values.reduce(0, +)
+        let sum = postureManager.goodPoint + postureManager.notGoodPoint
         postureManager.recognizedPostures.forEach { key, value in
             if (Double(value) / Double(sum)) > 0.15 {
                 feedbacks.append(key.rawValue + "Problem")
@@ -467,12 +482,12 @@ struct PostureView: View {
     
     private func handAndFootFeedback() {
         guard let handCV = handCV, let footCV = footCV else { return }
-        if handCV > 0.65 {
-            feedbacks.append("Moving too much hand")
-        } else if handCV < 0.15 {
+        if handCV <= 0.2 {
             feedbacks.append("Moving too less hand")
+        } else if handCV >= 0.66 {
+            feedbacks.append("Moving too much hand")
         }
-        if footCV > 0.65 {
+        if footCV > 0.36 {
             feedbacks.append("move too much when giving a presentation.")
         }
     }

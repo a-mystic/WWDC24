@@ -14,8 +14,8 @@ import Charts
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
     private var index: UInt64 = 0
-    private let footDistanceSmallRatio: Float = 1.3
-    private let footDistanceLargeRatio: Float = 2.4
+    private let footDistanceSmallRatio: Float = 1.35
+    private let footDistanceLargeRatio: Float = 2.6
     
     private var postureManager = PostureManager.shared
     
