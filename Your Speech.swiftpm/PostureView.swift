@@ -76,11 +76,11 @@ struct PostureView: View {
                     .font(.title)
                     .padding()
                     .foregroundStyle(.white)
-                    .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
                     .background {
                         RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(.ultraThinMaterial)
                     }
+                    .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
             }
         }
         .overlay {
@@ -207,12 +207,14 @@ struct PostureView: View {
         return Double(postureManager.goodPoint) / Double(sum)
     }
     
+    @State private var goodRatioAnimationValue: Double = 0
+    
     private func goodAndNotGoodChart(in size: CGSize) -> some View {
         VStack(spacing: size.height * 0.01) {
             ZStack {
                 Pie(endAngle: .degrees(360))
                     .foregroundStyle(.black)
-                Pie(endAngle: .degrees(360 * goodRatio))
+                Pie(endAngle: .degrees(360 * goodRatioAnimationValue))
                     .foregroundStyle(.white)
             }
             HStack {
@@ -241,6 +243,11 @@ struct PostureView: View {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.brown.gradient)
                 .frame(width: size.width * 0.9)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: goodRatio * 2.5)) {
+                goodRatioAnimationValue = goodRatio
+            }
         }
     }
     
