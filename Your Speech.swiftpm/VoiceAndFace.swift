@@ -355,7 +355,11 @@ struct VoiceAndFace: View {
                 divider
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
-                    Text("\(index + 1). \(feedbacks[index])")
+                    if let condition = feedbacks.first, condition == "nil" {
+                        Text("No problem")
+                    } else {
+                        Text("\(index + 1). \(feedbacks[index])")
+                    }
                     divider
                 }
             }
@@ -369,10 +373,16 @@ struct VoiceAndFace: View {
                 .frame(width: size.width * 0.9)
         }
         .onAppear {
-            DispatchQueue.global(qos: .background).async {
+            let dispatchGroup = DispatchGroup()
+            DispatchQueue.global(qos: .background).async(group: dispatchGroup) {
                 faceFeedback()
                 voiceFeedback()
                 eyesFeedback()
+            }
+            dispatchGroup.notify(queue: .global(qos: .background)) {
+                if feedbacks.isEmpty {
+                    feedbacks.append("nil")
+                }
             }
         }
     }

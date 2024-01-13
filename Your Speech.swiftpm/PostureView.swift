@@ -482,7 +482,11 @@ struct PostureView: View {
                 divider
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
-                    Text("\(index + 1). \(feedbacks[index])")
+                    if let condition = feedbacks.first, condition == "nil" {
+                        Text("No problem")
+                    } else {
+                        Text("\(index + 1). \(feedbacks[index])")
+                    }
                     divider
                 }
             }
@@ -497,9 +501,13 @@ struct PostureView: View {
                 .frame(width: size.width * 0.9)
         }
         .onAppear {
-            DispatchQueue.global(qos: .background).async {
+            let dispatchGroup = DispatchGroup()
+            DispatchQueue.global(qos: .background).async(group: dispatchGroup) {
                 postureFeedback()
                 handAndFootFeedback()
+            }
+            dispatchGroup.notify(queue: .global(qos: .background)) {
+                feedbacks.append("nil")
             }
         }
     }
