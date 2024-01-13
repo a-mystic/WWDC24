@@ -42,7 +42,7 @@ struct PostureView: View {
         case .play:
             recognizePosture(in: size)
         case .finish:
-            result(in: size)
+            analysis(in: size)
         }
     }
     
@@ -168,7 +168,7 @@ struct PostureView: View {
     @State private var handCV: Float?
     @State private var footCV: Float?
     
-    private func result(in size: CGSize) -> some View {
+    private func analysis(in size: CGSize) -> some View {
         ScrollView {
             VStack(spacing: size.height * 0.05) {
                 Text("good/bad")
@@ -189,7 +189,7 @@ struct PostureView: View {
                 .tint(.white)
                 Text("FeedBack")
                     .frame(width: size.width * 0.9, alignment: .leading)
-                feedBack(in: size)
+                feedback(in: size)
             }
             .font(.largeTitle)
             .fontWeight(.black)
@@ -313,21 +313,7 @@ struct PostureView: View {
                     }
                 }
             }
-            HStack(spacing: 10) {
-                Text("your hand cv:")
-                if let handCV = handCV {
-                    Text("\(handCV)")
-                } else {
-                    ProgressView().tint(.gray)
-                }
-            }
-            .font(.body)
-            .foregroundStyle(.black)
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.white.gradient)
-            }
+            analyzedHandDatas(in: size)
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
@@ -338,6 +324,48 @@ struct PostureView: View {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.brown.gradient)
                 .frame(width: size.width * 0.9)
+        }
+    }
+    
+    private func analyzedHandDatas(in size: CGSize) -> some View {
+        HStack(spacing: 10) {
+            Text("your hand cv:")
+            if let handCV = handCV {
+                Text("\(handCV)")
+            } else {
+                ProgressView().tint(.gray)
+            }
+        }
+        .font(.body)
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+        }
+    }
+    
+    private func calcHandCV() {
+        var rightXDatas = [Float]()
+        var rightYDatas = [Float]()
+        var leftXDatas = [Float]()
+        var leftYDatas = [Float]()
+        DispatchQueue.global(qos: .background).async {
+            postureManager.handPositions.forEach { position in
+                rightXDatas.append(position.rightX)
+                rightYDatas.append(position.rightY)
+                leftXDatas.append(position.leftX)
+                leftYDatas.append(position.leftY)
+            }
+            if let rightXCV = rightXDatas.coefficientOfVariation(),
+               let rightYCV = rightYDatas.coefficientOfVariation(),
+               let leftXCV = leftXDatas.coefficientOfVariation(),
+               let leftYCV = leftYDatas.coefficientOfVariation() {
+                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / Float(4)
+                handCV = meanCV
+            } else {
+                handCV = nil
+            }
         }
     }
     
@@ -385,21 +413,7 @@ struct PostureView: View {
                     }
                 }
             }
-            HStack(spacing: 10) {
-                Text("your foot cv:")
-                if let footCV = footCV {
-                    Text("\(footCV)")
-                } else {
-                    ProgressView().tint(.gray)
-                }
-            }
-            .font(.body)
-            .foregroundStyle(.black)
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.white.gradient)
-            }
+            analyzedFootDatas(in: size)
         }
         .fontWeight(.light)
         .foregroundStyle(.white)
@@ -413,27 +427,21 @@ struct PostureView: View {
         }
     }
     
-    private func calcHandCV() {
-        var rightXDatas = [Float]()
-        var rightYDatas = [Float]()
-        var leftXDatas = [Float]()
-        var leftYDatas = [Float]()
-        DispatchQueue.global(qos: .background).async {
-            postureManager.handPositions.forEach { position in
-                rightXDatas.append(position.rightX)
-                rightYDatas.append(position.rightY)
-                leftXDatas.append(position.leftX)
-                leftYDatas.append(position.leftY)
-            }
-            if let rightXCV = rightXDatas.coefficientOfVariation(),
-               let rightYCV = rightYDatas.coefficientOfVariation(),
-               let leftXCV = leftXDatas.coefficientOfVariation(),
-               let leftYCV = leftYDatas.coefficientOfVariation() {
-                let meanCV = (rightXCV + rightYCV + leftXCV + leftYCV) / Float(4)
-                handCV = meanCV
+    private func analyzedFootDatas(in size: CGSize) -> some View {
+        HStack(spacing: 10) {
+            Text("your foot cv:")
+            if let footCV = footCV {
+                Text("\(footCV)")
             } else {
-                handCV = nil
+                ProgressView().tint(.gray)
             }
+        }
+        .font(.body)
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
         }
     }
     
@@ -463,16 +471,19 @@ struct PostureView: View {
     
     @State private var feedbacks: [String] = []
     
-    private func feedBack(in size: CGSize) -> some View {
+    @ViewBuilder
+    private func feedback(in size: CGSize) -> some View {
+        let divider = Divider().background(.black)
         VStack {
             Text("detected problems")
+            divider
             if feedbacks.isEmpty {
-                ProgressView()
-                    .tint(.gray)
+                ProgressView().tint(.gray)
+                divider
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
                     Text("\(index + 1). \(feedbacks[index])")
-                    Divider()
+                    divider
                 }
             }
             Text("Your final score...")

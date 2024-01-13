@@ -52,7 +52,8 @@ struct VoiceAndFace: View {
     private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
-            textInput
+//            result(in: size)
+            textInput(in: size)
         case .play:
             analyzer(in: size)
         case .finish:
@@ -63,31 +64,34 @@ struct VoiceAndFace: View {
     @State private var script = ""
     @State private var shakeCount: CGFloat = 0
     
-    private var textInput: some View {
+    private func textInput(in size: CGSize) -> some View {
         TextField("Enter your script", text: $script, axis: .vertical)
             .padding()
-            .foregroundStyle(.black)
-            .background(Color.white.gradient)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
             .lineLimit(15...20)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white, lineWidth: 2)
+            }
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
-            .padding(.horizontal, 200)
+            .padding(.horizontal, size.width * 0.15)
             .shake(with: shakeCount)
-            .tint(.black)
+            .tint(.white)
     }
     
     @StateObject private var faceManager = FaceManager.shared
     
     private func analyzer(in size: CGSize) -> some View {
-        VStack(spacing: size.height * 0.05) {
+        VStack(spacing: size.height * 0.03) {
+            Spacer()
             FaceRecognitionView()
-                .frame(width: size.width * 0.7, height: size.height * 0.6)
+                .frame(width: size.width * 0.7, height: size.height * 0.55)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             voiceChart
-                .frame(width: size.width * 0.9, height: size.height * 0.15)
-            Text(recognizedText)
-                .font(.body)
+                .frame(width: size.width * 0.9, height: size.height * 0.2)
+                .padding()
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .transition(.scale)
     }
@@ -150,7 +154,7 @@ struct VoiceAndFace: View {
     
     private func result(in size: CGSize) -> some View {
         ScrollView {
-            VStack {
+            VStack(spacing: size.height * 0.03) {
                 Text("Chart")
                     .font(.largeTitle)
                     .frame(width: size.width * 0.9, alignment: .leading)
@@ -169,99 +173,34 @@ struct VoiceAndFace: View {
                             .foregroundStyle(.brown.gradient)
                             .frame(width: size.width * 0.9)
                     }
-                    .frame(height: size.height * 0.5)
                 Text("FeedBack")
                     .font(.largeTitle)
                     .frame(width: size.width * 0.9, alignment: .leading)
-                resultFeedback(in: size)
+                feedback(in: size)
             }
         }
         .scrollIndicators(.hidden)
     }
-    
-    private var voiceCV: Float? {
-        var datas: [Float] = []
-        voiceManager.voiceDatas.forEach { datas.append($0.strength) }
-        // Remove unnecessary data.
-        let drop = Int(Double(datas.count) * 0.04)
-        var shortFormDatas = Array(datas.dropFirst(drop))
-        shortFormDatas = Array(shortFormDatas.dropLast(drop))
-        if let returncv = shortFormDatas.coefficientOfVariation() {
-            return returncv
-        } else {
-            return nil
-        }
-    }
-    
-    private var eyesCVX: Float? {
-        var datas: [Float] = []
-        faceManager.lookAtPoint.forEach { datas.append($0.x) }
-        if let returncv = datas.coefficientOfVariation() {
-            return returncv
-        } else {
-            return nil
-        }
-    }
-    
-    private var eyesCVY: Float? {
-        var datas: [Float] = []
-        faceManager.lookAtPoint.forEach { datas.append($0.y) }
-        if let returncv = datas.coefficientOfVariation() {
-            return returncv
-        } else {
-            return nil
-        }
-    }
-    
-    @State private var recognizedTextCopy = ""
-    
+        
     @ViewBuilder
     private func charts(in size: CGSize) -> some View {
         switch selectedResult {
         case "😀 Face":
-            faceChart(in: size)
+            faceChart
+                .frame(width: size.width * 0.8, height: size.height * 0.4)
         case "🎙️ Voice":
             VStack {
                 voiceChart
-                HStack {
-                    if let voiceCV = voiceCV, let similarity = similarity {
-                        Text("CV: \(voiceCV)")
-                        Text("Similarity: \(similarity)")
-                    }
-                }
-                .font(.body)
-                .foregroundStyle(.black)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.white.gradient)
-                }
-                DisclosureGroup {
-                    Text(recognizedTextCopy)
-                } label: {
-                    Text("Recognized text")
-                }
-                .foregroundStyle(.white)
+                recognizedTextDisclousre(in: size)
+                analyzedVoiceDatas(in: size)
             }
-            .padding()
-            .frame(width: size.width * 0.9, height: size.height * 0.4)
+            .frame(width: size.width * 0.8, height: size.height * 0.4)
         case "👀 Eyes":
             VStack {
-                eyesChart(in: size)
-                HStack {
-                    if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
-                        Text("CVX: \(eyesCVX)")
-                        Text("CVY: \(eyesCVY)")
-                    }
-                }
-                .font(.body)
-                .foregroundStyle(.black)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(.white.gradient)
-                }
+                eyesChart
+                analyzedEyesDatas(in: size)
             }
+            .frame(width: size.width * 0.8, height: size.height * 0.4)
         default:
             Text("Error")
         }
@@ -277,13 +216,12 @@ struct VoiceAndFace: View {
         return datas
     }
     
-    private func faceChart(in size: CGSize) -> some View {
+    private var faceChart: some View {
         Chart(faceDatas.sorted(by: <), id: \.key) { emotion in
             BarMark(x: .value("emotion", emotion.key), y: .value("value", emotion.value))
                 .foregroundStyle(colorByEmotion(emotion.key))
                 .clipShape(RoundedRectangle(cornerRadius: 6))
         }
-        .frame(width: size.width * 0.8, height: size.height * 0.4)
     }
     
     private func colorByEmotion(_ key: String) -> Color {
@@ -313,31 +251,112 @@ struct VoiceAndFace: View {
         .foregroundStyle(faceManager.faceColor)
     }
     
-    private func eyesChart(in size: CGSize) -> some View {
+    @State private var recognizedTextCopy = ""
+    
+    private func recognizedTextDisclousre(in size: CGSize) -> some View {
+        DisclosureGroup {
+            Text(recognizedTextCopy)
+        } label: {
+            Text("Recognized text")
+        }
+        .font(.body)
+        .foregroundStyle(.white)
+        .frame(width: size.width * 0.8)
+    }
+    
+    private var voiceCV: Float? {
+        var datas: [Float] = []
+        voiceManager.voiceDatas.forEach { datas.append($0.strength) }
+        // Remove unnecessary data.
+        let drop = Int(Double(datas.count) * 0.04)
+        var shortFormDatas = Array(datas.dropFirst(drop))
+        shortFormDatas = Array(shortFormDatas.dropLast(drop))
+        if let returncv = shortFormDatas.coefficientOfVariation() {
+            return returncv
+        } else {
+            return nil
+        }
+    }
+    
+    private func analyzedVoiceDatas(in size: CGSize) -> some View {
+        HStack {
+            if let voiceCV = voiceCV, let similarity = similarity {
+                Text("CV: \(voiceCV)")
+                Text("Similarity: \(similarity)")
+            }
+        }
+        .font(.body)
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+        }
+    }
+    
+    private var eyesChart: some View {
         HStack(spacing: 40) {
             Chart(faceManager.lookAtPoint) { point in
                 LineMark(x: .value("Index", point.id), y: .value("X", point.x))
             }
-            .frame(width: size.width * 0.3, height: size.height * 0.3)
             Chart(faceManager.lookAtPoint) { point in
                 LineMark(x: .value("Index", point.id), y: .value("Y", point.y))
             }
-            .frame(width: size.width * 0.3, height: size.height * 0.3)
         }
         .foregroundStyle(.white)
     }
     
+    private var eyesCVX: Float? {
+        var datas: [Float] = []
+        faceManager.lookAtPoint.forEach { datas.append($0.x) }
+        if let returncv = datas.coefficientOfVariation() {
+            return returncv
+        } else {
+            return nil
+        }
+    }
+    
+    private var eyesCVY: Float? {
+        var datas: [Float] = []
+        faceManager.lookAtPoint.forEach { datas.append($0.y) }
+        if let returncv = datas.coefficientOfVariation() {
+            return returncv
+        } else {
+            return nil
+        }
+    }
+    
+    private func analyzedEyesDatas(in size: CGSize) -> some View {
+        HStack {
+            if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
+                Text("CVX: \(eyesCVX)")
+                Text("CVY: \(eyesCVY)")
+            }
+        }
+        .font(.body)
+        .foregroundStyle(.black)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+        }
+    }
+    
     @State private var feedbacks: [String] = []
     
-    private func resultFeedback(in size: CGSize) -> some View {
+    @ViewBuilder
+    private func feedback(in size: CGSize) -> some View {
+        let divider = Divider().background(.black)
         VStack {
             Text("Your detected problems")
+            divider
             if feedbacks.isEmpty {
                 ProgressView().tint(.gray)
+                divider
             } else {
                 ForEach(feedbacks.indices, id: \.self) { index in
                     Text("\(index + 1). \(feedbacks[index])")
-                    Divider()
+                    divider
                 }
             }
             Text("Your final score")

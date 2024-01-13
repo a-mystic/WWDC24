@@ -26,13 +26,15 @@ struct Intro: View {
                 Color.black
             }
             .onTapGesture {
-                withAnimation {
-                    currentTextIndex += 1
-                    needStart = false
+                if currentTextIndex < TextConstants.introTexts.count - 1 {
+                    withAnimation {
+                        currentTextIndex += 1
+                        needStart = false
+                    }
                 }
                 if currentTextIndex == TextConstants.introTexts.count - 1 {
                     hideGuideMessage = true
-                    withAnimation(.easeInOut(duration: 1)) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
                         showButton = true
                     }
                 }
@@ -91,8 +93,7 @@ struct Intro: View {
                     Text("Let's Go")
                 }
                 .padding()
-                .font(.title)
-                .foregroundStyle(.white)
+                .font(.headline)
             }
             .buttonStyle(.borderedProminent)
             .transition(.scale)
