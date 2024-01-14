@@ -149,8 +149,8 @@ struct VoiceAndFace: View {
         return text.components(separatedBy: removeCondition).joined().lowercased()
     }
     
-    @State private var selectedResult = "😀 Face"
-    private let results = ["😀 Face", "🎙️ Voice", "👀 Eyes"]
+    @State private var selectedResultState: ResultChartStatus = .face
+    private let resultStates: [ResultChartStatus] = [.face, .voice, .eyes]
     
     private func result(in size: CGSize) -> some View {
         ScrollView {
@@ -158,9 +158,9 @@ struct VoiceAndFace: View {
                 Text("Chart")
                     .font(.largeTitle)
                     .frame(width: size.width * 0.9, alignment: .leading)
-                Picker("Choose you want", selection: $selectedResult) {
-                    ForEach(results, id: \.self) { result in
-                        Text(result)
+                Picker("Choose you want", selection: $selectedResultState) {
+                    ForEach(resultStates, id: \.self) { state in
+                        Text(state.rawValue)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -184,26 +184,30 @@ struct VoiceAndFace: View {
         
     @ViewBuilder
     private func charts(in size: CGSize) -> some View {
-        switch selectedResult {
-        case "😀 Face":
+        switch selectedResultState {
+        case .face:
             faceChart
                 .frame(width: size.width * 0.8, height: size.height * 0.4)
-        case "🎙️ Voice":
+        case .voice:
             VStack {
                 voiceChart
                 recognizedTextDisclousre(in: size)
                 analyzedVoiceDatas(in: size)
             }
             .frame(width: size.width * 0.8, height: size.height * 0.4)
-        case "👀 Eyes":
+        case .eyes:
             VStack {
                 eyesChart
                 analyzedEyesDatas(in: size)
             }
             .frame(width: size.width * 0.8, height: size.height * 0.4)
-        default:
-            Text("Error")
         }
+    }
+    
+    private enum ResultChartStatus: String {
+        case face = "😀 Face"
+        case voice = "🎙️ Voice"
+        case eyes = "👀 Eyes"
     }
     
     private var faceDatas: [String:Int] {
