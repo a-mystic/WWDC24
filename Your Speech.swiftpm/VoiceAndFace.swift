@@ -18,9 +18,6 @@ struct VoiceAndFace: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: geometry.size.height * 0.05) {
-                if playStatus == .notPlay {
-                    Text(TextConstants.voiceText)
-                }
                 contents(in: geometry.size)
                 playButton
             }
@@ -52,8 +49,13 @@ struct VoiceAndFace: View {
     private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
-//            result(in: size)
-            textInput(in: size)
+            VStack(spacing: size.height * 0.05) {
+                Text(TextConstants.voiceAndFaceText)
+                    .font(.body)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, size.width * 0.15)
+                textInput(in: size)
+            }
         case .play:
             analyzer(in: size)
         case .finish:

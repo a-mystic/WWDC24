@@ -35,7 +35,10 @@ struct PostureView: View {
         switch playStatus {
         case .notPlay:
             VStack {
-                Text("This view is a..")
+                Text(TextConstants.postureText)
+                    .multilineTextAlignment(.leading)
+                    .frame(width: size.width * 0.9)
+                    .font(.body)
                 placeHolder(in: size)
             }
         case .play:
@@ -52,7 +55,7 @@ struct PostureView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .foregroundStyle(Color.white.gradient)
-                .frame(width: size.width * 0.9, height: size.height * 0.77)
+                .frame(width: size.width * 0.9, height: size.height * 0.7)
                 .padding()
             VStack {
                 Image(systemName: "figure.arms.open")
@@ -298,7 +301,8 @@ struct PostureView: View {
         .background {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.white.opacity(0.14))
-                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))                .frame(width: size.width * 0.9)
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))  
+                .frame(width: size.width * 0.9)
         }
     }
     
