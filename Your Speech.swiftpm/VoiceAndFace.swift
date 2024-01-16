@@ -169,8 +169,9 @@ struct VoiceAndFace: View {
                     .padding()
                     .padding(.vertical)
                     .background {
-                        RoundedRectangle(cornerRadius: 6)
-                            .foregroundStyle(.brown.gradient)
+                        RoundedRectangle(cornerRadius: 12)
+                            .foregroundStyle(.white.opacity(0.14))
+                            .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
                             .frame(width: size.width * 0.9)
                     }
                 Text("FeedBack")

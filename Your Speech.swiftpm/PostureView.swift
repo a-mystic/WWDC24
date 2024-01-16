@@ -10,7 +10,7 @@ import SwiftUI
 import Charts
 
 struct PostureView: View {
-    @StateObject private var postureManager = PostureManager.shared
+    @StateObject private var postureManager = PostureManager.shared    
     @EnvironmentObject var pageManager: PageManager
         
     var body: some View {
@@ -27,7 +27,6 @@ struct PostureView: View {
             } message: {
                 Text(postureManager.postureErrorStatus.errorMessage)
             }
-
         }
     }
     
@@ -40,7 +39,10 @@ struct PostureView: View {
                 placeHolder(in: size)
             }
         case .play:
-            recognizePosture(in: size)
+            ZStack(alignment: .topLeading) {
+                recognizePosture(in: size)
+                currentMode
+            }
         case .finish:
             analysis(in: size)
         }
@@ -126,41 +128,64 @@ struct PostureView: View {
         }
     }
     
+    private var currentMode: some View {
+        Text("Current Mode: \(postureManager.currentPostureMode.rawValue)")
+            .font(.body)
+            .padding()
+            .foregroundStyle(.white)
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .foregroundStyle(.ultraThinMaterial)
+            }
+    }
+    
     @State private var playStatus = PlayButton.PlayStatus.notPlay
     
+    @ViewBuilder
     private var playButton: some View {
-        PlayButton(playStatus: $playStatus) {
-            DispatchQueue.global(qos: .background).async {    // real
-                isLoading = true
+        if #available(iOS 17.0, *) {
+            PlayButton(playStatus: $playStatus) {
+                DispatchQueue.global(qos: .background).async {    // real
+                    isLoading = true
+                    withAnimation {
+                        playStatus = .play
+                        isLoading = false
+                    }
+                }
+            } stopAction: {
                 withAnimation {
-                    playStatus = .play
-                    isLoading = false
+                    playStatus = .finish
                 }
             }
-            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {           // test func
-//                DispatchQueue.global(qos: .background).async {
-//                    isLoading = true
-//                    withAnimation {
-//                        playStatus = .play
-//                        isLoading = false
-//                    }
-//                }
-//            }
-        } stopAction: {
-            withAnimation {
-                playStatus = .finish
+            .onChange(of: postureManager.currentPostureMode) {
+                autoFinish()
             }
-        }
-        .onChange(of: postureManager.currentPostureMode) { _ in     // test func
-            testFunc()
+        } else {
+            PlayButton(playStatus: $playStatus) {
+                DispatchQueue.global(qos: .background).async {
+                    isLoading = true
+                    withAnimation {
+                        playStatus = .play
+                        isLoading = false
+                    }
+                }
+            } stopAction: {
+                withAnimation {
+                    playStatus = .finish
+                }
+            }
+            .onChange(of: postureManager.currentPostureMode) { _ in
+                autoFinish()
+            }
         }
     }
     
-    private func testFunc() {
-        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 30) {
-            withAnimation {
-                playStatus = .finish
+    private func autoFinish() {
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 35) {
+            if playStatus != .finish {
+                withAnimation {
+                    playStatus = .finish
+                }
             }
         }
     }
@@ -241,7 +266,8 @@ struct PostureView: View {
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.brown.gradient)
+                .foregroundStyle(.white.opacity(0.14))
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
                 .frame(width: size.width * 0.9)
         }
         .onAppear {
@@ -271,8 +297,8 @@ struct PostureView: View {
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.brown.gradient)
-                .frame(width: size.width * 0.9)
+                .foregroundStyle(.white.opacity(0.14))
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))                .frame(width: size.width * 0.9)
         }
     }
     
@@ -329,7 +355,8 @@ struct PostureView: View {
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.brown.gradient)
+                .foregroundStyle(.white.opacity(0.14))
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
                 .frame(width: size.width * 0.9)
         }
     }
@@ -429,7 +456,8 @@ struct PostureView: View {
         .padding(.vertical)
         .background {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.brown.gradient)
+                .foregroundStyle(.white.opacity(0.14))
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
                 .frame(width: size.width * 0.9)
         }
     }

@@ -66,7 +66,7 @@ struct Controller: View {
         Button {
             showCurrentProgress = true
         } label: {
-            Image(systemName: "info.circle.fill")
+            Image(systemName: "info.circle")
                 .font(.title2)
         }
         .sheet(isPresented: $showCurrentProgress) {
