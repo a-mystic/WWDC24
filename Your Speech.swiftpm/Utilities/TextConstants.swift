@@ -10,7 +10,7 @@ import Foundation
 struct TextConstants {
     static let introTexts = [
         "🎙️ Your Speech",
-        "I know you have great idea.",
+        "💡\nI know you have great idea.",
         "And I ensure your idea can change world.",
         "And third.",
         "And forth."

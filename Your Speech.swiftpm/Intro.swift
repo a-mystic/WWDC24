@@ -46,6 +46,7 @@ struct Intro: View {
     
     private var currentText: some View {
         Text(TextConstants.introTexts[currentTextIndex])
+            .multilineTextAlignment(.center)
             .font(.largeTitle)
             .fontWeight(.black)
     }
