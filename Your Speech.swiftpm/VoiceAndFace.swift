@@ -108,7 +108,7 @@ struct VoiceAndFace: View {
             if script.isEmpty || script.isContainEmoji {
                 shakeCount = 0
                 withAnimation(.easeInOut(duration: 1)) {
-                    shakeCount = 7
+                    shakeCount = 6
                 }
             } else {
                 DispatchQueue.global(qos: .background).async {
