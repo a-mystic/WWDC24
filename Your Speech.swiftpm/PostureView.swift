@@ -15,7 +15,7 @@ struct PostureView: View {
         
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+            VStack(spacing: geometry.size.height * 0.04) {
                 contents(in: geometry.size)
                 playButton
             }
@@ -51,7 +51,7 @@ struct PostureView: View {
                 .foregroundStyle(Color.white.gradient)
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .padding()
-            VStack {
+            VStack(spacing: size.height * 0.04) {
                 Image(systemName: "figure.arms.open")
                     .imageScale(.large)
                     .font(.system(size: size.width * 0.3))
@@ -59,6 +59,7 @@ struct PostureView: View {
                     .multilineTextAlignment(.leading)
                     .frame(width: size.width * 0.8)
                     .font(.body)
+                    .fontWeight(.light)
             }
             .foregroundStyle(.black)
             .overlay { loading }
@@ -260,9 +261,7 @@ struct PostureView: View {
         .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.opacity(0.14))
-                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
+            SpecialBrownBackground()
                 .frame(width: size.width * 0.9)
         }
         .onAppear {
@@ -291,9 +290,7 @@ struct PostureView: View {
         .frame(width: size.width * 0.9, height: size.height * 0.4)
         .padding(.vertical)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.opacity(0.14))
-                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))  
+            SpecialBrownBackground()
                 .frame(width: size.width * 0.9)
         }
     }
@@ -350,9 +347,7 @@ struct PostureView: View {
         .frame(width: size.width * 0.9, height: size.height * 0.5)
         .padding(.vertical)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.opacity(0.14))
-                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
+            SpecialBrownBackground()
                 .frame(width: size.width * 0.9)
         }
     }
@@ -451,9 +446,7 @@ struct PostureView: View {
         .frame(width: size.width * 0.9, height: size.height * 0.5)
         .padding(.vertical)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.opacity(0.14))
-                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
+            SpecialBrownBackground()
                 .frame(width: size.width * 0.9)
         }
     }

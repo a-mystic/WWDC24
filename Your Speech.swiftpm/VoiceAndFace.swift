@@ -20,7 +20,6 @@ struct VoiceAndFace: View {
             VStack(spacing: geometry.size.height * 0.05) {
                 contents(in: geometry.size)
                 playButton
-                Spacer()
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .overlay {
@@ -59,24 +58,29 @@ struct VoiceAndFace: View {
     @State private var shakeCount: CGFloat = 0
     
     private func textAndInput(in size: CGSize) -> some View {
-        VStack(spacing: size.height * 0.05) {
-            Text(TextConstants.voiceAndFaceText)
-                .font(.body)
-                .multilineTextAlignment(.leading)
-                .padding(.horizontal, size.width * 0.15)
-            TextField("Enter your script", text: $script, axis: .vertical)
+        ZStack {
+            RoundedRectangle(cornerRadius: 14)
+                .foregroundStyle(Color.white.gradient)
+                .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .padding()
-                .lineLimit(15...20)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white, lineWidth: 2)
-                }
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-                .padding(.horizontal, size.width * 0.15)
-                .shake(with: shakeCount)
-                .tint(.white)
+            VStack(spacing: size.height * 0.05) {
+                Text(TextConstants.voiceAndFaceText)
+                    .multilineTextAlignment(.leading)
+                    .frame(width: size.width * 0.8)
+                    .font(.body)
+                    .fontWeight(.light)
+                    .foregroundStyle(.black)
+                TextField("Enter your script", text: $script, axis: .vertical)
+                    .lineLimit(10...10)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .padding()
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, size.width * 0.1)
+                    .shake(with: shakeCount)
+                    .tint(.white)
+                    .foregroundStyle(.white)
+            }
         }
     }
     
@@ -172,9 +176,7 @@ struct VoiceAndFace: View {
                     .padding()
                     .padding(.vertical)
                     .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .foregroundStyle(.white.opacity(0.14))
-                            .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
+                        SpecialBrownBackground()
                             .frame(width: size.width * 0.9)
                     }
                 Text("FeedBack")

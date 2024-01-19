@@ -161,3 +161,13 @@ struct EmotionColor {
     static let veryAngry = Color.red
     static let tongue = Color.purple
 }
+
+struct SpecialBrownBackground: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.opacity(0.14))
+                .background(.brown.gradient, in: RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
