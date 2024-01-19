@@ -75,7 +75,7 @@ struct VoiceAndFace: View {
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .padding()
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.black, in: RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, size.width * 0.1)
                     .shake(with: shakeCount)
                     .tint(.white)
