@@ -86,11 +86,11 @@ class PostureManager: ObservableObject {
         var errorMessage: String {
             switch self {
             case .ARTrackingSupportedError:
-                return "ARTrackingSupportedError"
+                return "AR Tracking Supported Error occured."
             case .videoRequestError:
-                return "videoRequestError"
+                return "Video Request Error occured."
             default:
-                return "something can't recognized error occured"
+                return "Something can't recognized error occured."
             }
         }
     }

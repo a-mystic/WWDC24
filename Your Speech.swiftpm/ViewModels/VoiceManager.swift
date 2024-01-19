@@ -25,7 +25,7 @@ class VoiceManager: ObservableObject {
             case .authorized: 
                 changeScreen()
                 break
-            default: 
+            default:
                 self.voiceErrorStatus = .authError
                 self.showVoiceError = true
             }
@@ -45,7 +45,7 @@ class VoiceManager: ObservableObject {
         recognitionRequest.requiresOnDeviceRecognition = true
         recognizer.recognitionTask(with: recognitionRequest) { result, error in
             if let error = error {
-                print(error)
+                self.voiceErrorStatus = .recognitionTaskError(message: error.localizedDescription)
                 return
             }
             guard let result = result else { return }
@@ -57,7 +57,7 @@ class VoiceManager: ObservableObject {
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
             try audioEngine.start()
         } catch {
-            voiceErrorStatus = .audioSessionError
+            voiceErrorStatus = .audioSessionError(message: error.localizedDescription)
             showVoiceError = true
         }
     }
@@ -92,7 +92,7 @@ class VoiceManager: ObservableObject {
             inputNode.removeTap(onBus: 0)
             try audioSession.setActive(false)
         } catch {
-            voiceErrorStatus = .audioSessionSetActiveError
+            voiceErrorStatus = .audioSessionSetActiveError(message: error.localizedDescription)
             showVoiceError = true
         }
     }
@@ -101,21 +101,24 @@ class VoiceManager: ObservableObject {
         case notError
         case authError
         case recognizerError
-        case audioSessionError
-        case audioSessionSetActiveError
+        case audioSessionError(message: String)
+        case audioSessionSetActiveError(message: String)
+        case recognitionTaskError(message: String)
         
         var errorMessage: String {
             switch self {
             case .authError:
-                return "authError"
+                return "RequestAuthorization Error occured."
             case .recognizerError:
-                return "recognizerError"
-            case .audioSessionError:
-                return "audio session error"
-            case .audioSessionSetActiveError:
-                return "audioSessionSetActiveError"
+                return "Recognizer Error occured."
+            case .audioSessionError(let message):
+                return message
+            case .audioSessionSetActiveError(let message):
+                return message
+            case .recognitionTaskError(let message):
+                return message
             default:
-                return "something can't recognized error occured"
+                return "Something can't recognized error occured."
             }
         }
     }

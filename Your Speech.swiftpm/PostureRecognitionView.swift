@@ -27,7 +27,7 @@ final class PostureRecognitionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
-        if ARFaceTrackingConfiguration.isSupported {
+        if ARBodyTrackingConfiguration.isSupported {
             requestPermission()
         } else {
             postureManager.postureErrorStatus = .ARTrackingSupportedError
@@ -91,8 +91,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
            let rightShoulderPos = bodyAnchor.skeleton.modelTransform(for: .rightShoulder)?.columns.3,
            let leftShoulderPos = bodyAnchor.skeleton.modelTransform(for: .leftShoulder)?.columns.3,
            let rightFootPos = bodyAnchor.skeleton.modelTransform(for: .rightFoot)?.columns.3,
-           let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 
-        {
+           let leftFootPos = bodyAnchor.skeleton.modelTransform(for: .leftFoot)?.columns.3 {
             let shoulderDistance = abs(leftShoulderPos.x - rightShoulderPos.x)
             let footDistance = leftFootPos.x - rightFootPos.x
             let isCrossLeg = footDistance < 0
@@ -136,29 +135,24 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             
             // MARK: - Posture rehearsal func
             if postureManager.currentPostureMode == .rehearsal {
-             postureManager.addHandPosition(PostureModel.Hand(id: index, rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y))
-             postureManager.addFootPosition(PostureModel.Foot(id: index, rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y))
-             index += 1
+                postureManager.addHandPosition(PostureModel.Hand(id: index, rightX: rightHandPos.x, rightY: rightHandPos.y, leftX: leftHandPos.x, leftY: leftHandPos.y))
+                postureManager.addFootPosition(PostureModel.Foot(id: index, rightX: rightFootPos.x, rightY: rightFootPos.y, leftX: leftFootPos.x, leftY: leftFootPos.y))
+                index += 1
              
                 if rightHandPos.y > shoulderHeight * 0.95 {
                     postureManager.notGood()
                     postureManager.updatePostures(.rightHand)
-                    postureManager.updatePostureMessage("Not Good")
                 } else if leftHandPos.y > shoulderHeight * 0.95 {
                     postureManager.notGood()
                     postureManager.updatePostures(.leftHand)
-                    postureManager.updatePostureMessage("Not Good")
                 } else if isCrossLeg {
                     postureManager.notGood()
                     postureManager.updatePostures(.isCrossLeg)
-                    postureManager.updatePostureMessage("Not Good")
                 } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
                     postureManager.notGood()
                     postureManager.updatePostures(.footDistance)
-                    postureManager.updatePostureMessage("Not Good")
                 } else {
                     postureManager.good()
-                    postureManager.updatePostureMessage("Good")
              }
          }
      }

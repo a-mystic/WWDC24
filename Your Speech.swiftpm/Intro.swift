@@ -98,8 +98,10 @@ struct Intro: View {
         }
         if currentTextIndex == TextConstants.introTexts.count - 1 {
             hideGuideMessage = true
-            withAnimation(.easeInOut(duration: 0.6)) {
-                showButton = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showButton = true
+                }
             }
         }
     }
