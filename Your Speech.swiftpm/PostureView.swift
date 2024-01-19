@@ -34,16 +34,10 @@ struct PostureView: View {
     private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
-            VStack {
-                Text(TextConstants.postureText)
-                    .multilineTextAlignment(.leading)
-                    .frame(width: size.width * 0.9)
-                    .font(.body)
-                placeHolder(in: size)
-            }
+            placeHolder(in: size)
         case .play:
             ZStack(alignment: .topLeading) {
-                recognizePosture(in: size)
+                postureRecognizer(in: size)
                 currentMode
             }
         case .finish:
@@ -55,23 +49,23 @@ struct PostureView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .foregroundStyle(Color.white.gradient)
-                .frame(width: size.width * 0.9, height: size.height * 0.7)
+                .frame(width: size.width * 0.9, height: size.height * 0.8)
                 .padding()
             VStack {
                 Image(systemName: "figure.arms.open")
                     .imageScale(.large)
                     .font(.system(size: size.width * 0.3))
-                Text("Please tap start!!")
-                    .font(.largeTitle)
+                Text(TextConstants.postureText)
+                    .multilineTextAlignment(.leading)
+                    .frame(width: size.width * 0.8)
+                    .font(.body)
             }
             .foregroundStyle(.black)
-            .overlay {
-                loading
-            }
+            .overlay { loading }
         }
     }
     
-    private func recognizePosture(in size: CGSize) -> some View {
+    private func postureRecognizer(in size: CGSize) -> some View {
         ZStack(alignment: .bottom) {
             PostureRecognitionView()
                 .frame(width: size.width * 0.9, height: size.height * 0.8)
@@ -88,9 +82,7 @@ struct PostureView: View {
                     .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
             }
         }
-        .overlay {
-            countdownAnimation(in: size)
-        }
+        .overlay { countdownAnimation(in: size) }
         .transition(.scale)
     }
     

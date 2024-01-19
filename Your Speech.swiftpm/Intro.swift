@@ -15,29 +15,16 @@ struct Intro: View {
             VStack(spacing: geometry.size.height * 0.02) {
                 Spacer()
                 currentText
-                next
+                nextPage
                 Spacer()
                 guideMessage
                 Spacer()
                     .frame(height: geometry.size.height * 0.05)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
-            .background {
-                Color.black
-            }
+            .background(Color.black)
             .onTapGesture {
-                if currentTextIndex < TextConstants.introTexts.count - 1 {
-                    withAnimation {
-                        currentTextIndex += 1
-                        needStart = false
-                    }
-                }
-                if currentTextIndex == TextConstants.introTexts.count - 1 {
-                    hideGuideMessage = true
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        showButton = true
-                    }
-                }
+                next()
             }
         }
     }
@@ -82,7 +69,7 @@ struct Intro: View {
     @State private var showButton = false
     
     @ViewBuilder
-    private var next: some View {
+    private var nextPage: some View {
         if currentTextIndex == TextConstants.introTexts.count - 1, showButton {
             Button {
                 withAnimation {
@@ -98,6 +85,21 @@ struct Intro: View {
             }
             .buttonStyle(.borderedProminent)
             .transition(.scale)
+        }
+    }
+    
+    private func next() {
+        if currentTextIndex < TextConstants.introTexts.count - 1 {
+            withAnimation {
+                currentTextIndex += 1
+                needStart = false
+            }
+        }
+        if currentTextIndex == TextConstants.introTexts.count - 1 {
+            hideGuideMessage = true
+            withAnimation(.easeInOut(duration: 0.5)) {
+                showButton = true
+            }
         }
     }
 }

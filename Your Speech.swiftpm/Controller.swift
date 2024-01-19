@@ -2,9 +2,7 @@ import SwiftUI
 
 struct Controller: View {
     @EnvironmentObject var pageManager: PageManager
-    
-    @State private var nav: NavigationSplitViewVisibility = .all
-    
+        
     private let lessons = ["Intro", "Voice&Face", "Posture", "Finish"]
     private var currentLessonTitle: String {
         if pageManager.currentPage != nil {
@@ -18,7 +16,7 @@ struct Controller: View {
             lesson
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        currentProgress
+                        description
                     }
                     ToolbarItem(placement: .topBarLeading) {
                         HStack {
@@ -60,16 +58,16 @@ struct Controller: View {
         }
     }
     
-    @State private var showCurrentProgress = false
+    @State private var showDescription = false
     
-    private var currentProgress: some View {
+    private var description: some View {
         Button {
-            showCurrentProgress = true
+            showDescription = true
         } label: {
             Image(systemName: "info.circle")
                 .font(.title2)
         }
-        .sheet(isPresented: $showCurrentProgress) {
+        .sheet(isPresented: $showDescription) {
             NavigationStack {
                 Description()
             }

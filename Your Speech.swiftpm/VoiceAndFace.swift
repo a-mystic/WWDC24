@@ -47,13 +47,7 @@ struct VoiceAndFace: View {
     private func contents(in size: CGSize) -> some View {
         switch playStatus {
         case .notPlay:
-            VStack(spacing: size.height * 0.05) {
-                Text(TextConstants.voiceAndFaceText)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, size.width * 0.15)
-                textInput(in: size)
-            }
+            textAndInput(in: size)
         case .play:
             analyzer(in: size)
         case .finish:
@@ -64,20 +58,26 @@ struct VoiceAndFace: View {
     @State private var script = ""
     @State private var shakeCount: CGFloat = 0
     
-    private func textInput(in size: CGSize) -> some View {
-        TextField("Enter your script", text: $script, axis: .vertical)
-            .padding()
-            .lineLimit(15...20)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white, lineWidth: 2)
-            }
-            .autocorrectionDisabled()
-            .textInputAutocapitalization(.never)
-            .padding(.horizontal, size.width * 0.15)
-            .shake(with: shakeCount)
-            .tint(.white)
+    private func textAndInput(in size: CGSize) -> some View {
+        VStack(spacing: size.height * 0.05) {
+            Text(TextConstants.voiceAndFaceText)
+                .font(.body)
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal, size.width * 0.15)
+            TextField("Enter your script", text: $script, axis: .vertical)
+                .padding()
+                .lineLimit(15...20)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white, lineWidth: 2)
+                }
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .padding(.horizontal, size.width * 0.15)
+                .shake(with: shakeCount)
+                .tint(.white)
+        }
     }
     
     @StateObject private var faceManager = FaceManager.shared
@@ -125,7 +125,7 @@ struct VoiceAndFace: View {
         } stopAction: {
             recognizedTextCopy = recognizedText
             withAnimation {
-                similarity(recognizedText, and: script)
+                similar(recognizedText, to: script)
                 voiceManager.stopRecording()
                 playStatus = .finish
             }
@@ -134,7 +134,7 @@ struct VoiceAndFace: View {
     
     @State private var similarity: Float?
 
-    private func similarity(_ input: String, and compare: String) {
+    private func similar(_ input: String, to compare: String) {
         if let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english) {
             let shortInput = onlyString(input)
             let shortCompare = onlyString(compare)
