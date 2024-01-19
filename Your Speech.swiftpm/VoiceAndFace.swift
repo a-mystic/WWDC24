@@ -414,9 +414,9 @@ struct VoiceAndFace: View {
         case "🙂":
             return "🙂 too much smile"
         case "😡":
-            return "😡 too much very fret"
+            return "😡 too much very frown"
         case "😠":
-            return "😠 too much fret"
+            return "😠 too much frown"
         case "😛":
             return "😛 too much tongue out"
         default:
@@ -429,7 +429,7 @@ struct VoiceAndFace: View {
             feedbacks.append("Voice is unstable")
         }
         if let similarity = similarity, similarity > 0.95 {
-            feedbacks.append("Can't present the script properly")
+            feedbacks.append("Couldn't present the script properly")
         }
     }
     
@@ -441,11 +441,11 @@ struct VoiceAndFace: View {
     private func eyesFeedback() {
         if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
             if ((eyesCVX + eyesCVY) / Float(2)) > 5.1 {
-                feedbacks.append("Moving eyes too much.")
+                feedbacks.append("Moving your eyes too much")
             }
         }
         if blinkRatio > 0.23 {
-            feedbacks.append("Blinking eyes too much.")
+            feedbacks.append("Blinking too much")
         }
     }
     

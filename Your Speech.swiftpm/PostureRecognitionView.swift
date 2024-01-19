@@ -109,23 +109,23 @@ extension PostureRecognitionViewController: ARSessionDelegate {
             if postureManager.currentPostureMode == .ready {
                 if readyCondition {
                     arView.scene.removeAnchor(anchorEntity)
-                    postureManager.updatePostureMessage("Okay your done. ready to rehearsal start after 5 second.")
+                    postureManager.updatePostureMessage("Okay you are done. Get ready for rehearsal starting in 5 seconds.")
                     postureManager.toggleIsChanging()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                         self.postureManager.changeModeToRehearsal()
                     }
                 } else if footDistance < shoulderDistance * footDistanceSmallRatio || footDistance > shoulderDistance * footDistanceLargeRatio {
                     if isCrossLeg {
-                        postureManager.updatePostureMessage("Uncross your legs and Keep the space between your legs about shoulder width.")
+                        postureManager.updatePostureMessage("Uncross your legs and keep your feet about shoulder width apart.")
                     } else {
-                        postureManager.updatePostureMessage("Keep the space between your legs about shoulder width.")
+                        postureManager.updatePostureMessage("Keep your feet about shoulder width apart.")
                     }
                     moveSphere(rootPosition + rightFootPos)
                 } else if rightHandPos.y > shoulderHeight * 0.95 {
-                    postureManager.updatePostureMessage("Down your right Hand")
+                    postureManager.updatePostureMessage("Down your right Hand.")
                     moveSphere(rootPosition + rightHandPos)
                 } else if leftHandPos.y > shoulderHeight * 0.95 {
-                    postureManager.updatePostureMessage("Down your left hand")
+                    postureManager.updatePostureMessage("Down your left hand.")
                     moveSphere(rootPosition + leftHandPos)
                 } else if isCrossLeg {
                     postureManager.updatePostureMessage("Uncross your legs.")

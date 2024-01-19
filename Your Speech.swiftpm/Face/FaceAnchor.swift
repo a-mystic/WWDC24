@@ -48,7 +48,7 @@ final class FaceAnchor: NSObject {
            let browDownRight = faceAnchor.blendShapes[.browDownRight] as? CGFloat {
             let value = (browDownLeft + browDownRight) / 2
             DispatchQueue.main.async { [weak self] in
-                self?.isFret(value)
+                self?.isFrown(value)
             }
         }
     }
@@ -106,7 +106,7 @@ final class FaceAnchor: NSObject {
         delegate?.addColor(faceColor)
     }
     
-    private func isFret(_ value: CGFloat) {
+    private func isFrown(_ value: CGFloat) {
         switch value {
         case 0.55..<1:
             expression = "😡"
