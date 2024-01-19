@@ -80,6 +80,10 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
         faceManager.addColor(color)
     }
     
+    func updateBlink(_ isBlink: Bool) {
+        faceManager.addBlink(isBlink)
+    }
+    
     func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
         if let arError = error as? ARError {
             switch arError.errorCode {

@@ -24,6 +24,8 @@ class FaceManager: ObservableObject {
     @Published private(set) var faceColors: Set<Color> = [.white]
     @Published var faceErrorStatus = FaceError.notError
     @Published var showfaceError = false
+    @Published var blink: Float = 0
+    @Published var notBlink: Float = 0
     
     
     var faceColor: LinearGradient {
@@ -44,6 +46,14 @@ class FaceManager: ObservableObject {
     
     func addLookAtPoint(_ point: LookAtPoint) {
         lookAtPoint.append(point)
+    }
+    
+    func addBlink(_ isBlink: Bool) {
+        if isBlink {
+            blink += 1
+        } else {
+            notBlink += 1
+        }
     }
     
     enum FaceError: Error {

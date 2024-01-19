@@ -20,6 +20,7 @@ struct VoiceAndFace: View {
             VStack(spacing: geometry.size.height * 0.05) {
                 contents(in: geometry.size)
                 playButton
+                Spacer()
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .overlay {
@@ -41,10 +42,7 @@ struct VoiceAndFace: View {
             }
         }
     }
-    
-    @State private var playStatus = PlayButton.PlayStatus.notPlay
-    @State private var similarity: Float?
-    
+        
     @ViewBuilder
     private func contents(in size: CGSize) -> some View {
         switch playStatus {
@@ -99,6 +97,7 @@ struct VoiceAndFace: View {
     }
     
     @State private var recognizedText = ""
+    @State private var playStatus = PlayButton.PlayStatus.notPlay
 
     private var playButton: some View {
         PlayButton(playStatus: $playStatus) {
@@ -132,6 +131,8 @@ struct VoiceAndFace: View {
             }
         }
     }
+    
+    @State private var similarity: Float?
 
     private func similarity(_ input: String, and compare: String) {
         if let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english) {
@@ -429,11 +430,19 @@ struct VoiceAndFace: View {
         }
     }
     
+    private var blinkRatio: Float {
+        let sum = faceManager.blink + faceManager.notBlink
+        return faceManager.blink / sum
+    }
+    
     private func eyesFeedback() {
         if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
             if ((eyesCVX + eyesCVY) / Float(2)) > 5.1 {
                 feedbacks.append("Moving eyes too much.")
             }
+        }
+        if blinkRatio > 0.23 {
+            feedbacks.append("Blinking eyes too much.")
         }
     }
     

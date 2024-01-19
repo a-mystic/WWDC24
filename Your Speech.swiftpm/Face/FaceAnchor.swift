@@ -12,6 +12,7 @@ protocol FaceAnchorDelegate: AnyObject {
     func updateExpression(_ expression: String)
     func addLookAtPoint(x: Float, y: Float)
     func addColor(_ color: Color)
+    func updateBlink(_ isBlink: Bool)
 }
 
 final class FaceAnchor: NSObject {
@@ -21,53 +22,75 @@ final class FaceAnchor: NSObject {
     private var faceColor = Color.white
     
     func analyze(faceAnchor: ARFaceAnchor) {
-        DispatchQueue.main.async { [weak self] in
-            self?.delegate?.addLookAtPoint(x: faceAnchor.lookAtPoint.x, y: faceAnchor.lookAtPoint.y)
-        }
-        mouth(faceAnchor)
+        eyesBlink(faceAnchor)
         eyebrow(faceAnchor)
+        eyesLookAt(faceAnchor)
+        mouth(faceAnchor)
         tongue(faceAnchor)
         mouthAndeyes(faceAnchor)
     }
     
-    private func mouth(_ faceAnchor: ARFaceAnchor) {
-        let mouthSmileLeft = faceAnchor.blendShapes[.mouthSmileLeft] as? CGFloat ?? 0
-        let mouthSmileRight = faceAnchor.blendShapes[.mouthSmileRight] as? CGFloat ?? 0
-        let smile = (mouthSmileLeft + mouthSmileRight) / 2
-        DispatchQueue.main.async { [weak self] in
-            self?.isSmile(value: smile)
+    private func eyesBlink(_ faceAnchor: ARFaceAnchor) {
+        if let eyeBlinkLeft = faceAnchor.blendShapes[.eyeBlinkLeft] as? CGFloat,
+           let eyeBlinkRight = faceAnchor.blendShapes[.eyeBlinkRight] as? CGFloat {
+            DispatchQueue.main.async { [weak self] in
+                if eyeBlinkLeft > 0.94 && eyeBlinkRight > 0.94 {
+                    self?.delegate?.updateBlink(true)
+                } else {
+                    self?.delegate?.updateBlink(false)
+                }
+            }
         }
     }
     
     private func eyebrow(_ faceAnchor: ARFaceAnchor) {
-        let browDownLeft = faceAnchor.blendShapes[.browDownLeft] as? CGFloat ?? 0
-        let browDownRight = faceAnchor.blendShapes[.browDownRight] as? CGFloat ?? 0
-        let fret = (browDownLeft + browDownRight) / 2
+        if let browDownLeft = faceAnchor.blendShapes[.browDownLeft] as? CGFloat,
+           let browDownRight = faceAnchor.blendShapes[.browDownRight] as? CGFloat {
+            let value = (browDownLeft + browDownRight) / 2
+            DispatchQueue.main.async { [weak self] in
+                self?.isFret(value)
+            }
+        }
+    }
+    
+    private func eyesLookAt(_ faceAnchor: ARFaceAnchor) {
         DispatchQueue.main.async { [weak self] in
-            self?.isFret(value: fret)
+            self?.delegate?.addLookAtPoint(x: faceAnchor.lookAtPoint.x, y: faceAnchor.lookAtPoint.y)
+        }
+    }
+    
+    private func mouth(_ faceAnchor: ARFaceAnchor) {
+        if let mouthSmileLeft = faceAnchor.blendShapes[.mouthSmileLeft] as? CGFloat,
+           let mouthSmileRight = faceAnchor.blendShapes[.mouthSmileRight] as? CGFloat {
+            let value = (mouthSmileLeft + mouthSmileRight) / 2
+            DispatchQueue.main.async { [weak self] in
+                self?.isSmile(value)
+            }
         }
     }
     
     private func tongue(_ faceAnchor: ARFaceAnchor) {
-        let tongueOut = faceAnchor.blendShapes[.tongueOut] as? CGFloat ?? 0
+        if let value = faceAnchor.blendShapes[.tongueOut] as? CGFloat {
             DispatchQueue.main.async { [weak self] in
-                self?.isTongueOut(value: tongueOut)
+                self?.isTongueOut(value)
+            }
         }
     }
     
     private func mouthAndeyes(_ faceAnchor: ARFaceAnchor) {
-        let mouthFunnel = faceAnchor.blendShapes[.mouthFunnel] as? CGFloat ?? 0
-        let jawOpen = faceAnchor.blendShapes[.jawOpen] as? CGFloat ?? 0
-        let eyeWideLeft = faceAnchor.blendShapes[.eyeWideLeft] as? CGFloat ?? 0
-        let eyeWideRight = faceAnchor.blendShapes[.eyeWideRight] as? CGFloat ?? 0
-        let openValue = (mouthFunnel + jawOpen + eyeWideLeft + eyeWideRight) / 4
-        DispatchQueue.main.async { [weak self] in
-            self?.isMouthOpen(value: openValue)
+        if let mouthFunnel = faceAnchor.blendShapes[.mouthFunnel] as? CGFloat,
+           let jawOpen = faceAnchor.blendShapes[.jawOpen] as? CGFloat,
+           let eyeWideLeft = faceAnchor.blendShapes[.eyeWideLeft] as? CGFloat,
+           let eyeWideRight = faceAnchor.blendShapes[.eyeWideRight] as? CGFloat {
+            let value = (mouthFunnel + jawOpen + eyeWideLeft + eyeWideRight) / 4
+            DispatchQueue.main.async { [weak self] in
+                self?.isSurprise(value)
+            }
         }
     }
 
     
-    private func isSmile(value: CGFloat) {
+    private func isSmile(_ value: CGFloat) {
         switch value {
         case 0.5..<1: 
             expression = "😁"
@@ -83,7 +106,7 @@ final class FaceAnchor: NSObject {
         delegate?.addColor(faceColor)
     }
     
-    private func isFret(value: CGFloat) {
+    private func isFret(_ value: CGFloat) {
         switch value {
         case 0.55..<1:
             expression = "😡"
@@ -98,7 +121,7 @@ final class FaceAnchor: NSObject {
         delegate?.addColor(faceColor)
     }
     
-    private func isTongueOut(value:  CGFloat) {
+    private func isTongueOut(_ value:  CGFloat) {
         switch value {
         case 0.1..<1: 
             expression = "😛"
@@ -110,7 +133,7 @@ final class FaceAnchor: NSObject {
         delegate?.addColor(faceColor)
     }
     
-    private func isMouthOpen(value: CGFloat) {
+    private func isSurprise(_ value: CGFloat) {
         switch value {
         case 0.2..<1: 
             expression = "😮"
