@@ -12,16 +12,17 @@ struct Description: View {
     
     var body: some View {
         Form {
-            Section("App") {
-                Text("Not yet")
+            Section("APP") {
+                Text(TextConstants.descriptionApp)
             }
-            Section("Voice&Face") {
-                Text("Not yet, the voice chart have some secret.")
+            Section("VOICE&FACE") {
+                Text(TextConstants.descriptionVoiceAndFace)
             }
-            Section("Posture") {
-                Text("Not yet")
+            Section("POSTURE") {
+                Text(TextConstants.descriptionPosture)
             }
         }
+        .fontWeight(.light)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Close") {
@@ -34,4 +35,5 @@ struct Description: View {
 
 #Preview {
     Description()
+        .preferredColorScheme(.dark)
 }

@@ -21,6 +21,7 @@ struct Finish: View {
                                 .bold()
                             Text(TextConstants.finishText)
                                 .font(.title)
+                                .fontWeight(.light)
                         }
                         .foregroundStyle(.black)
                     }

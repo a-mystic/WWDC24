@@ -400,7 +400,8 @@ struct VoiceAndFace: View {
     private func faceFeedback() {
         let sum = faceManager.faceEmotions.values.reduce(0, +)
         faceManager.faceEmotions.forEach { key, value in
-            if key != "😐" && key != "😮" && (Double(value) / Double(sum)) > 0.15 {
+            let ratio = Double(value) / Double(sum)
+            if key != "😐" && key != "😮" && ratio > 0.15 {
                 feedbacks.append(convertEmoji(key))
             }
         }
