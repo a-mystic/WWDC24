@@ -494,6 +494,7 @@ struct PostureView: View {
     }
     
     @State private var feedbacks: [String] = []
+    @State private var finalScore = ""
     
     @ViewBuilder
     private func feedback(in size: CGSize) -> some View {
@@ -514,7 +515,12 @@ struct PostureView: View {
                     divider
                 }
             }
-            Text("Your final score...")
+            Text("Your final score: ")
+            if finalScore.isEmpty {
+                ProgressView().tint(.gray)
+            } else {
+                Text(finalScore)
+            }
         }
         .foregroundStyle(.black)
         .font(.body)
@@ -531,7 +537,10 @@ struct PostureView: View {
                 handAndFootFeedback()
             }
             dispatchGroup.notify(queue: .global(qos: .background)) {
-                feedbacks.append("nil")
+                if feedbacks.isEmpty {
+                    feedbacks.append("nil")
+                }
+                evaluate()
             }
         }
     }
@@ -548,12 +557,24 @@ struct PostureView: View {
     private func handAndFootFeedback() {
         guard let handCV = handCV, let footCV = footCV else { return }
         if handCV <= 0.2 {
-            feedbacks.append("Moving too less hand")
+            feedbacks.append("Moved hands too little")
         } else if handCV >= 0.66 {
-            feedbacks.append("Moving too much hand")
+            feedbacks.append("Moved hands too much")
         }
         if footCV > 0.36 {
-            feedbacks.append("move too much when giving a presentation.")
+            feedbacks.append("Moved too much during the presentation.")
+        }
+    }
+    
+    private func evaluate() {
+        let count = feedbacks.count
+        switch count {
+        case 1, 2:
+            finalScore = "😀 Very Good"
+        case 3, 4:
+            finalScore = "🙂 Good"
+        default:
+            finalScore = "😢 Not Good"
         }
     }
     

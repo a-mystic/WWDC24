@@ -353,6 +353,7 @@ struct VoiceAndFace: View {
     }
     
     @State private var feedbacks: [String] = []
+    @State private var finalScore = ""
     
     @ViewBuilder
     private func feedback(in size: CGSize) -> some View {
@@ -373,7 +374,14 @@ struct VoiceAndFace: View {
                     divider
                 }
             }
-            Text("Your final score")
+            HStack {
+                Text("Your final score: ")
+                if finalScore.isEmpty {
+                    ProgressView().tint(.gray)
+                } else {
+                    Text(finalScore)
+                }
+            }
         }
         .foregroundStyle(.black)
         .padding()
@@ -393,6 +401,7 @@ struct VoiceAndFace: View {
                 if feedbacks.isEmpty {
                     feedbacks.append("nil")
                 }
+                evaluate()
             }
         }
     }
@@ -410,17 +419,17 @@ struct VoiceAndFace: View {
     private func convertEmoji(_ emoji: String) -> String {
         switch emoji {
         case "😁":
-            return "😁 too much very smile"
+            return "😁 Too much very smile"
         case "🙂":
-            return "🙂 too much smile"
+            return "🙂 Too much smile"
         case "😡":
-            return "😡 too much very frown"
+            return "😡 Too much very frown"
         case "😠":
-            return "😠 too much frown"
+            return "😠 Too much frown"
         case "😛":
-            return "😛 too much tongue out"
+            return "😛 Too much tongue out"
         default:
-            return "😱 unrecognizable emotions"
+            return "😱 Unrecognizable emotions"
         }
     }
     
@@ -441,11 +450,23 @@ struct VoiceAndFace: View {
     private func eyesFeedback() {
         if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
             if ((eyesCVX + eyesCVY) / Float(2)) > 5.1 {
-                feedbacks.append("Moving your eyes too much")
+                feedbacks.append("Moved eyes too much")
             }
         }
         if blinkRatio > 0.23 {
-            feedbacks.append("Blinking too much")
+            feedbacks.append("Blinked too much")
+        }
+    }
+    
+    private func evaluate() {
+        let count = feedbacks.count
+        switch count {
+        case 1, 2:
+            finalScore = "😀 Very Good"
+        case 3, 4:
+            finalScore = "🙂 Good"
+        default:
+            finalScore = "😢 Not Good"
         }
     }
     
