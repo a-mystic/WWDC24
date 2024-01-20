@@ -410,8 +410,12 @@ struct VoiceAndFace: View {
         let sum = faceManager.faceEmotions.values.reduce(0, +)
         faceManager.faceEmotions.forEach { key, value in
             let ratio = Double(value) / Double(sum)
-            if key != "😐" && key != "😮" && ratio > 0.15 {
-                feedbacks.append(convertEmoji(key))
+            if key != "😐" && key != "😮" {
+                if (key == "🙂" || key == "😁") && ratio > 0.25 {
+                    feedbacks.append(convertEmoji(key))
+                } else if key != "🙂" && key != "😁" && ratio > 0.15 {
+                    feedbacks.append(convertEmoji(key))
+                }
             }
         }
     }
