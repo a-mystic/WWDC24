@@ -70,7 +70,7 @@ struct VoiceAndFace: View {
                     .font(.body)
                     .fontWeight(.light)
                     .foregroundStyle(.black)
-                TextField("Enter your script", text: $script, axis: .vertical)
+                TextField("Enter the parts of your script that you think are important", text: $script, axis: .vertical)
                     .lineLimit(10...10)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)

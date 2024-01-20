@@ -21,7 +21,7 @@ struct TextConstants {
     When giving a presentation, both your voice and nonverbal communication are important.
     In this chapter we analyze your 🎙️voice, 🙂face, and 👀eyes. (Tap the button in the top right for details)
     Lastly, it is important to write and practice a script before you begin your presentation.
-    Write a script for your presentation, shorten the parts you think are important, and present it as if it were real.
+    Write your script, choose the parts you think are important, and present it as if it were real.
     When you're ready, tap the button below.
     """
     
