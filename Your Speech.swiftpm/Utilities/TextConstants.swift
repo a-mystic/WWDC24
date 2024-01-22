@@ -8,13 +8,14 @@
 import Foundation
 
 struct TextConstants {
+    static let introEmojis = ["🎙️", "💡", "🌎", "💭", "💬", "🪄"]
     static let introTexts = [
-        "🎙️ Your Speech",
-        "💡 I know you have great ideas.",
-        "🌎 And I'm sure your ideas will change the world.",
-        "💭 But ideas that exist only in imagination are meaningless.",
-        "✉️ Ideas are meaningful only when they are well communicated to people.",
-        "If you want to convey your idea to people, tap the button below."
+        "Your Speech",
+        "I know you have great ideas.",
+        "And I'm sure your ideas will change the world.",
+        "But ideas that exist only in imagination are meaningless.",
+        "Ideas are meaningful only when they are well communicated to people.",
+        "If you want to convey your ideas to people more clearly, tap the button below."
     ]
     
     static let voiceAndFaceText = """
@@ -34,7 +35,7 @@ struct TextConstants {
     When you're ready, tap the button below.
     """
     
-    static let finishText = "I hope your ideas reach the world."
+    static let finishText = "I hope your ideas change the world."
     
     static let descriptionApp = "Your Speech is an app that helps users give better presentations."
     

@@ -14,7 +14,7 @@ struct Intro: View {
         GeometryReader { geometry in
             VStack(spacing: geometry.size.height * 0.02) {
                 Spacer()
-                currentText
+                currentText(in: geometry.size)
                 nextPage
                 Spacer()
                 guideMessage
@@ -31,12 +31,20 @@ struct Intro: View {
     
     @State private var currentTextIndex = 0
     
-    private var currentText: some View {
-        Text(TextConstants.introTexts[currentTextIndex])
-            .multilineTextAlignment(.center)
-            .font(.largeTitle)
-            .fontWeight(.black)
-            .padding()
+    private func currentText(in size: CGSize) -> some View {
+        VStack(spacing: size.height * 0.02) {
+            Text(TextConstants.introEmojis[currentTextIndex])
+                .font(.system(size: emojiSize(in: size)))
+            Text(TextConstants.introTexts[currentTextIndex])
+                .font(.largeTitle)
+        }
+        .multilineTextAlignment(.center)
+        .fontWeight(.black)
+        .padding()
+    }
+    
+    private func emojiSize(in size: CGSize) -> CGFloat {
+        return min(size.width * 0.07, size.height * 0.07)
     }
     
     @State private var showGuideMessage = true
@@ -77,12 +85,9 @@ struct Intro: View {
                     pageManager.addPage()
                 }
             } label: {
-                HStack {
-                    Image(systemName: "arrow.right")
-                    Text("Let's Go")
-                }
-                .padding()
-                .font(.headline)
+                Text("Let's Go")
+                    .padding()
+                    .font(.headline)
             }
             .buttonStyle(.borderedProminent)
             .transition(.scale)
