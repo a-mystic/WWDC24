@@ -15,7 +15,7 @@ struct Intro: View {
             VStack(spacing: geometry.size.height * 0.02) {
                 Spacer()
                 currentText(in: geometry.size)
-                nextPage
+                start
                 Spacer()
                 guideMessage
                 Spacer()
@@ -78,14 +78,14 @@ struct Intro: View {
     @State private var showButton = false
     
     @ViewBuilder
-    private var nextPage: some View {
+    private var start: some View {
         if currentTextIndex == TextConstants.introTexts.count - 1, showButton {
             Button {
                 withAnimation {
                     pageManager.addPage()
                 }
             } label: {
-                Text("Let's Go")
+                Text("Let's go")
                     .padding()
                     .font(.headline)
             }

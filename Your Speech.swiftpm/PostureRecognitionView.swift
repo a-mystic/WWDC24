@@ -13,7 +13,7 @@ import Charts
 
 final class PostureRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
-    private var index: UInt64 = 0
+    private var index: Int = 0
     private let footDistanceSmallRatio: Float = 1.35
     private let footDistanceLargeRatio: Float = 2.6
     
@@ -158,7 +158,7 @@ extension PostureRecognitionViewController: ARSessionDelegate {
      }
  }
     
-    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
+    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention when running ARView twice.
         if let arError = error as? ARError {
             switch arError.errorCode {
             case 102: setUp()

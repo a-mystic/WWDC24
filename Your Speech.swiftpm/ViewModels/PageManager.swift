@@ -15,10 +15,4 @@ class PageManager: ObservableObject {
             self.currentPage = currentPage + 1
         }
     }
-    
-    func minusPage() {
-        if let currentPage = currentPage, currentPage > 0 {
-            self.currentPage = currentPage - 1
-        }
-    }
 }

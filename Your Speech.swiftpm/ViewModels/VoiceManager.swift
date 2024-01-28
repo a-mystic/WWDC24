@@ -17,7 +17,7 @@ class VoiceManager: ObservableObject {
     private var inputNode: AVAudioInputNode { audioEngine.inputNode }
     private var audioSession = AVAudioSession()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-    private var voiceIndex: UInt64 = 0
+    private var voiceIndex: Int = 0
     
     func requestPermission(changeScreen: @escaping () -> Void) {
         SFSpeechRecognizer.requestAuthorization { status in

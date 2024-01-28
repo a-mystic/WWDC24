@@ -14,7 +14,7 @@ struct TextConstants {
         "I know you have great ideas.",
         "And I'm sure your ideas will change the world.",
         "But ideas that exist only in imagination are meaningless.",
-        "Ideas are meaningful only when they are well communicated to people.",
+        "Ideas are meaningful only when they are communicated well to people.",
         "If you want to convey your ideas to people more clearly, tap the button below."
     ]
     
@@ -45,7 +45,8 @@ struct TextConstants {
     🙂: Recognizes facial expressions and analyzes expressions that appear too often.
     👀: By analyzing eye movements and blinking, we analyze how much eye movement or eye blinking occurs when giving a presentation.
 
-    * If you have a stand, it is better to secure the iPad to the stand and make a presentation.
+    * Script cannot be empty or contain unpronounceable emojis.
+    ** If you have a stand, it is better to secure the iPad to the stand and make a presentation.
     """
     
     static let descriptionPosture = """

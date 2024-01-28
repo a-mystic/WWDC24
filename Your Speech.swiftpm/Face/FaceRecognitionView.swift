@@ -12,7 +12,7 @@ import Charts
 
 final class FaceRecognitionViewController: UIViewController {
     private var arView = ARView(frame: .zero)
-    private var index: UInt64 = 0
+    private var index: Int = 0
     private var face = FaceAnchor()
     private var faceManager = FaceManager.shared
     
@@ -84,7 +84,7 @@ extension FaceRecognitionViewController: ARSessionDelegate, FaceAnchorDelegate {
         faceManager.addBlink(isBlink)
     }
     
-    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention code when running ARView twice.
+    func session(_ session: ARSession, didFailWithError error: Error) {   // Error prevention when running ARView twice.
         if let arError = error as? ARError {
             switch arError.errorCode {
             case 102: setUp()

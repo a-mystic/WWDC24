@@ -8,6 +8,6 @@
 import Foundation
 
 struct VoiceModel: Identifiable {
-    var id: UInt64
+    var id: Int
     var strength: Float
 }

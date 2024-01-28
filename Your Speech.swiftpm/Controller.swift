@@ -14,17 +14,7 @@ struct Controller: View {
     var body: some View {
         NavigationStack {
             lesson
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        description
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        HStack {
-                            testMinusButton
-                            testPlusButton
-                        }
-                    }
-                }
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { description } }
                 .toolbarBackground(.visible, for: .navigationBar)
                 .navigationTitle(currentLessonTitle)
                 .navigationBarTitleDisplayMode(.inline)
@@ -39,22 +29,6 @@ struct Controller: View {
         case 2: PostureView()
         case 3: Finish()
         default: Intro()
-        }
-    }
-    
-    private var testMinusButton: some View {
-        Button {
-            pageManager.minusPage()
-        } label: {
-            Image(systemName: "arrowtriangle.left.fill")
-        }
-    }
-    
-    private var testPlusButton: some View {
-        Button {
-            pageManager.addPage()
-        } label: {
-            Image(systemName: "arrowtriangle.right.fill")
         }
     }
     

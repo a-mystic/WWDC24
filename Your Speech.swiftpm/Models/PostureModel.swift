@@ -24,7 +24,7 @@ struct PostureModel {
     
     
     struct Hand: Identifiable {
-        var id: UInt64
+        var id: Int
         var rightX: Float
         var rightY: Float
         var leftX: Float
@@ -32,7 +32,7 @@ struct PostureModel {
     }
     
     struct Foot: Identifiable {
-        var id: UInt64
+        var id: Int
         var rightX: Float
         var rightY: Float
         var leftX: Float

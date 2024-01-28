@@ -8,7 +8,7 @@
 import Foundation
 
 struct LookAtPoint: Identifiable {
-    var id: UInt64
+    var id: Int
     var x: Float
     var y: Float
 }

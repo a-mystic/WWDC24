@@ -23,12 +23,12 @@ struct Description: View {
             }
         }
         .fontWeight(.light)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Close") {
-                    dismiss()
-                }
-            }
+        .toolbar { ToolbarItem(placement: .topBarLeading) { close } }
+    }
+    
+    private var close: some View {
+        Button("Close") {
+            dismiss()
         }
     }
 }
