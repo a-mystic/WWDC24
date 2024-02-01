@@ -44,18 +44,20 @@ struct TextConstants {
     🎙️: Analyzes the volume of the user's voice to determine whether the user's voice is trembling. Additionally, it analyzes how well the script pronounced by the user matches the script entered.
     🙂: Recognizes facial expressions and analyzes expressions that appear too often.
     👀: By analyzing eye movements and blinking, we analyze how much eye movement or eye blinking occurs when giving a presentation.
-
-    * Script cannot be empty or contain unpronounceable emojis.
-    ** If you have a stand, it is better to secure the iPad to the stand and make a presentation.
+    """
+    
+    static let descriptionVoiceAndFaceNotice = """
+    * Script cannot be empty and cannot contain unpronounceable characters such as emojis.
     """
     
     static let descriptionPosture = """
     Focusing on the body, analyze ✋ hands and 🦶 feet.
     ✋: Hand positions are recorded to analyze how much the user moves their hands while presenting. Additionally, it recognizes whether the position of the user's hand is below the designated position.
     🦶: Recognizes the positions of the feet and shoulders and checks whether the user's feet are shoulder width apart. It also analyzes how much users move their feet while presenting. Additionally, it recognizes whether the user is crossing their legs.
-
+    """
+    
+    static let descriptionPostureNotice = """
     * Correct presentation posture: Spread your legs about shoulder width and place your hands below your shoulders. And it is good to use your hands by moving them appropriately.
     ** Considering users who play alone, the game automatically moves to the feedback screen after 35 seconds. If you completed your presentation before then, tap the Finish button.
-    *** If you have a stand, it is better to secure the iPad to the stand and make a presentation.
     """
 }

@@ -64,7 +64,7 @@ struct Intro: View {
         if !hideGuideMessage {
             Text(guideMessageText)
                 .foregroundStyle(.white.opacity(0.8))
-                .font(.largeTitle)
+                .font(.title)
                 .opacity(showGuideMessage ? 1 : 0)
                 .animation(.linear(duration: 3).repeatForever(autoreverses: true), value: showGuideMessage)
                 .onAppear {

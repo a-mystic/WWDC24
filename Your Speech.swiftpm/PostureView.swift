@@ -76,10 +76,7 @@ struct PostureView: View {
                     .font(.title)
                     .padding()
                     .foregroundStyle(.white)
-                    .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .foregroundStyle(.ultraThinMaterial)
-                    }
+                    .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                     .opacity(postureManager.currentPostureMode == .ready ? 1 : 0)
             }
         }
@@ -129,10 +126,7 @@ struct PostureView: View {
             .font(.body)
             .padding()
             .foregroundStyle(.white)
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.ultraThinMaterial)
-            }
+            .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
     
     @State private var playStatus = PlayButton.PlayStatus.notPlay
@@ -354,9 +348,9 @@ struct PostureView: View {
     
     private func analyzedHandDatas(in size: CGSize) -> some View {
         HStack(spacing: 10) {
-            Text("your hand cv:")
+            Text("Coefficient of variation:")
             if let handCV = handCV {
-                Text("\(handCV)")
+                Text("\(String(format: "%.2f", handCV))")
             } else {
                 ProgressView().tint(.gray)
             }
@@ -364,10 +358,7 @@ struct PostureView: View {
         .font(.body)
         .foregroundStyle(.black)
         .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.gradient)
-        }
+        .background(Color.white.gradient, in: RoundedRectangle(cornerRadius: 12))
     }
     
     private func calcHandCV() {
@@ -453,9 +444,9 @@ struct PostureView: View {
     
     private func analyzedFootDatas(in size: CGSize) -> some View {
         HStack(spacing: 10) {
-            Text("your foot cv:")
+            Text("Coefficient of variation:")
             if let footCV = footCV {
-                Text("\(footCV)")
+                Text("\(String(format: "%.2f", footCV))")
             } else {
                 ProgressView().tint(.gray)
             }
@@ -463,10 +454,7 @@ struct PostureView: View {
         .font(.body)
         .foregroundStyle(.black)
         .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.gradient)
-        }
+        .background(Color.white.gradient, in: RoundedRectangle(cornerRadius: 12))
     }
     
     private func calcFootCV() {
@@ -524,6 +512,7 @@ struct PostureView: View {
         }
         .foregroundStyle(.black)
         .font(.body)
+        .fontWeight(.black)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -569,7 +558,7 @@ struct PostureView: View {
     private func evaluate() {
         let count = feedbacks.count
         switch count {
-        case 1, 2:
+        case 0, 1, 2:
             finalScore = "😀 Very Good"
         case 3, 4:
             finalScore = "🙂 Good"

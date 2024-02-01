@@ -92,12 +92,25 @@ struct VoiceAndFace: View {
             FaceRecognitionView()
                 .frame(width: size.width * 0.7, height: size.height * 0.55)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(alignment: .bottom) { subtitle }
             voiceChart
                 .frame(width: size.width * 0.9, height: size.height * 0.2)
                 .padding()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .transition(.scale)
+    }
+    
+    @ViewBuilder
+    private var subtitle: some View {
+        if !recognizedText.isEmpty {
+            Text(recognizedText)
+                .font(.body)
+                .fontWeight(.light)
+                .foregroundStyle(.white)
+                .padding()
+                .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        }
     }
     
     @State private var recognizedText = ""
@@ -127,9 +140,8 @@ struct VoiceAndFace: View {
                 }
             }
         } stopAction: {
-            recognizedTextCopy = recognizedText
+            similar(recognizedText, to: script)
             withAnimation {
-                similar(recognizedText, to: script)
                 voiceManager.stopRecording()
                 playStatus = .finish
             }
@@ -193,20 +205,19 @@ struct VoiceAndFace: View {
         switch selectedResultState {
         case .face:
             faceChart
-                .frame(width: size.width * 0.8, height: size.height * 0.4)
+                .frame(width: size.width * 0.8, height: size.height * 0.45)
         case .voice:
             VStack {
                 voiceChart
-                recognizedTextDisclousre(in: size)
                 analyzedVoiceDatas(in: size)
             }
-            .frame(width: size.width * 0.8, height: size.height * 0.4)
+            .frame(width: size.width * 0.8, height: size.height * 0.45)
         case .eyes:
             VStack {
                 eyesChart
                 analyzedEyesDatas(in: size)
             }
-            .frame(width: size.width * 0.8, height: size.height * 0.4)
+            .frame(width: size.width * 0.8, height: size.height * 0.45)
         }
     }
     
@@ -261,19 +272,6 @@ struct VoiceAndFace: View {
         .foregroundStyle(faceManager.faceColor)
     }
     
-    @State private var recognizedTextCopy = ""
-    
-    private func recognizedTextDisclousre(in size: CGSize) -> some View {
-        DisclosureGroup {
-            Text(recognizedTextCopy)
-        } label: {
-            Text("Recognized text")
-        }
-        .font(.body)
-        .foregroundStyle(.white)
-        .frame(width: size.width * 0.8)
-    }
-    
     private var voiceCV: Float? {
         var datas: [Float] = []
         voiceManager.voiceDatas.forEach { datas.append($0.strength) }
@@ -288,20 +286,26 @@ struct VoiceAndFace: View {
         }
     }
     
+    private var similarityPercent: String {
+        if let similarity = similarity {
+            let percent = (1 - similarity / 2) * 100
+            return String(format: "%.2f", percent) + "%"
+        } else {
+            return "Not measurable."
+        }
+    }
+    
     private func analyzedVoiceDatas(in size: CGSize) -> some View {
-        HStack {
-            if let voiceCV = voiceCV, let similarity = similarity {
-                Text("CV: \(voiceCV)")
-                Text("Similarity: \(similarity)")
+        VStack(alignment: .leading) {
+            if let voiceCV = voiceCV {
+                Text("Coefficient of variation: \(String(format: "%.2f", voiceCV))")
+                Text("Similarity: \(similarityPercent)")
             }
         }
         .font(.body)
         .foregroundStyle(.black)
         .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.gradient)
-        }
+        .background(Color.white.gradient, in: RoundedRectangle(cornerRadius: 12))
     }
     
     private var eyesChart: some View {
@@ -336,20 +340,22 @@ struct VoiceAndFace: View {
         }
     }
     
+    private var blinkRatio: Float {
+        let sum = faceManager.blink + faceManager.notBlink
+        return faceManager.blink / sum
+    }
+    
     private func analyzedEyesDatas(in size: CGSize) -> some View {
-        HStack {
+        VStack(alignment: .leading) {
             if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
-                Text("CVX: \(eyesCVX)")
-                Text("CVY: \(eyesCVY)")
+                Text("Coefficient of variation: \(String(format: "%.2f", (eyesCVX + eyesCVY) / 2))")
+                Text("Blink ratio: \(String(format: "%.2f", blinkRatio * 100))%")
             }
         }
         .font(.body)
         .foregroundStyle(.black)
         .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundStyle(.white.gradient)
-        }
+        .background(Color.white.gradient, in: RoundedRectangle(cornerRadius: 12))
     }
     
     @State private var feedbacks: [String] = []
@@ -384,6 +390,8 @@ struct VoiceAndFace: View {
             }
         }
         .foregroundStyle(.black)
+        .font(.body)
+        .fontWeight(.black)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -438,7 +446,7 @@ struct VoiceAndFace: View {
     }
     
     private func voiceFeedback() {
-        if let voiceCV = voiceCV, voiceCV > 1.65 {
+        if let voiceCV = voiceCV, voiceCV > 1.7 {
             feedbacks.append("Voice is unstable")
         }
         if let similarity = similarity, similarity > 0.95 {
@@ -446,14 +454,9 @@ struct VoiceAndFace: View {
         }
     }
     
-    private var blinkRatio: Float {
-        let sum = faceManager.blink + faceManager.notBlink
-        return faceManager.blink / sum
-    }
-    
     private func eyesFeedback() {
         if let eyesCVX = eyesCVX, let eyesCVY = eyesCVY {
-            if ((eyesCVX + eyesCVY) / Float(2)) > 5.1 {
+            if ((eyesCVX + eyesCVY) / 2) > 5.1 {
                 feedbacks.append("Moved eyes too much")
             }
         }
@@ -465,7 +468,7 @@ struct VoiceAndFace: View {
     private func evaluate() {
         let count = feedbacks.count
         switch count {
-        case 1, 2:
+        case 0, 1, 2:
             finalScore = "😀 Very Good"
         case 3, 4:
             finalScore = "🙂 Good"

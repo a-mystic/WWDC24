@@ -17,9 +17,15 @@ struct Description: View {
             }
             Section("VOICE&FACE") {
                 Text(TextConstants.descriptionVoiceAndFace)
+                Text(TextConstants.descriptionVoiceAndFaceNotice)
             }
             Section("POSTURE") {
                 Text(TextConstants.descriptionPosture)
+                Text(TextConstants.descriptionPostureNotice)
+            }
+            Section("NOTE") {
+                Text("* If you have a stand, it is better to secure the iPad to the stand and make a presentation.")
+                Text("** Coefficient of variation(CV) is a standardized measure of dispersion of a probability distribution or frequency distribution. It is defined as the ratio of the standard deviation to the mean. In this app, it is used to measure the instability of the data.")
             }
         }
         .fontWeight(.light)
