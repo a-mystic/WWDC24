@@ -12,21 +12,36 @@ struct Finish: View {
         GeometryReader { geometry in
             ZStack {
                 Color.clear
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.white.gradient)
-                    .overlay {
-                        VStack(spacing: 40) {
-                            Text("Thank you")
-                                .font(.largeTitle)
-                                .bold()
-                            Text(TextConstants.finishText)
-                                .font(.title)
-                                .fontWeight(.light)
-                        }
-                        .foregroundStyle(.black)
-                    }
-                    .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.6)
+                message(in: geometry.size)
             }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.5)) {
+                    showMessage = true
+                }
+            }
+        }
+    }
+    
+    @State private var showMessage = false
+    
+    @ViewBuilder
+    private func message(in size: CGSize) -> some View {
+        if showMessage {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.white.gradient)
+                .overlay {
+                    VStack(spacing: 40) {
+                        Text("Thank you")
+                            .font(.largeTitle)
+                            .bold()
+                        Text(TextConstants.finishText)
+                            .font(.title)
+                            .fontWeight(.light)
+                    }
+                    .foregroundStyle(.black)
+                }
+                .frame(width: size.width * 0.6, height: size.height * 0.6)
+                .transition(.move(edge: .bottom))
         }
     }
 }
