@@ -47,7 +47,7 @@ struct TextConstants {
     """
     
     static let descriptionVoiceAndFaceNotice = """
-    * Script cannot be empty and cannot contain unpronounceable characters such as emojis.
+    * The script cannot be empty and cannot contain unpronounceable characters such as emojis.
     """
     
     static let descriptionPosture = """

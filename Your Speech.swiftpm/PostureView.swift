@@ -482,7 +482,7 @@ struct PostureView: View {
     }
     
     @State private var feedbacks: [String] = []
-    @State private var finalScore = ""
+    @State private var score = ""
     
     @ViewBuilder
     private func feedback(in size: CGSize) -> some View {
@@ -503,11 +503,11 @@ struct PostureView: View {
                     divider
                 }
             }
-            Text("Your final score: ")
-            if finalScore.isEmpty {
+            Text("Your score: ")
+            if score.isEmpty {
                 ProgressView().tint(.gray)
             } else {
-                Text(finalScore)
+                Text(score)
             }
         }
         .foregroundStyle(.black)
@@ -529,7 +529,9 @@ struct PostureView: View {
                 if feedbacks.isEmpty {
                     feedbacks.append("nil")
                 }
-                evaluate()
+                DispatchQueue.main.async {
+                    evaluate()
+                }
             }
         }
     }
@@ -555,15 +557,18 @@ struct PostureView: View {
         }
     }
     
+    @StateObject private var feedbackScore = FeedbackScore.shared
+    
     private func evaluate() {
         let count = feedbacks.count
+        feedbackScore.score += count
         switch count {
         case 0, 1, 2:
-            finalScore = "😀 Very Good"
+            score = "😀 Very Good"
         case 3, 4:
-            finalScore = "🙂 Good"
+            score = "🙂 Good"
         default:
-            finalScore = "😢 Not Good"
+            score = "😢 Not Good"
         }
     }
     

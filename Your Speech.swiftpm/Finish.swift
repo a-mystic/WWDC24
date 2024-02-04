@@ -12,9 +12,15 @@ struct Finish: View {
         GeometryReader { geometry in
             ZStack {
                 Color.clear
-                message(in: geometry.size)
+                VStack(spacing: 30) {
+                    Text("Your final score: \(finalScore)")
+                        .font(.largeTitle)
+                        .bold()
+                    message(in: geometry.size)
+                }
             }
             .onAppear {
+                evaluate()
                 withAnimation(.easeInOut(duration: 1.5)) {
                     showMessage = true
                 }
@@ -40,8 +46,22 @@ struct Finish: View {
                     }
                     .foregroundStyle(.black)
                 }
-                .frame(width: size.width * 0.6, height: size.height * 0.6)
+                .frame(width: size.width * 0.6, height: size.height * 0.5)
                 .transition(.move(edge: .bottom))
+        }
+    }
+    
+    @StateObject private var feedbackScore = FeedbackScore.shared
+    @State private var finalScore = ""
+    
+    private func evaluate() {
+        switch feedbackScore.score {
+        case 0...4:
+            finalScore = "😀 Very Good"
+        case 5...8:
+            finalScore = "🙂 Good"
+        default:
+            finalScore = "😢 Not Good"
         }
     }
 }
