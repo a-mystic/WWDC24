@@ -39,7 +39,7 @@ struct Intro: View {
                 .font(.largeTitle)
         }
         .multilineTextAlignment(.center)
-        .fontWeight(.black)
+        .fontWeight(.regular)
         .padding()
     }
     
