@@ -1,6 +1,6 @@
 //
 //  TextConstants.swift
-//  Your Speech
+//  Your Presentation
 //
 //  Created by a mystic on 12/25/23.
 //
@@ -10,7 +10,7 @@ import Foundation
 struct TextConstants {
     static let introEmojis = ["🎙️", "💡", "🌎", "💭", "💬", "🪄"]
     static let introTexts = [
-        "Your Speech",
+        "Your Presentation",
         "I know you have great ideas.",
         "And I'm sure your ideas will change the world.",
         "But ideas that exist only in imagination are meaningless.",
@@ -37,7 +37,7 @@ struct TextConstants {
     
     static let finishText = "I hope your ideas change the world."
     
-    static let descriptionApp = "Your Speech is an app that helps users give better presentations."
+    static let descriptionApp = "Your Presentation is an app that helps users give better presentations."
     
     static let descriptionVoiceAndFace = """
     Analyze 🎙️ voice, 🙂 facial expression, 👀 eyes.

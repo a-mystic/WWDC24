@@ -1,6 +1,6 @@
 //
 //  VoiceAndFace.swift
-//  Your Speech
+//  Your Presentation
 //
 //  Created by a mystic on 11/29/23.
 //
