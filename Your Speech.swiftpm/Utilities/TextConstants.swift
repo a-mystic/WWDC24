@@ -20,7 +20,7 @@ struct TextConstants {
     
     static let voiceAndFaceText = """
     When giving a presentation, both your voice and nonverbal communication are important.
-    In this chapter we analyze your 🎙️voice, 🙂face, and 👀eyes. (Tap the button in the top right for details)
+    In this chapter we analyze your 🎙️voice, 🙂face and 👀eyes. (Tap the button in the top right for details)
     Lastly, it is important to write and practice a script before you begin your presentation.
     Write your script, choose the parts you think are important, and present it as if it were real.
     When you're ready, tap the button below.
@@ -29,9 +29,9 @@ struct TextConstants {
     static let postureText = """
     This chapter analyzes your presentation posture in terms of nonverbal aspects. (Tap the button in the top right for details)
     The analysis consists of two steps.
-    1. ready: Check your posture at the start of your presentation. If your posture is appropriate, count down 5 seconds and then move on to the next stage, the rehearsal stage.
+    1. Ready: Check your posture at the start of your presentation. If your posture is appropriate, count down 5 seconds and then move on to the next stage, the rehearsal stage.
     2. Rehearsal: You rehearse as if you were giving an actual presentation.
-    Before you start your presentation, think about how you would like to pose during your presentation.
+    Before you start your presentation, think about how you would like to pose during your presentation. 
     When you're ready, tap the button below.
     """
     
