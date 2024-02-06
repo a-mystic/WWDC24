@@ -49,15 +49,16 @@ struct PostureView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .foregroundStyle(Color.white.gradient)
-                .frame(width: size.width * 0.9, height: size.height * 0.8)
+                .frame(width: placeHolderSize(in: size).width, height: placeHolderSize(in: size).height)
                 .padding()
             VStack(spacing: size.height * 0.04) {
                 Image(systemName: "figure.arms.open")
                     .imageScale(.large)
-                    .font(.system(size: size.width * 0.3))
+                    .font(.system(size: placeHolderImageSize(in: size)))
                 Text(TextConstants.postureText)
                     .multilineTextAlignment(.leading)
-                    .frame(width: size.width * 0.8)
+                    .padding(.horizontal)
+                    .frame(width: placeHolderSize(in: size).width)
                     .font(.body)
                     .fontWeight(.light)
             }
@@ -66,10 +67,18 @@ struct PostureView: View {
         }
     }
     
+    private func placeHolderSize(in size: CGSize) -> (width: CGFloat, height: CGFloat) {
+        return (width: min(size.width * 0.9, size.height * 0.9), height: max(size.height * 0.8, size.width * 0.55))
+    }
+    
+    private func placeHolderImageSize(in size: CGSize) -> CGFloat {
+        return min(size.width * 0.3, size.height * 0.25)
+    }
+    
     private func postureRecognizer(in size: CGSize) -> some View {
         ZStack(alignment: .bottom) {
             PostureRecognitionView()
-                .frame(width: size.width * 0.9, height: size.height * 0.8)
+                .frame(width: recognitionViewFrame(in: size).width, height: recognitionViewFrame(in: size).height)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             if !postureManager.currentPostureMessage.isEmpty {
                 Text(postureManager.currentPostureMessage)
@@ -82,6 +91,10 @@ struct PostureView: View {
         }
         .overlay { countdownAnimation(in: size) }
         .transition(.scale)
+    }
+    
+    private func recognitionViewFrame(in size: CGSize) -> (width: CGFloat, height: CGFloat) {
+        return (width: min(size.width * 0.9, size.height * 0.9), height: max(size.height * 0.8, size.width * 0.55))
     }
     
     @State private var count = 5

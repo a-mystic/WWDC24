@@ -61,8 +61,6 @@ struct VoiceAndFace: View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .foregroundStyle(Color.white.gradient)
-                .frame(width: size.width * 0.9, height: size.height * 0.8)
-                .padding()
             VStack(spacing: size.height * 0.05) {
                 Text(TextConstants.voiceAndFaceText)
                     .multilineTextAlignment(.leading)
@@ -82,6 +80,11 @@ struct VoiceAndFace: View {
                     .foregroundStyle(.white)
             }
         }
+        .frame(width: textInputSize(in: size).width, height: textInputSize(in: size).height)
+    }
+    
+    private func textInputSize(in size: CGSize) -> (width: CGFloat, height: CGFloat) {
+        return (width: min(size.width * 0.9, size.height * 0.9), height: min(size.height * 0.8, size.width * 0.8))
     }
     
     @StateObject private var faceManager = FaceManager.shared
@@ -90,7 +93,7 @@ struct VoiceAndFace: View {
         VStack(spacing: size.height * 0.03) {
             Spacer()
             FaceRecognitionView()
-                .frame(width: size.width * 0.7, height: size.height * 0.55)
+                .frame(width: recognitionViewFrame(in: size).width, height: recognitionViewFrame(in: size).height)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(alignment: .bottom) { subtitle }
             voiceChart
@@ -99,6 +102,10 @@ struct VoiceAndFace: View {
                 .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .transition(.scale)
+    }
+    
+    private func recognitionViewFrame(in size: CGSize) -> (width: CGFloat, height: CGFloat) {
+        return (width: min(size.width * 0.7, size.height * 0.7), height: max(size.height * 0.55, size.width * 0.35))
     }
     
     @ViewBuilder
