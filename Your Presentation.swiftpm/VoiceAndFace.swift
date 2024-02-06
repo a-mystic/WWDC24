@@ -164,8 +164,9 @@ struct VoiceAndFace: View {
     }
     
     private func onlyString(_ text: String) -> String {
-        let removeCondition = CharacterSet(charactersIn: ".,?!&-_\n\t")
-        return text.components(separatedBy: removeCondition).joined().lowercased()
+        let removeCondition = CharacterSet(charactersIn: ".,?!&-_ \n\t")
+        let components = text.components(separatedBy: removeCondition).filter { !$0.isEmpty }
+        return components.joined(separator: " ").lowercased()
     }
     
     @State private var selectedResultState: ResultChartStatus = .face
