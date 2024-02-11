@@ -51,7 +51,7 @@ struct Finish: View {
         }
     }
     
-    @StateObject private var feedbackScore = FeedbackScore.shared
+    private var feedbackScore = FeedbackScore.shared
     @State private var finalScore = ""
     
     private func evaluate() {

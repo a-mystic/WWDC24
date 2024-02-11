@@ -580,7 +580,7 @@ struct PostureView: View {
         }
     }
     
-    @StateObject private var feedbackScore = FeedbackScore.shared
+    private var feedbackScore = FeedbackScore.shared
     
     private func evaluate() {
         let count = feedbacks.count
