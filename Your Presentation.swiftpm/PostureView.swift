@@ -359,11 +359,15 @@ struct PostureView: View {
         }
     }
     
+    @State private var handCVCalcIsFinished = false
+    
     private func analyzedHandDatas(in size: CGSize) -> some View {
         HStack(spacing: 10) {
             Text("Coefficient of variation:")
             if let handCV = handCV {
                 Text("\(String(format: "%.2f", handCV))")
+            } else if handCV == nil && handCVCalcIsFinished {
+                Text("need data to analyze.")
             } else {
                 ProgressView().tint(.gray)
             }
@@ -394,6 +398,7 @@ struct PostureView: View {
                 handCV = meanCV
             } else {
                 handCV = nil
+                handCVCalcIsFinished = true
             }
         }
     }
@@ -455,11 +460,15 @@ struct PostureView: View {
         }
     }
     
+    @State private var footCVCalcIsFinished = false
+    
     private func analyzedFootDatas(in size: CGSize) -> some View {
         HStack(spacing: 10) {
             Text("Coefficient of variation:")
             if let footCV = footCV {
                 Text("\(String(format: "%.2f", footCV))")
+            } else if footCV == nil && footCVCalcIsFinished {
+                Text("need data to analyze.")
             } else {
                 ProgressView().tint(.gray)
             }
@@ -490,6 +499,7 @@ struct PostureView: View {
                 footCV = meanCV
             } else {
                 footCV = nil
+                footCVCalcIsFinished = true
             }
         }
     }

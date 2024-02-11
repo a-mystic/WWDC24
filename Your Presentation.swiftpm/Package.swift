@@ -35,7 +35,7 @@ let package = Package(
             capabilities: [
                 .camera(purposeString: "Can I use camera for your presentation?"),
                 .microphone(purposeString: "Can I use a microphone for your presentation?"),
-                .speechRecognition(purposeString: "Can I use speech recognition for your presentation? (My app does not require network connection.)")
+                .speechRecognition(purposeString: "Can I use speech recognition for your presentation? (It does not require network connection.)")
             ],
             appCategory: .education
         )
