@@ -1,4 +1,3 @@
-# WWDC24 Swift Student Challenge Submission
+# WWDC24 Swift Student Challenge Submission(Submitted)
 
-Submitted
 Using AR technology to improve users’ presentation skills.
